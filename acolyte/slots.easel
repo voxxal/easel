@@ -1,0 +1,27 @@
+pub fn unit.SlotAbilities(owner) {
+    WalkSlotAbility
+    DashSlotAbility(btnIndex=0, btnSize=0.75)
+    PrimarySlotAbility(btnIndex=1, btnSize=1)
+    DefenseSlotAbility(btnIndex=3, btnSize=0.9)
+    SpecialSlotAbility(btnIndex=2, btnSize=0.9)
+    UltimateSlotAbility(btnIndex=4, btnSize=0.9)
+    MeleeSlotAbility(btnIndex=5, btnSize=0.75)
+}
+
+pub fn owner.RandomizeAllSlots {
+	RandomizePrimarySlot
+	RandomizeDefenseSlot
+	RandomizeSpecialSlot
+	RandomizeUltimateSlot
+	RandomizeMeleeSlot
+	RandomizeDashSlot
+}
+
+pub fn this.SlotEditors(.. ui, owner) {
+	PrimarySlotEditor
+	SpecialSlotEditor
+	DefenseSlotEditor
+	UltimateSlotEditor
+	MeleeSlotEditor
+	DashSlotEditor
+}

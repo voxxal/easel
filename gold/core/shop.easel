@@ -1,0 +1,52 @@
+pub fn this.ShopTool(tooltip .. owner, placement=null, icon="fas fa-shop") .. ui {
+    const showLoadoutDialog = Modal<loadoutDialog> { delve() }
+    Toolbar<loadoutTool>(placement=) {
+        Button(onPress=showLoadoutDialog, icon=, collapsable=true, repeatable=true) {
+            %(tooltip)
+        }
+    }
+}
+
+pub fn this.ItemCategory<Category>(ui .. btn?, owner, slotDefault?) .. ui {
+	PipTabs<Category> {
+		delve()
+
+		hook owner.Preference<Category> {
+			Select(owner.Preference<Category> ?? slotDefault)
+		}
+	}
+
+    on Selected<Category> choice {
+        owner.Preference<Category> = choice
+    }
+}
+
+pub fn this.Item<Item>(.. ui, glyph, color, item) .. ui {
+	PipTab<Item> {
+        delve() 
+        P(color=#e5e520, bold=true) { %("Cost: " + FormatToFixed(ItemCost, 0)) }
+    }
+}
+
+pub fn this.ShopService(.. owner, unit) {
+    hook owner.Preference<ShopBasic> {
+        let choice = owner.Preference<ShopBasic> ?? None
+        BuyItem(choice)
+        
+        owner.Preference<ShopBasic> = None
+    }
+}
+
+pub fn this.BuyItem(item, .. unit) {
+    if item == None { return }
+    let cost = ItemCost
+    if unit.Gold >= cost {
+        unit.Gold -= cost
+        Debug:Log("Bought " + item)
+        if item == Shield {
+            unit.Hp += 50
+        }
+    } else {
+        Debug:Log("Could not afford " + item)
+    }
+}

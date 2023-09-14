@@ -1,0 +1,80 @@
+.. glyph=LightningHelix:Glyph, color=#ffaa00, damage=0, cooldown=9s
+
+pub symbol WantRepulsor
+
+pub fn RepulsorOption(.. ui) {
+	SlotOption<WantRepulsor> {
+		H1 { %("Repulsor") }
+
+		P {
+			%("Emit an intense beam of energy which drives your foes backward. Exercise caution, as its fierce recoil propels you backward too, either catapulting you into peril or hastening your retreat to safety. ")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.RepulsorAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		TurnRateModifier(-1.0)
+		await ChargeForDuration(6) {
+			ChargingIndicator
+		}
+		unit.Velocity:ImpulseAway(Pointer, impulse=140.0)
+
+		Spawn projectile {
+			.. parent=unit
+			.. lifetime=0.5s, dissipation=30 
+			.. radius=0.2, speed=240.0
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=8, ccd=true
+			.. categories=Category:Projectile, durability=Durability:High
+			.. collideWith = Category:Solid ^ Category:Projectile
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			Sing(Repulsor:Sound)
+			RayEmitter(fade=1)
+			ExpireAfterLifetime
+
+			Collider {
+				Shape:Circle
+			}
+
+			on BeforeCollide that {
+				if that.Team != owner.Team {
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" repulsed ")
+						NameBlock(victim)
+						%(" to the realm of no return ")
+					}
+				}
+			}
+			on AfterCollide that {
+				if that.Durability >= this.Durability {
+					Strobe(shine=0.5)
+					Puff(count=5, splatter=1)
+					Expire
+				}
+			}
+		}
+	}
+}
+
+sound Repulsor:Sound(duration=0.3s, cutoff=0.3s) {
+	Oscillator(wave=$sawtooth, freq=[4500,5000], harmonics=[1,1.33,1.5,1.78,2,2.67,3,3.56])
+	Envelope(attack=0.001s, sustain=0s)
+}

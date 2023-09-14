@@ -1,0 +1,26 @@
+pub accumulator owner.NumOutlasts
+pub accumulator owner.NumOutlasts:Session
+
+pub fn NumOutlasts:Accumulate(ranking) {
+	let numPlayers = Length(ranking)
+	for i in Range(0,numPlayers) {
+		let self = ranking[i]
+		if !self.IsHuman { continue }
+
+		let numOutlasts = 0
+		for j in Range(i+1,numPlayers) {
+			let opponent = ranking[j]
+			if opponent && opponent.IsHuman && opponent.UserId != self.UserId && opponent.Team != self.Team {
+				numOutlasts += 1
+			}
+		}
+
+		// Lifetime
+		self.Accumulate<NumOutlasts>(numOutlasts, showOnLeaderboard=true)
+
+		// Session
+		self.Accumulate<NumOutlasts:Session>(numOutlasts)
+		let numOutlasts:session = self.NumOutlasts:Session
+		self.AccumulateLater<NumOutlasts:Session>(-numOutlasts:session, after=1h, key=$session)
+	}
+}

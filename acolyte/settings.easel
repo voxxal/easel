@@ -1,0 +1,29 @@
+pub page fn owner.SettingsPage {
+	Section {
+        H1 { %("Settings") }
+        Panel {
+            FormBlock("Name") { NameEditor }
+        }
+
+        H1 { %("Visuals") }
+        Panel {
+            FormBlock("Resolution") {
+                ResolutionEditor
+                Caption { %("Higher for better quality, lower for better performance") }
+            }
+        }
+
+        H1 { %("Audio") }
+        Panel {
+            FormBlock("Volume") { VolumeEditor }
+        }
+
+        H1 { %("Controls") }
+        Panel {
+            FormBlock("Movement") {
+                WalkSlotEditor
+                Caption { %("Choose whether to continuously move towards your cursor, or only when you click/tap") }
+            }
+        }
+	}
+}

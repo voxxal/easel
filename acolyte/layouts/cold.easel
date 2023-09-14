@@ -1,0 +1,45 @@
+pub fn scene.ColdLayout {
+	Lava
+	Shrink
+	SolidBackground(color=#25192e)
+
+	Spawn turf {
+		Turf(color=#41324e) {
+			hook ShrinkScale {
+				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=6)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=27.2, numObstacles=6, angleOffset=0.5rev / numObstacles) {
+		Spawn obstacle {
+			Ice {
+				Shape:Arc(radius=0.2, arc=0.72rev / numObstacles, cap=true)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=5.8, numObstacles=3, angleOffset=0.5rev / numObstacles) {
+		Spawn obstacle {
+			Ice {
+				Shape:Arc(radius=0.16, arc=0.6rev / numObstacles, cap=true)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=5.8, numObstacles=3) {
+		Spawn obstacle {
+			Boulder {
+				Shape:Equilateral(numPoints=6, radius=0.8)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=27.2, numObstacles=3) {
+		Spawn obstacle {
+			Boulder {
+				Shape:Equilateral(numPoints=6, radius=1.2)
+			}
+		}
+	}
+}

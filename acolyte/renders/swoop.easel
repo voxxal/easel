@@ -1,0 +1,31 @@
+pub behavior fn this.SwoopEmitter<Id?>(
+	body, radius,
+	..
+	color, depth, dissipation,
+
+	audience?,
+	fade?,
+	angleOffset?=0,
+	bloom?=3.0, bloomAlpha?=0.3,
+	crater?,
+	diminish?,
+	feather?,
+	strobe?,
+	flicker?,
+	glare?, glareAlpha?,
+	luminous?=1.0,
+	owner?, ownerColor?,
+	shading?, shadow?=0,
+	shine?,
+
+	// Looks weird if the swooping radius tapers to zero, so default to this off
+	taper=0) {
+
+	loop {
+		let heading = body.Heading
+		if !IsNum(heading) { break } // Seems our mark has died
+
+		Swoop<Id>(angle = heading + angleOffset, .. body)
+		await TickEnd
+	}
+}

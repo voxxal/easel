@@ -1,0 +1,51 @@
+.. owner = null
+
+pub fn obstacle.Conveyor(pos, heading?=0, convey, maxHp=50, radius=0.25) .. shape {
+	.. density=1.0,
+	.. color=#3332, fade=#3331,
+	.. bloom=0, luminous=1,
+	.. shading=0, shadow=0, depth=Depth:Zone,
+	.. categories=(Category:Zone | Category:HurtByLava),
+	.. collideWith=Category:None, sense=Category:Aoe,
+	.. durability=Durability:Maximum,
+	.. isSensor=true, immovable=true, ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	Health
+
+	// reuse=false so a new buff is created each time a new conveyor is entered.
+	// This is important because we expect different conveyors to point in different directions and so the buff must be refreshed each time.
+	BuffOnContact<conveyor>(reuse=false, filter=Category:Aoe) that {
+		hook Tick {
+			that.ApplyPositionStep(Rotate(convey, obstacle.Heading) / TicksPerSecond)
+		}
+	}
+
+	Collider {
+		Sprite {
+			Perimeter {
+				delve()
+			}
+		}
+	}
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps
+		Smoke(
+			radius=, luminous=1.0, shine=0.5, bloom=0, shadow=0,
+			interval=6, dissipation=45, splatter=Splatter:Conveyor(convey),
+			flutter=$area)
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=2.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}

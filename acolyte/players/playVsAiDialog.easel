@@ -1,0 +1,22 @@
+pub fn this.PlayVsAiDialog() .. {
+	Subspawn {
+		hook NumPlayers {
+			Section {
+				if NumPlayers < 2 {
+					Panel {
+						H1 {%("Waiting for players...")}
+						Button(tier=$primary, onPress=$playVsAi) { %("Play vs AI") }
+					}
+				}
+			}
+		}
+
+		once BeforeCommence {
+			Despawn
+		}
+
+		once ButtonPress($playVsAi) {
+			delve()
+		}
+	}
+}

@@ -1,0 +1,117 @@
+.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=3.0, lifesteal=1.0, lifetime=2.0s, cooldown=5s, numHalos=3, fastProportion=0.2
+
+pub symbol WantHalo
+
+pub fn HaloOption(.. ui) {
+	SlotOption<WantHalo> {
+		H1 { %("Halo") }
+
+		P {
+			%("Manifest " + numHalos + " resplendent swirls of radiant energy, burning your enemies with holy light and stealing a fragment of their soul with each hit.")
+		}
+
+		P {
+			SlotEffect("Interruptible", icon="fas fa-hand-paper") {
+				%("Any disruption, be it an attempt to cast another spell or a strike from your enemies, compromises your steadfast devotion and will shatter the celestial radiance of your halos.")
+			}
+			SlotEffect("Rapid Gracefulness", icon="fas fa-running") {
+				%("Move " + (fastProportion * 100) + "% faster as your every step shimmers with the favor of the gods.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.HaloAbility(unit, owner, btn) {
+	on BotAttacking target {
+		const triggerDistance = 5
+		if Cooldown == 0 && Distance(unit.Pos, target) <= triggerDistance {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		CooldownRate(-1)
+		SpeedModifier(fastProportion)
+
+		on Interrupt interruptor {
+			if interruptor & Interruptor:Self {
+				StopIncantation
+			}
+		}
+
+		on BotChannelling target {
+			const chaseDistance=10
+			if Distance(unit.Pos, target) <= chaseDistance {
+				BotKeepChannelling
+			}
+		}
+
+		await Barrage(interval=0.8s, count=numHalos) index {
+			Subspawn projectile { // Subspawn so all halos expire at the same time when incantation ends
+				.. parent=unit
+				.. dissipation=15 
+				.. radius=0.1, speed=40.0
+				.. luminous=1.0, depth=Depth:Projectile
+				.. density=1, ccd=true
+				.. categories=Category:Projectile, durability=Durability:Minimum
+				.. collideWith = Category:Solid ^ Category:Projectile
+				.. noLavasteal=true // Not enough knockback to push others into lava
+				
+				// Current halos expire if hit (but more may be spawned if the spell has not been completed yet)
+				once Interrupt interruptor { Expire }
+
+				LaunchBody
+				PrepareForCollision
+				PropulsiveMotion
+				Movement:WalkWith(unit)
+				Homing(unit, turnProportion=0.2)
+				RayEmitter(bloom=2, fade=1, taper=0)
+				Sing(Halo:Sound)
+
+				Collider {
+					Shape:Circle
+				}
+
+				on BeforeCollide that {
+					if that.Team != owner.Team {
+						Attack(that)
+						Strobe(growth=1.0)
+						Hear(Halo:HitSound)
+
+						that.Tombstone victim {
+							NameBlock(owner)
+							%(" enlightened ")
+							NameBlock(victim)
+							%(" in a blazing spectacle")
+						}
+					}
+				}
+			}
+		}
+
+		// All halos expire live for the same lifetime duration and expire at the same time
+		await Sleep(lifetime)
+	}
+}
+
+sound Halo:Sound(duration=0.3s) {
+	Oscillator(wave=$sawtooth, freq=[9000,11500], harmonics=[1, 1.167, 1.33, 1.78, 2, 2.25])
+	Envelope(attack=0.01s, sustain=0s)
+	Gain(volume=0.25)
+}
+
+sound Halo:HitSound(duration=0.3s) {
+	Oscillator(wave=$sawtooth, freq=[7000,6880], harmonics=[1, 1.167, 1.33, 1.78, 2, 2.25])
+	HighPass(freq=6500)
+	LowPass(freq=[10000,0])
+	Envelope(attack=0.01s, sustain=0s)
+	Gain(volume=0.25)
+}

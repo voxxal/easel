@@ -1,0 +1,154 @@
+meta Project(name="Acolyte Fight!", author="raysplaceinspace")
+
+meta PlayerNames(defaultPrefix="Acolyte")
+meta PlayerColors(
+	selfColor=#00ccff,
+	colors=[#f58c81, #54c794, #b69cf6, #e09f47, #e08747, #e58cc5, #a9b852, #6eb2fd],
+	teamHueRange=10.0, teamHueStep=7.0,
+)
+
+pub mode fn World.Main {
+	Introducer
+	Scoreboard<NumOutlasts:Session>("Most Outlasts", icon="fas fa-skull")
+	Scoreboard<NumWins:Session>("Most Wins", icon="fas fa-crown")
+	Scoreboard<NumGames:Session>("Most Games", icon="fas fa-hourglass-start")
+
+	Spawn scene {
+		RandomLayout
+	}
+
+	SpawnPlayer owner {
+		if owner.IsHuman {
+			QueryPlayers.WhereIsHuman(false).FindAny.DespawnBot // Replace a bot with a human
+		} else {
+			BotChooseSpells
+		}
+
+		SlotRandomizeTool(tooltip="Randomize your abilities", placement=$important) { RandomizeAllSlots }
+		ShopTool(tooltip="Shop", placement=$important) {
+			H1 {%("Shop")}
+			ItemCategory<ShopBasic> {
+				// A little redundant but nothing much i can do about it
+				Item<Sword>(item=Sword,glyph=GlowingHands:Glyph, color=#777) {
+					H1 {%("Sword")}
+					P { %("Just a sword.")}
+				}
+
+				Item<Shield>(item=Shield,glyph=WingedShield:Glyph, color=#6d503d) {
+					H1 {%("Heal")}
+					P { %("Just a heal.")}
+				}
+			}
+		}
+
+		Spawn unit {
+			AudioCenter // spatial audio is calculated around this unit
+			PointerCenter // emulated pointers (e.g. touchscreen or gamepads) are relative to this unit
+			PointerLine(color=#0001, radius=0.5, depth=Depth:Aim)
+
+			Hero(owner=, pos=NextStartingPosition(radiusFraction=0.4))
+			SlotAbilities
+			AntiTeamingBonus
+
+			Tombstone { // add a backup Tombstone in case the user does not get hit by anything
+				NameBlock
+				%(" died")
+			}
+
+			once Expire {
+				Eliminate(owner)
+			}
+
+			once BeforePlayerLeave {
+				if IsReadyToBegin && !HasConcluded {
+					// During the game, no one leaves, instead wait until the game is complete
+					await Conclude
+					await Sleep(2s)
+				}
+				delete unit.Tombstone // Voluntary leaving should not count as a kill
+				unit.HeroExit
+			}
+
+			hook IsPresent {
+				if IsPresent {
+					delete Bot
+				} else {
+					Bot
+				}
+			}
+		}
+
+		once AfterCommence {
+			SlotsUneditable = true
+		}
+
+		once IsEliminated {
+			SlotsUneditable = false
+
+			EliminatedDialog { 
+				H1 { %("You Died") }
+				Button(tier=$primary, onPress=Main) { %("Play Again") }
+			}
+
+			if Outlast:IsGameComplete {
+				Victory = Outlast:CalculateRanking
+			}
+		}
+
+		on Rating:OnChange {
+			Rating:AnnounceChange
+		}
+
+		once Conclude {
+			SlotsUneditable = false
+		}
+	}
+
+	PlayVsAiDialog {
+		const numBots=7
+		for i in Range(0, numBots) {
+			SpawnBot(name="AcolyteBot") player {
+				// Make the bot automatically leave when the game ends
+				await Conclude
+				await Sleep(2s)
+				player.DespawnBot
+			}
+		}
+	}
+
+	CommenceCountdown(waitForMoreDelay=12s, commenceDelay=3s) {
+		let numPlayers = QueryPlayers.Count
+		if numPlayers < 2 { return false }
+
+		let numBots = QueryPlayers.WhereIsHuman(false).Count
+		if numPlayers < 4 && numBots == 0 { return WaitForMorePlayers }
+
+		return true
+	}
+
+	once BeforeCommence {
+		Teams:Individual
+	}
+
+	once AfterCommence {
+		Transmission<announceStart>(duration=15s) {
+			P {
+				%("Game started. ")
+				Span(bold=true) { %("Defeat your enemies!") }
+			}
+		}
+	}
+
+	once Victory ranking {
+		Conclude(ranking)
+		VictoryDialog
+		DiscordAd
+
+		if ranking.Where(p => p.IsHuman).Length >= 2 { // Single player games do not count towards stats
+			NumGames:Accumulate
+			NumOutlasts:Accumulate
+			NumWins:Accumulate
+			Rating:Accumulate
+		}
+	}
+}

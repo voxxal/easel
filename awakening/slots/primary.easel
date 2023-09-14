@@ -1,0 +1,36 @@
+.. btn="KeyQ", slotDefault=WantPulseQ
+
+pub preference owner.PrimarySlot
+
+pub fn unit.PrimarySlotAbility(.. owner, btnIndex?, btnSize=1) {
+	SlotAbility<PrimarySlot> choice {
+		if choice == WantPulseQ { PulseQAbility }
+		else if choice == WantFireboom { FireboomAbility }
+		else if choice == WantDifire { DifireAbility }
+		else if choice == WantTrifire { TrifireAbility }
+		else if choice == WantRefract { RefractAbility }
+		else if choice == WantBoomerang { BoomerangAbility }
+		else if choice == WantElectroshock { ElectroshockAbility }
+		else { SlotWithoutAbility }
+
+		SlotPopup<PrimarySlot> { PrimarySlotEditor }
+	}
+}
+
+pub fn this.PrimarySlotEditor(.. owner, ui) {
+	SlotEditor<PrimarySlot> {
+		PulseQOption
+	}
+}
+
+pub fn owner.RandomizePrimarySlot {
+	PrimarySlot = PickRandom([
+		WantFireball,
+		WantFireboom,
+		WantDifire,
+		WantTrifire,
+		WantRefract,
+		WantBoomerang,
+		WantElectroshock,
+	])
+}

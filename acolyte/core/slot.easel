@@ -1,0 +1,150 @@
+pub prop owner.SlotsUneditable(uneditable)
+
+field unit.PreviousAbility<Slot>(ability)
+
+pub fn unit.SlotAbility<Slot>(.. owner, slotDefault?, btnIndex?, btnSize?) choice .. *ability {
+	hook owner.Preference<Slot> {
+        // Destroy previous ability
+		let previous = unit.PreviousAbility<Slot> ?? null
+        let cooldown = previous.Cooldown ?? 0 // capture cooldown so we can assign it to the new ability
+		previous.Despawn
+
+        // Create new ability
+		unit.PreviousAbility<Slot> = Subspawn ability {
+            Cooldown = cooldown
+			CommandPlacement(.. btnIndex btnSize)
+			delve(owner.Preference<Slot> ?? slotDefault)
+		}
+	}
+}
+
+// If the slot has no ability, this displays a blank icon for the slot which allows a new ability to be selected instead
+pub fn ability.SlotWithoutAbility(.. owner) {
+	CommandIcon(opacity=0.5, color=#333, glyphColor=#aaa, glyph=BlankGlyph)
+}
+
+pub fn this.SlotPopup<Slot>(.. ability, owner) .. ui {
+	hook SlotsUneditable {
+		if SlotsUneditable {
+			delete Modal<Slot+slotPopup>
+			delete CommandPopup
+
+		} else {
+			const showPopup = Modal<Slot+slotPopup>(placement=$bottom) {
+				delve()
+			}
+			CommandPopup(showPopup)
+		}
+	}
+}
+
+pub fn this.SlotEditor<Slot>(ui .. btn?, owner, slotDefault?) .. ui {
+	PipTabs<Slot> {
+		delve()
+
+		if InPageMode && btn {
+			// Don't show the rebinding block in-game - it takes too much space
+			Right { RebindingBlock }
+		}
+
+		hook owner.Preference<Slot> {
+			Select(owner.Preference<Slot> ?? slotDefault)
+		}
+	}
+    on Selected<Slot> choice {
+        owner.Preference<Slot> = choice
+    }
+}
+pub fn this.SlotDropdown<Slot>(ui .. owner, slotDefault?) .. ui {
+	Dropdown<Slot> {
+		delve()
+		hook owner.Preference<Slot> {
+			Select(owner.Preference<Slot> ?? slotDefault)
+		}
+	}
+    on Selected<Slot> choice {
+        owner.Preference<Slot> = choice
+    }
+}
+
+pub fn SlotOption<Id>(.. ui, glyph, color) .. ui {
+	PipTab<Id> { delve() }
+}
+
+pub fn SlotEffect(effect, icon .. ui) .. ui {
+	if !IsEmpty(ui) {
+		%(LineBreak)
+	}
+	Span(scale=0.8) {
+		Span(bold=true, italic=true, color=#eee) {
+			Icon(icon=)
+			%(" ")
+			%(effect)
+			%(": ")
+		}
+		Span(italic=true, color=#ddd) {
+			delve()
+		}
+	}
+}
+
+pub fn SlotStats(.. ui) .. ui {
+	Footer {
+		Span(scale=0.9) {
+			delve()
+		}
+	}
+}
+
+pub fn SlotStat(stat, icon .. ui) .. ui {
+	if !IsEmpty(ui) {
+		Blank(chars=1)
+	}
+	Span(color=#eee, tooltip=stat) {
+		delve()
+		%(" ")
+		Icon(icon=)
+	}
+}
+
+pub fn this.SlotLoadoutTool(tooltip .. owner, placement=null, icon="fas fa-ballot-check") .. ui {
+	hook SlotsUneditable {
+		if SlotsUneditable {
+			delete Modal<loadoutDialog>
+			delete Toolbar<loadoutTool>
+
+		} else {
+			const showLoadoutDialog = Modal<loadoutDialog> { delve() }
+			Toolbar<loadoutTool>(placement=) {
+				Button(onPress=showLoadoutDialog, icon=, collapsable=true, repeatable=true) {
+					%(tooltip)
+				}
+			}
+		}
+	}
+}
+
+pub fn this.SlotRandomizeTool(tooltip .. owner, hidden=false, placement=null, icon="fas fa-dice") .. {
+	hook SlotsUneditable {
+		if SlotsUneditable {
+			delete Toolbar<randomizeTool>
+
+		} else {
+			Toolbar<randomizeTool>(placement=) {
+				if !hidden {
+					Button(onPress=$randomize, icon=, collapsable=true, repeatable=true) {
+						%(tooltip)
+					}
+				}
+			}
+
+			if !hidden {
+				on ButtonPress($randomize) {
+					delve()
+				}
+			}
+		}
+	}
+}
+
+glyph BlankGlyph(path="")

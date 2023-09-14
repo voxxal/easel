@@ -1,0 +1,121 @@
+.. glyph=LightningHelix:Glyph, color=#c0ff0d, damage=10.0, lifesteal=0.3, cooldown=2.5s
+
+pub symbol WantPulseQ
+
+pub fn PulseQOption(.. ui) {
+	SlotOption<WantPulseQ> {
+		H1 { %("Steel Current") }
+
+		P {
+			%("Stab forwards with your blade, damaging enemies struck. On a successful hit, Flicker is automatically casted. Additionally, gain a stack of Wandering Spark. Discharge may be casted every 2 stacks, and Divine Bladework every 4.")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.PulseQAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		// We wait for 6 ticks and for that time we show a ChargingIndicator
+		await ChargeForDuration(6) {
+			ChargingIndicator
+		}
+		
+		Spawn projectile {
+			.. parent=unit 
+			.. lifetime=7, dissipation=30 
+			.. radius=0.3, speed=120.0
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=0.01, ccd=true
+			// Looks like the player has a durability of 100, and we want it survive when
+			// hitting players. The logic in afterCollide handles that but im feeling lazy.
+			.. categories=Category:Projectile, durability=99999
+			.. collideWith=Category:Solid ^ Category:Hero ^ Category:Projectile, sense=Category:Projectile | Category:Hero
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			Smoke(splatter=0.15)
+			RayEmitter
+			ExpireAfterLifetime
+			Sing(Fireball:Sound)
+
+			Collider {
+				Shape:Circle
+			}
+
+			let canHurtSelf = false
+			on BeforeCollide that {
+				if canHurtSelf || that.Team != owner.Team {
+					// Call the PulseStack signal
+					PulseStack
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" electrocuted ")
+						NameBlock(victim)
+					}
+					// If we hit a player, we want to call the E.
+					// In this case we can use a buff to keep track
+					if that.Category & Category:Hero {
+						unit.ReplaceBuff<pulseQ> {
+							ExpireAfterLifetime(15)
+							SpeedModifier(3, unit)
+							Tangibility(Category:None, unit)
+							Vanished(true, unit)
+							Sing(PulseE:Sound)
+
+							Smoke(unit,
+								flutter=Flutter:Swirl(1,period=5),
+								radius=0.2, feather=1, glare=0.4, bloom=1.5,
+								splatter=Splatter:Outwards(0.1,glide=0.3), count=10,interval=14,
+								shadow=0.5)
+						}
+					}
+
+				}
+			}
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+				}
+
+				if that.Durability >= this.Durability {
+					Strobe(growth=0.5, shine=1.0)
+					Puff(count=10, splatter=1)
+					Hear(Fireball:HitSound)
+					Expire
+				}
+			}
+		}
+	}
+}
+
+sound Fireball:Sound(duration=1.5s, cutoff=0.5s) {
+	BrownNoise
+	BandPass(freq=[220,330], q=[1,5])
+	Envelope(attack=0.25s, release=0.5s)
+}
+
+sound Fireball:HitSound(duration=1s) {
+	Vibrato(freqModulation=350) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[500,0], q=1)
+	Peaking(freq=165, db=12)
+	Envelope(attack=0.01s, decay=0.05s, sustain=0s, sustainVolume=0.2)
+}

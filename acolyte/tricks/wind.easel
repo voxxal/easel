@@ -1,0 +1,23 @@
+pub behavior fn this.Wind(wind, radius, body, .. filter=Category:Hero, against?=Alliance:Enemy, owner?) {
+	loop {
+		await Tick
+		let windVelocity = body.Velocity
+		let windDirection = Direction(windVelocity)
+		let windSpeed = Length(windVelocity)
+		let mass = body.Mass
+
+		let items =
+			QueryColliders
+			.WhereCategory(filter)
+			.WhereAlliance(owner, against)
+			.FindAllWithinRadius(body.Pos, radius)
+		for that in items {
+			let speed = Dot(windDirection, that.Velocity)
+			if speed < windSpeed {
+				let delta = windSpeed - speed
+				let acceleration = delta * wind * mass / (mass + that.Mass)
+				that.Velocity += acceleration * windDirection
+			}
+		}
+	}
+}

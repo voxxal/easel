@@ -1,0 +1,37 @@
+pub fn scene.InnerStarLayout {
+	.. orientation=0.1rev
+
+	Lava
+	Shrink
+	SolidBackground(color=#2b1c22)
+
+	Spawn turf {
+		Turf(color=#443138, heading=orientation) {
+			hook ShrinkScale {
+				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=5)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=25.6, numObstacles=5) {
+		Spawn obstacle {
+			Volcano {
+				Shape:Arc(radius=0.16, arc=0.15rev, cap=true)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=5.6, numObstacles=10, angleOffset=orientation, headingOffset=0.5rev) {
+		Spawn obstacle {
+			Explosive(radius=0.4)
+		}
+	}
+
+	ArrangeRing(orbit=25.6, numObstacles=5, angleOffset=orientation, headingOffset=0.5rev) {
+		Spawn obstacle {
+			Boulder {
+				Shape:Equilateral(numPoints=4, radius=1.6)
+			}
+		}
+	}
+}

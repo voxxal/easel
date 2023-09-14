@@ -1,0 +1,36 @@
+.. btn="KeyR", slotDefault=WantPulseR
+
+pub preference owner.UltimateSlot
+
+pub fn unit.UltimateSlotAbility(.. owner, btnIndex?, btnSize=1) {
+	SlotAbility<UltimateSlot> choice {
+		if choice == WantPulseR { PulseRAbility }
+		else if choice == WantApexAcolyte { ApexAcolyteAbility }
+		else if choice == WantBlast { BlastAbility }
+		else if choice == WantSupernova { SupernovaAbility }
+		else if choice == WantSpiritBomb { SpiritBombAbility }
+		else if choice == WantRepeater { RepeaterAbility }
+		else if choice == WantBouncer { BouncerAbility }
+		else { SlotWithoutAbility }
+
+		SlotPopup<UltimateSlot> { UltimateSlotEditor }
+	}
+}
+
+pub fn this.UltimateSlotEditor(.. owner, ui) {
+	SlotEditor<UltimateSlot> {
+		PulseROption
+	}
+}
+
+pub fn owner.RandomizeUltimateSlot {
+	UltimateSlot = PickRandom([
+		WantBeam,
+		WantBlast,
+		WantSupernova,
+		WantSpiritBomb,
+		WantRepeater,
+		WantBouncer,
+		WantApexAcolyte,
+	])
+}

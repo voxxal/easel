@@ -1,0 +1,100 @@
+.. glyph=AndromedaChain:Glyph, color=#4444ff, cooldown=7.5s, relayProportion=1.0, damage=0
+
+pub symbol WantLink1
+
+pub fn LinkOption(.. ui) {
+	SlotOption<WantLink1> {
+		H1 { %("Link") }
+
+		P {
+			%("Forge an ethereal grapple that binds your foe to you, irresistably drawing them towards you. With your souls entwined, all incoming damage will be transferred from you to them, turning their aggression into their own undoing.")
+		}
+
+		P {
+			SlotEffect("Ethereal Relay", icon="fas fa-exchange") {
+				%("While linked, " + (relayProportion * 100) + "% of received damage is instead applied to your enemy.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.LinkAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		Spawn projectile {
+			.. parent=unit 
+			.. lifetime=94, dissipation=5
+			.. radius=0.4, speed=40.0
+			.. ownerColor=true, color=#fff, depth=Depth:Tether
+			.. luminous=1.0, taper=0.3, flicker=0.4
+			.. density=10, restitution=0, ccd=true
+			.. categories=Category:Projectile, durability=Durability:Low
+			.. sense = Category:Hero | Category:Obstacle
+
+			LaunchBody(turnRate=2rev)
+			PrepareForCollision
+			DriftingMotion
+			ExpireWith(unit)
+			ExpireAfterLifetime
+			Sing(Link:Sound)
+			CooldownRate(-1)
+
+			Sprite(bloom=2) {
+				Shape:Equilateral(radius=, numPoints=3)
+			}
+			Collider {
+				Shape:Circle
+			}
+
+			once<redirect> Sleep(40) {
+				Velocity:RedirectTowards(unit.Pos, speed=4)
+				await Sleep(20)
+				Velocity:RedirectTowards(unit.Pos, speed=48)
+			}
+
+			on BeforeCollide that {
+				if that.Team != owner.Team {
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" transmuted their demise to ")
+						NameBlock(victim)
+					}
+				}
+			}
+
+			once SeverTethers { Expire }
+
+			TetherBuffOnHit(radius=0.2, bloomAlpha=0.5, shadow=0.5) that {
+				ExpireAfterLifetime(1.75s)
+				CooldownRate(-1)
+				Tether:Pull(that, attractor=unit, impulse=5, minDistance=2, maxDistance=10)
+				Tether:Tow(that, attractor=unit)
+
+				if (that.Category & (Category:Hero | Category:Obstacle)) && that.Team != owner.Team {
+					Relay(that)
+					RelayProportion(relayProportion)
+				}
+			}
+		}
+	}
+}
+
+sound Link:Sound(duration=2s) {
+	Oscillator(wave=$square, freq=150, harmonics=[1,2,4,8,16])
+	LowPass(freq=150)
+	Tremolo(volumeModulation=0.4) {
+		Oscillator(freq=10)
+	}
+	Envelope(attack=1s, sustain=0s)
+}

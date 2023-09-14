@@ -1,0 +1,95 @@
+.. glyph=BubblingBeam:Glyph, color=#ff0044
+.. damage=50.0, lifesteal=0.3, cooldown=5.0s
+.. lifetime=12, speed=50.0, attackDistance=lifetime * speed / TicksPerSecond
+
+pub symbol WantFiresplatter
+
+pub fn FiresplatterOption(.. ui) {
+	SlotOption<WantFiresplatter> {
+		H1 { %("Firesplatter") }
+
+		P {
+			%("Unleash a sweeping arc of flames, scorching nearby foes while also incinerating incoming attacks with its all-consuming blaze.")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.FiresplatterAbility(unit, owner, btn) {
+	on BotAttacking target {
+		if Cooldown == 0 && Distance(unit.Pos, target) <= attackDistance {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		TurnRateModifier(-1)
+
+		Sing(Firesplatter:Sound)
+		await Spray(duration=20, count=10, spray=0.2revs) {
+			.. damage = damage / count
+
+			Spawn projectile {
+				.. parent=unit
+				.. dissipation=12, radius=0.32
+				.. density=0.5, ccd=true
+				.. luminous=1.0, depth=Depth:Projectile
+				.. categories=Category:Projectile, durability=Durability:High
+
+				LaunchBody
+				PrepareForCollision
+				PropulsiveMotion
+				RayEmitter(dissipation=7)
+				Smoke(dissipation=30, splatter=0.3, feather=1.0)
+				ExpireAfterLifetime
+
+				Collider {
+					Shape:Circle
+				}
+
+				let canHurtSelf = false
+				on BeforeCollide that {
+					if canHurtSelf || that.Team != owner.Team {
+						Attack(that)
+
+						that.Tombstone victim {
+							NameBlock(owner)
+							%(" burned ")
+							NameBlock(victim)
+							%(" to a crisp")
+						}
+					}
+				}
+				on AfterCollide that {
+					if that.Category & Category:Shield {
+						canHurtSelf = true // Can bounce off shield to hurt self
+					}
+					if that.Durability >= this.Durability {
+						Strobe(shine=0.5, growth=0.25)
+						Puff(count=1, splatter=1)
+						Expire
+					}
+				}
+			}
+		}
+	}
+}
+
+sound Firesplatter:Sound(duration=0.5s) {
+	Vibrato(freqModulation=[3600,10800]) {
+		Oscillator(freq=30)
+	}
+	Oscillator(wave=$triangle, freq=[4800,7200], harmonics=[1, 1.33, 1.5])
+	Tremolo(volumeModulation=0.1) {
+		Oscillator(freq=30)
+	}
+	Envelope(attack=0.1s, release=0.25s)
+	Gain(volume=0.1)
+}

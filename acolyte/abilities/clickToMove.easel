@@ -1,0 +1,17 @@
+pub symbol WantClickToMove
+
+pub fn ability.ClickToMoveAbility(unit, owner) {
+	CommandBinding(["Click", "Tap"])
+
+	on ability.InvokeCommand {
+		await Subscope {
+			// While holding down the button, follow cursor
+			hook Pointer {
+				Movement:WalkTo(Pointer)
+			}
+
+			// Delay the button is released, stop
+			await ability.ReleaseCommand
+		}
+	}
+}

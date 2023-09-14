@@ -1,0 +1,43 @@
+.. owner=null
+
+pub fn obstacle.Boulder(pos, heading?=0, maxHp=100.0, radius=1.0, density=50.0, turningDecay=0.05) .. shape {
+	.. color=#bbb, fade=#822,
+	.. bloom=0, luminous=0,
+	.. shading=0.25, depth=Depth:Obstacle,
+	.. categories=(Category:Obstacle | Category:CanGrab | Category:HurtByLava | Category:Aoe),
+	.. collideWith=Category:Solid,
+	.. durability=Durability:Maximum,
+	.. ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	DecayingMotion(turningDecay=)
+
+	Health(maxHp)
+
+	Collider {
+		Sprite {
+			Perimeter {
+				delve()
+			}
+		}
+	}
+
+	Anchored(pos, heading)
+	once AfterCommence { delete Anchored }
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps(shadow=0.5)
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=1.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}

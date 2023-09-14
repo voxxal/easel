@@ -1,0 +1,2 @@
+pub alias body = unit | projectile | shield | saber | obstacle | zone | turf
+pub alias life = unit | obstacle

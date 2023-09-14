@@ -1,0 +1,91 @@
+.. glyph=WoodenFence:Glyph, color=#3366ff, cooldown=7.5s, lifetime=2.0s
+.. easeInFraction=0.05
+
+pub symbol WantForcefield
+
+pub fn ForcefieldOption(.. ui) {
+	SlotOption<WantForcefield> {
+		H1 { %("Forcefield") }
+
+		P {
+			%("Forge an impressive barrier of shimmering light that resolutely repels foes and their onslaughts. Fortunately, you may pass through your radiant barrier unhindered, allowing you to navigate the battlefield with ease while your adversaries are left confounded by its impenetrable presence.")
+		}
+
+		P {
+			SlotEffect("Unhindered Passage", icon="fas fa-portal-exit") {
+				%("You can walk through your own Forcefield.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.ForcefieldAbility(unit, owner, btn) {
+	on BotDeflecting target {
+		if Cooldown == 0 {
+			let mid = unit.Pos + (target - unit.Pos) / 2.0
+			BotUseAbility(target=mid)
+		}
+	}
+
+	Incantation {
+		Spawn shield {
+			.. parent=unit
+			.. dissipation=10
+			.. extent=6.0, radius=0.25, maxDistance=20
+			.. density=100.0, restitution=1.0
+			.. luminous=1.0, depth=Depth:Shield
+			.. ccd=true
+			.. categories = Category:Shield | Category:Obstacle | Category:Aoe, durability=Durability:Shield
+			.. collideWith = Category:Solid ^ Category:Shield ^ Category:Obstacle
+
+			Body(Towards(parent.Pos, Pointer, maxDistance), heading=Angle(Pointer - parent.Pos))
+			PrepareForCollision
+			DecayingMotion
+			Sing(Forcefield:Sound)
+			ExpireAfterLifetime
+
+			Collider(passthroughParent=true) {
+				Shape:Capsule(angleOffset=0.25rev)
+			}
+
+			on Hurt {
+				Strobe(dissipation=10, shine=1.0)
+			}
+
+			Tween(duration=lifetime, initial=0, final=1) a {
+				.. fade = a * 0.5, color=color.Fade(fade)
+				.. ease = Min(1, a/easeInFraction), extent=extent*ease
+
+				Sprite(flicker=0.1, shadow=0.25, glare=1, glareAlpha=1-fade, bloom=5.0, bloomAlpha=1) {
+					Shape:Capsule(angleOffset=0.25rev)
+				}
+			}
+
+			on BeforeCollide that {
+				if that.Category & Category:Projectile {
+					Hear(Forcefield:HitSound)
+				}
+			}
+		}
+	}
+}
+
+sound Forcefield:Sound(duration=2s) {
+	Oscillator(wave=$sine, freq=100)
+	Envelope(attack=0.05s, sustain=0s)
+	Gain(volume=0.25)
+}
+
+sound Forcefield:HitSound(duration=0.5s) {
+	Vibrato(freqModulation=100) {
+		Oscillator(freq=200)
+	}
+	Oscillator(freq=100)
+	LowPass(freq=100)
+	Envelope(attack=0.01s, sustain=0s)
+	Gain(volume=0.5)
+}

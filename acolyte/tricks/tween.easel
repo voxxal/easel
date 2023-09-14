@@ -1,0 +1,23 @@
+field this.TweenStart<Id>
+
+pub await fn Tween(duration, initial=0.0, final=1.0, start=Tick) scale {
+	loop {
+		let alpha = duration > 0 ? (Tick - start) / duration : 1
+		let scale = alpha.Mix(initial, final)
+		delve(scale)
+
+		if alpha >= 1.0 { break }
+		await Tick
+	}
+}
+
+pub behavior fn this.Tween<Id?>(duration, initial=0.0, final=1.0) scale {
+	let start = this.TweenStart<Id> ??= Tick
+	await Tween(.. duration initial final start) scale {
+		delve(scale)
+	}
+}
+
+pub delete fn this.Tween<Id?> {
+	delete this.TweenStart<Id>
+}

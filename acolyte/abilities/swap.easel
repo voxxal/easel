@@ -1,0 +1,113 @@
+.. glyph=BodySwapping:Glyph, color=#ffaa33, damage=0, cooldown=10s
+
+pub symbol WantSwap
+
+pub fn SwapOption(.. ui) {
+	SlotOption<WantSwap> {
+		H1 { %("Swap") }
+
+		P {
+			%("By weaving an ethereal grapple that bridges the distance between you and your enemy, you can trade places, putting them in the danger you were previously in while you take their place on stable ground. ")
+		}
+
+		P {
+			SlotEffect("Ethereal Interchange", icon="fas fa-exchange") {
+				%("Swap places with enemies, obstacles or meteors. If you miss, you will be teleported instead.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.SwapAbility(unit, owner, btn, btnIndex?, btnSize) {
+	hook IsInLava {
+		CooldownRate(IsInLava ? 1.0 : 0.0)
+	}
+
+	on BotRecovering {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		Spawn projectile {
+			.. parent=unit
+			.. lifetime=45, dissipation=12
+			.. radius=0.5, aoe=3.0, speed=64.0
+			.. feather=0.5, shine=0.2, glare=0.7, luminous=1.0, depth=Depth:Projectile
+			.. density=100, durability=Durability:High, ccd=true
+			.. categories=Category:Projectile
+			.. collideWith = Category:Shield | Category:Projectile
+			.. sense = Category:Hero | Category:Obstacle
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			ExpireWith(unit)
+			Sing(Swap:Sound)
+			ExpireAfterLifetime(Velocity:TicksTo(Pointer).Min(lifetime))
+
+			Collider {
+				Shape:Circle(radius=1.0)
+			}
+
+			Smoke(
+				color=#75e7ff, dissipation=30, splatter=0.2, feather=0.3,
+				radius=radius*0.5,
+				flutter=Flutter:Helix(radius=0.5, period=20))
+			Tether(ancestor=unit, taper=0.7, shadow=0.5)
+
+			on BeforeCollide that {
+				if that.Durability >= this.Durability {
+					Strobe(growth=0.5, shine=1.0)
+					Expire
+				}
+			}
+
+			await Expire
+
+			let home = unit?.Pos
+			let away = projectile?.Pos
+			if !(home && away) { return }
+
+			projectile.Puff(count=10, splatter=Splatter:Outwards(20))
+			unit.Puff(count=10, splatter=Splatter:Outwards(20))
+			Explosion(aoe)
+
+			Aoe:ForEach(filter = Category:Aoe | Category:Projectile) that {
+				if that.Team != owner.Team {
+					let delta = that.Pos - away
+					that.Pos = home + delta
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" translocated ")
+						NameBlock(victim)
+						%(" to their final resting place ")
+					}
+				}
+			}
+
+			unit.Pos = away
+			CleanseBuffs
+			SeverTethers
+		}
+	}
+}
+
+sound Swap:Sound(duration=0.75s, cutoff=0.25s) {
+	Vibrato(freqModulation=[3600,4200]) {
+		Oscillator(freq=30)
+	}
+	Oscillator(wave=$triangle, freq=[4800,7200], harmonics=[1, 1.33, 1.5])
+	Tremolo(volumeModulation=0.1) {
+		Oscillator(freq=5)
+	}
+	Envelope(attack=0.05s, sustain=0s)
+	Gain(volume=0.1)
+}

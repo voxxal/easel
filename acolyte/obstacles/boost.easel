@@ -1,0 +1,52 @@
+.. owner = null
+
+pub fn obstacle.Boost(pos, heading?=0, maxHp=50, radius=0.25) .. shape {
+	.. density=1.0,
+	.. color=#ff4c, fade=#ff44,
+	.. bloom=2.0, bloomAlpha=0.3, luminous=1,
+	.. shading=0, shadow=0, depth=Depth:Zone,
+	.. categories=(Category:Zone | Category:HurtByLava),
+	.. collideWith=Category:None, sense=Category:Hero,
+	.. durability=Durability:Maximum,
+	.. isSensor=true, immovable=true, ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	Health(maxHp)
+
+	BuffOnContact<boost>(filter=Category:Hero) that {
+		SpeedModifier(0.5, that)
+		Smoke(that,
+			color=#ff4c, fade=1, ownerColor=true, owner=that.Owner,
+			radius=1.0, depth=Depth:Buff,
+			dissipation=30, luminous=1, feather=0, bloom=0,
+			splatter=Splatter:Outwards(5.0))
+	}
+
+	Collider {
+		Sprite {
+			Perimeter {
+				delve()
+			}
+		}
+	}
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps
+		Smoke(
+			luminous=1.0, shine=0.2, bloom=0, shadow=0,
+			dissipation=15, splatter=Splatter:Outwards(4.0),
+			flutter=$area)
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=2.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}

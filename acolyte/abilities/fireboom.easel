@@ -1,0 +1,127 @@
+.. glyph=BurningDot:Glyph, color=#ff4400
+.. damage=10.0, lifesteal=0.3, cooldown=1.5s, maxScale=3, growthDuration=1.0s
+
+pub symbol WantFireboom
+
+pub fn FireboomOption(.. ui) {
+	SlotOption<WantFireboom> {
+		H1 { %("Fireboom") }
+
+		P {
+			%("Conjure a searing ball of flame that detonates upon impact, engulfing enemies within its fiery radius. Fireboom may be slow, but its wide blast zone leaves few places for your enemies to hide. ")
+		}
+
+		P {
+			SlotEffect("Intensifying Inhalation", icon="fas fa-flame") {
+				%("Fireboom begins life as a tiny ember, then grows to " + maxScale + "x damage over " + (growthDuration / TicksPerSecond) + " second. Cultivate Fireboom's full potential by launching it from afar and giving time for the fiery orb to breathe.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.FireboomAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		Spawn projectile {
+			.. parent=unit 
+			.. aoe = 3.6 / maxScale, radius = 0.5 / maxScale
+			.. impulse=120.0, speed=23.0
+			.. lifetime=90, dissipation=18
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=9.0, ccd=true
+			.. categories=Category:Projectile, durability=Durability:Medium
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			Sing(Fireboom:Sound)
+			ExpireAfterLifetime(Velocity:TicksTo(Pointer).Min(lifetime))
+
+			Collider {
+				Shape:Circle
+			}
+
+			let canHurtSelf = false
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+				}
+				if that.Durability >= this.Durability {
+					Strobe(shine=1.0)
+					Expire
+				}
+			}
+
+			await Tween(duration=growthDuration, initial=1, final=maxScale) factor {
+				.. aoe = aoe * factor, radius = radius * factor, damage = damage * factor
+
+				RayEmitter
+				Smoke(splatter=0.4)
+				Aoe:Indicator(aoe, color=Fade(color, 0.95))
+
+				once Expire {
+					Puff(count=10, splatter=Splatter:Outwards(10))
+					Explosion(aoe)
+					Hear(Fireboom:ExplodeSound)
+
+					Aoe:ForEach that {
+						if canHurtSelf || that.Team != owner.Team {
+							Attack(that)
+							Aoe:Impulse(that)
+
+							that.Tombstone victim {
+								NameBlock(owner)
+								%(" combusted ")
+								NameBlock(victim)
+								if factor >= 1.0 {
+									%(" from afar ")
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+sound Fireboom:Sound(duration=1.5s, cutoff=0.5s) {
+	BrownNoise
+	BandPass(freq=[140,280], q=[1,5])
+	Gain(volume=0.67)
+	Output(into=$mix)
+
+	BrownNoise
+	BandPass(freq=[280,560], q=[1,5])
+	Gain(volume=0.33)
+	Output(into=$mix)
+
+	Input(key=$mix)
+	Envelope(attack=0.25s, release=0.5s)
+}
+
+sound Fireboom:ExplodeSound(duration=1s) {
+	Vibrato(freqModulation=2500) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=160)
+	LowPass(freq=[280,0])
+	HighShelf(freq=[140,0], db=-6)
+	Peaking(freq=70, q=1, db=6)
+	Envelope(attack=0.03s, decay=0.1s, sustain=0s, sustainVolume=0.2)
+	Gain(volume=0.67)
+}

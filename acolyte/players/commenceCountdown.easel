@@ -1,0 +1,65 @@
+pub signal World.RecheckCommenceCountdown()
+pub symbol WaitForMorePlayers
+
+pub behavior fn this.CommenceCountdown(waitForMoreDelay, commenceDelay=3s) .. {
+	if IsReadyToBegin { return }
+
+	loop {
+		await RecheckCommenceCountdown
+
+		let readyToBegin = delve()
+		if !readyToBegin { continue }
+
+		if readyToBegin == WaitForMorePlayers {
+			let cancelled = false
+			let end = Tick + waitForMoreDelay
+			loop {
+				let remaining = Max(0, end - Tick)
+				CountdownDialog(remaining) // Update the countdown
+				if remaining <= 0 { break }
+
+				// Update the status every 1 second, or immediately after a player leaves
+				await Sleep(1s), AfterPlayerLeave
+				let readyToBegin = delve()
+				if !readyToBegin {
+					cancelled = true
+					break
+				} else if readyToBegin == WaitForMorePlayers {
+					// Already waiting for more players, do nothing
+				} else {
+					// Ready to begin immediately
+					break
+				}
+			}
+
+			// Remove the countdown dialog
+			delete CountdownDialog
+
+			if cancelled { continue }
+		}
+
+		break
+	}
+
+	ReadyToBegin(commenceDelay)
+}
+
+fn this.CountdownDialog(remaining) {
+	if remaining > 0 {
+		Transmission<countdown>(duration=remaining) {
+			P(scale=0.9) {
+				%("Waiting ")
+				Span(bold=true) {
+					%(Ceil(remaining / TicksPerSecond))
+					%(" seconds")
+				}
+				%(" for more players to join...")
+			}
+		}
+	} else {
+		delete Transmission<countdown>
+	}
+}
+delete fn this.CountdownDialog() {
+	delete Transmission<countdown>
+}

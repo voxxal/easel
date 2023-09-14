@@ -1,0 +1,68 @@
+.. glyph=Hidden:Glyph, color=#00ff88, lifetime=4s, cooldown=10s, fastProportion=0.8
+
+pub symbol WantVanish
+
+pub fn VanishOption(.. ui) {
+	SlotOption<WantVanish> {
+		H1 { %("Vanish") }
+
+		P {
+			%("With a whisper to the shadows, you vanish from sight, your movements becoming as swift as the night. Seize the element of surprise and confront your foe from an unanticipated direction. ")
+		}
+
+		P {
+			SlotEffect("Shrouded Surge", icon="fas fa-running") {
+				%("Move " + (fastProportion * 100) + "% faster for " + (lifetime / TicksPerSecond) + " seconds. ")
+			}
+			SlotEffect("Invisibility", icon="fas fa-eye") {
+				%("For the duration of this spell, you are invisible.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.VanishAbility(unit, owner, btn) {
+	hook IsInLava {
+		CooldownRate(IsInLava ? 1.0 : 0.0)
+	}
+
+	on BotRecovering {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. radius=1.0
+		.. dissipation=60, shine=0, bloom=0, luminous=0, depth=Depth:Buff
+
+		CooldownRate(-1)
+		CleanseBuffs
+		SeverTethers
+		SpeedModifier(fastProportion)
+		Vanished(true)
+		Sing(Vanish:Sound)
+
+		Puff(count=10, color=#111111, fade=1, feather=0.2, splatter=Splatter:Outwards(5.0))
+		Smoke(color=#181818, fade=1, feather=0.2, splatter=Splatter:Outwards(5.0), audience=unit.Team)
+		once Expire {
+			Puff(count=10, color=#111111, fade=1, feather=0.2, splatter=Splatter:Outwards(5.0))
+		}
+
+		once Interrupt {
+			StopIncantation
+		}
+
+		await Sleep(lifetime)
+	}
+}
+
+sound Vanish:Sound(duration=4s) {
+	BrownNoise
+	BandPass(freq=[400,100], q=10)
+	Envelope(attack=0.5s, sustain=0s)
+}

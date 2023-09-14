@@ -1,0 +1,117 @@
+.. glyph=DeadlyStrike:Glyph, color=#ff9900
+.. damage=30.0, impulse=600, selfDamage=10.0, lifesteal=0.3, cooldown=5s, aoe=4.0
+
+pub symbol WantOverload
+
+pub fn OverloadOption(.. ui) {
+	SlotOption<WantOverload> {
+		H1 { %("Overload") }
+
+		P {
+			%("Channel your immense power beyond the boundaries of safety, culminating in a formidable explosion that sends your adversaries hurtling away with forceful abandon. ")
+		}
+
+		P {
+			SlotEffect("Density Surge", icon="fas fa-weight-hanging") {
+				%("The surge of energy amplifies your mass, making you resistant to knockback.")
+			}
+			SlotEffect("Excessive Power", icon="fas fa-heart-broken") {
+				%("The unchecked ferocity of this detonation also deals " + selfDamage + " damage to yourself.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.OverloadAbility(unit, owner, btn) {
+	on BotAttacking target {
+		if Cooldown == 0 && Distance(unit.Pos, target) <= aoe {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. radius=1.0, damage=damage * unit.DamageModifier
+		.. dissipation=30, shine=1.0, bloom=3.0, luminous=1.0, depth=Depth:Projectile
+
+		on Interrupt interruptor {
+			if interruptor & Interruptor:Self {
+				StopIncantation
+			}
+		}
+
+		SpeedModifier(-1)
+		DensityModifier(5)
+
+		on BotChannelling target {
+			if Distance(unit.Pos, target) <= aoe {
+				BotKeepChannelling
+			}
+		}
+
+		Sing(Overload:ChargingSound)
+		await ChargeForDuration(0.5s) {
+			ChargingIndicator
+			hook ChargeProportion {
+				Aoe:Indicator(aoe * Mix(ChargeProportion,0.75,1.0), color=Fade(color, 0.95))
+			}
+		}
+
+		unit.TakeDamage(selfDamage, minHealth=1)
+		SeverTethers
+
+		Puff(count=10, splatter=Splatter:Outwards(26), feather=1)
+		Explosion(aoe, bloom=5.0, shine=1.0)
+		Hear(Overload:ExplodeSound)
+
+		Aoe:ForEach that {
+			if that.Team != owner.Team {
+				Aoe:ImpulseAttenuated(that, attentuate=0.5)
+				Attack(that)
+
+				that.Tombstone victim {
+					NameBlock(owner)
+					%(" was too much for ")
+					NameBlock(victim)
+					%(" to handle")
+				}
+			}
+		}
+	}
+}
+
+sound Overload:ChargingSound(duration=0.5s) {
+	Vibrato(freqModulation=[25,100]) {
+		Oscillator(freq=[25,100])
+	}
+	Oscillator(wave=$triangle, freq=[50,200], harmonics=[1,1.25,1.5,1.75])
+	Envelope(attack=0.49s, sustain=0s)
+	Gain(volume=0.25)
+}
+
+sound Overload:ExplodeSound(duration=1s) {
+	Vibrato(freqModulation=1000) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[313,0])
+	Envelope(attack=0.01, sustain=0s)
+	Gain(volume=0.5)
+	Output
+
+	Vibrato(freqModulation=[300,100]) {
+		Oscillator(freq=[313,100])
+	}
+	Oscillator(wave=$triangle, freq=[100,30], harmonics=[1,1.33,1.5])
+	Tremolo(volumeModulation=0.2) {
+		Oscillator(freq=3)
+	}
+	Envelope(attack=0.01, sustain=0s)
+	Gain(volume=0.25)
+	Output
+}

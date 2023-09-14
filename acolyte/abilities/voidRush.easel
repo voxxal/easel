@@ -1,0 +1,69 @@
+.. glyph=Sprint:Glyph, color=#8800ff, lifetime=3.0s, cooldown=10.0s, fastProportion=0.8
+
+pub symbol WantVoidRush
+
+pub fn VoidRushOption(.. ui) {
+	SlotOption<WantVoidRush> {
+		H1 { %("Void Rush") }
+
+		P {
+			%("Tap into the dark energies of the void to quicken your movements while also rendering yourself immune to its malevolent effects.")
+		}
+
+		P {
+			SlotEffect("Void Surge", icon="fas fa-running") {
+				%("Move " + (fastProportion * 100) + "% faster for " + (lifetime / TicksPerSecond) + " seconds. ")
+			}
+			SlotEffect("Void Immunity", icon="fas fa-stars") {
+				%("For the duration of this spell, you are immune to damage from the void. ")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.VoidRushAbility(unit, owner, btn) {
+	hook IsInLava {
+		CooldownRate(IsInLava ? 1.0 : 0.0)
+	}
+
+	on BotRecovering {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. dissipation=60, ownerColor=true, depth=Depth:Projectile
+		.. shine=0.3, bloom=1.5, luminous=1.0
+
+		CleanseBuffs
+		SeverTethers
+
+		unit.SpawnBuff {
+			LavaDamageModifier(-1.0)
+			Sing(VoidRush:Sound)
+			CooldownRate(-1)
+			SpeedModifier(fastProportion)
+
+			await Tween(duration=lifetime, initial=1.0, final=0.0) factor {
+				unit.Smoke(
+					radius=1.0, depth=Depth:Buff,
+					color=color.WithOpacity(factor), fade=1,
+					feather=0.0, shadow=0.25,
+					splatter=Splatter:Outwards(5.0))
+			}
+
+			Expire
+		}
+	}
+}
+
+sound VoidRush:Sound(duration=3s) {
+	BrownNoise
+	BandPass(freq=[960,850], q=10)
+	Envelope(attack=0.25s, sustain=0s)
+}

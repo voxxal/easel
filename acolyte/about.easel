@@ -1,0 +1,12 @@
+pub page fn owner.AboutPage {
+	Section {
+		H1 {
+			%("About Acolyte Fight")
+		}
+		P {
+			Span(bold=true) { %("Acolyte Fight") }
+			%(" was created by ")
+			Span(bold=true) { %("raysplaceinspace") }
+		}
+	}
+}

@@ -1,0 +1,153 @@
+.. glyph=SonicLightning:Glyph, color=#00ff00
+.. damage=11, lifesteal=0.3, cooldown=9s
+.. rangedProportion=1, rangedDuration=0.4s
+.. bonusProportion=0.33, buffDuration=5s
+
+pub symbol WantRepeater
+
+signal ability.RepeaterMiss // signal this on the ability, not the projectile, because repeater projectile will have expired by the time this is sent
+
+pub fn RepeaterOption(.. ui) {
+	SlotOption<WantRepeater> {
+		H1 { %("Repeater") }
+
+		P {
+			%("Upon striking an enemy's soul with the harmonious energy of Repeater, the resulting symphony allows you to immediately unleash another blow, weaving an unyielding chain of attacks.")
+		}
+
+		P {
+			SlotEffect("Harmonic Resonance", icon="fas fa-undo") {
+				%("Each time Repeater hits, its cooldown resets, allowing you to fire it again immediately. ")
+				%("Hitting the same enemy a second time grants " + (bonusProportion * 100.0) + "% bonus damage. ")
+			}
+			SlotEffect("Soaring Crescendo", icon="fas fa-star-exclamation") {
+				%("Damage increases with range, building up to " + (rangedProportion+1) + "x bonus damage after " + (rangedDuration / TicksPerSecond) + " seconds.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.RepeaterAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		TurnRateModifier(-1.0)
+		await ChargeForDuration(3) {
+			ChargingIndicator
+		}
+
+		Spawn projectile {
+			.. parent=unit
+			.. lifetime=60, dissipation=18
+			.. maxStacks=2
+			.. radius=0.16, speed=64.0
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=28, ccd=true
+			.. categories=Category:Projectile, durability=Durability:Medium
+			.. collideWith = Category:Solid ^ Category:Projectile
+
+			const birth = Tick
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			Smoke(shadow=0.5, radius=4.0*radius, interval=2)
+			RayEmitter(0.5*radius, dissipation=12)
+			Sing(Repeater:Sound)
+			ExpireAfterLifetime
+
+			Collider {
+				Shape:Circle
+			}
+
+			let hit = false
+			once Expire {
+				if !hit {
+					RepeaterMiss
+				}
+			}
+
+			let canHurtSelf = false
+			on BeforeCollide that {
+				if canHurtSelf || that.Team != owner.Team {
+					// Only reset on units that are owned by a owner, not neutrals
+					if (that.Category & Category:Hero) && that.Team && (that.Team != owner.Team) {
+						hit = true
+						Cooldown = 0
+						Hear(Repeater:SuccessSound)
+						that.StackBuff<repeater>(cleansable=true, maxStacks=1) stacks {
+							ExpireAfterLifetime(buffDuration)
+							BloomIndicator(that, audience=owner)
+
+							const growthFactor = rangedProportion * ((Tick - birth) / rangedDuration).Min(1.0)
+							Attack(that, growthFactor * (damage + stacks * bonusProportion))
+
+							once RepeaterMiss { // miss once and the buff expires too
+								Expire
+							}
+
+							that.Tombstone victim {
+								NameBlock(owner)
+								%(" orchestrated ")
+								NameBlock(victim)
+								%("'s final refrain")
+								if stacks > 0 {
+									%(" again and again")
+								}
+							}
+						}
+					} else {
+						Attack(that)
+					}
+				}
+			}
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+				}
+				if that.Durability >= this.Durability {
+					Strobe(growth=1, shine=1.0)
+					Puff(count=5, splatter=1)
+					Expire
+				}
+			}
+		}
+	}
+}
+
+sound Repeater:Sound(duration=1s) {
+	BrownNoise
+	BandPass(freq=2000, q=3)
+	Envelope(attack=0.25s, sustain=0s)
+	Gain(volume=0.5)
+	Output
+
+	Oscillator(wave=$triangle, freq=2000, harmonics=[1,1.5])
+	LowPass(freq=1000)
+	Tremolo(volumeModulation=0.8) {
+		Oscillator(freq=15)
+	}
+	Envelope(attack=0.1s, sustain=0s)
+	Gain(volume=0.5)
+}
+
+sound Repeater:SuccessSound(duration=0.25s) {
+	Oscillator(wave=$square, freq=4000, harmonics=[1,1.5])
+	Tremolo(volumeModulation=0.8) {
+		Oscillator(freq=15)
+	}
+	Envelope(attack=0.01s, sustain=0s)
+	Gain(volume=0.1)
+}

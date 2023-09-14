@@ -1,0 +1,9 @@
+pub fn DigitCard(ui, heading=null) .. ui {
+	Card(align=$center) ui {
+		%(heading)
+		%(LineBreak)
+		Span(scale=4, bold=true) {
+			delve()
+		}
+	}
+}

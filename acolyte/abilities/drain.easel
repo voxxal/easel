@@ -1,0 +1,98 @@
+.. glyph=EnergyBreath:Glyph, color=#22ee88, damage=15.0, lifesteal=1.0, cooldown=5.0s
+
+pub symbol WantDrain
+
+prop projectile.Repossessor
+
+pub fn DrainOption(.. ui) {
+	SlotOption<WantDrain> {
+		H1 { %("Drain") }
+
+		P {
+			%("From the depths of your soul, release a spectral wisp of energy which hungrily seeks out the life force of your foes, rejuvenating your own being with each stolen spark.")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.DrainAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		Spawn projectile {
+			.. parent=unit
+			.. radius=0.15, speed=16.0
+			.. lifetime=2s, dissipation=15
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=2.0, ccd=true
+			.. categories=Category:Projectile, durability=Durability:Low
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			RayEmitter(radius * 1.5, shadow=0.5)
+			Sing(Drain:Sound)
+			ExpireAfterLifetime
+
+			Collider {
+				Shape:Circle
+			}
+
+			once<redirect> Sleep(Velocity:TicksTo(Pointer)) {
+				.. owner = Repossessor ?? owner // lookup latest owner in case of repossession
+				Velocity:RedirectTowards(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(this.Pos))
+			}
+
+			let canHurtSelf = false
+			on BeforeCollide that {
+				.. owner = Repossessor ?? owner // lookup latest owner in case of repossession
+				if canHurtSelf || that.Team != owner.Team {
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" sapped the life from ")
+						NameBlock(victim)
+					}
+				}
+			}
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+					this.Repossessor = that.Owner // Now the new owner can receive the lifesteal
+				}
+				if that.Durability >= this.Durability {
+					Strobe(growth=1.0, shine=1.0)
+					Puff(count=4, splatter=1)
+					Expire
+				}
+			}
+		}
+	}
+}
+
+sound Drain:Sound(duration=2s) {
+	BrownNoise
+	BandPass(freq=2500, q=10)
+	Envelope(attack=0.25s, sustain=0s)
+	Output
+
+	Oscillator(wave=$square, freq=275, harmonics=[1, 1.33, 1.5])
+	BandPass(freq=[600,800], q=15)
+	Tremolo(volumeModulation=0.4) {
+		Oscillator(freq=10)
+	}
+	Envelope(attack=0.25s, sustain=0s)
+	Gain(volume=0.5)
+}

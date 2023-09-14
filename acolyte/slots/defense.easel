@@ -1,0 +1,54 @@
+.. btn="KeyE", slotDefault=WantReflect
+
+pub preference owner.DefenseSlot
+
+pub fn unit.DefenseSlotAbility(.. owner, btnIndex, btnSize=1) {
+	SlotAbility<DefenseSlot> choice {
+		if choice == WantReflect { ReflectAbility }
+		else if choice == WantSpiritArmor { SpiritArmorAbility }
+		else if choice == WantForcefield { ForcefieldAbility }
+		else if choice == WantSaber { SaberAbility }
+		else if choice == WantDualSaber { DualSaberAbility }
+		else if choice == WantMeteor { MeteorAbility }
+		else if choice == WantMeteorite { MeteoriteAbility }
+		else if choice == WantDrain { DrainAbility }
+		else if choice == WantHorcrux { HorcruxAbility }
+		else if choice == WantPhaseShift { PhaseShiftAbility }
+		else if choice == WantBlaze { BlazeAbility }
+		else { SlotWithoutAbility }
+
+		SlotPopup<DefenseSlot> { DefenseSlotEditor }
+	}
+}
+
+pub fn this.DefenseSlotEditor(.. owner, ui) {
+	SlotEditor<DefenseSlot> {
+		ReflectOption
+		ForcefieldOption
+		SaberOption
+		DualSaberOption
+		MeteorOption
+		MeteoriteOption
+		DrainOption
+		HorcruxOption
+		PhaseShiftOption
+		BlazeOption
+		SpiritArmorOption
+	}
+}
+
+pub fn owner.RandomizeDefenseSlot {
+	DefenseSlot = PickRandom([
+		WantReflect,
+		WantForcefield,
+		WantSaber,
+		WantDualSaber,
+		WantMeteor,
+		WantMeteorite,
+		WantDrain,
+		WantHorcrux,
+		WantPhaseShift,
+		WantBlaze,
+		WantSpiritArmor,
+	])
+}

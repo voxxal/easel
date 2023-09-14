@@ -1,0 +1,42 @@
+.. glyph=Aura:Glyph, color=#ff4400
+
+pub symbol WantReverberate
+
+pub fn ReverberateOption(.. ui) {
+	SlotOption<WantReverberate> {
+		H1 { %("Reverberate") }
+
+		P {
+			Span(italic=true) { %("Passive ability. ") }
+			%("Imbue every atom in your body with an invisible, yet powerful, sonic resonance. Even the slightest contact with your vibrating form sends enemies reeling, forcefully replled by the resounding shockwave that pulsates from your very being.")
+		}
+	}
+}
+
+pub fn ability.ReverberateAbility(unit, owner, btn) {
+	NoIncantation
+
+	on unit.AfterCollide that {
+		if (that.Category & Category:Hero) && that.Team != owner.Team {
+			Aoe:Impulse(that, 100)
+			Hear(Reverberate:Sound)
+
+			that.Tombstone victim {
+				NameBlock(owner)
+				%(" reverberated ")
+				NameBlock(victim)
+				%(" into unending silence ")
+			}
+		}
+	}
+}
+
+sound Reverberate:Sound(duration=0.2s) {
+	Vibrato(freqModulation=80) {
+		Oscillator(freq=240)
+	}
+	Oscillator(wave=$square, freq=80)
+	LowPass(freq=120)
+	Envelope(attack=0.001s, sustain=0s)
+	Gain(volume=0.1)
+}

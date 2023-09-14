@@ -1,0 +1,39 @@
+.. btn="KeyF", slotDefault=WantOverload
+
+pub preference owner.MeleeSlot
+
+pub fn unit.MeleeSlotAbility(.. owner, btnIndex?, btnSize=1) {
+	SlotAbility<MeleeSlot> choice {
+		if choice == WantOverload { OverloadAbility }
+		else if choice == WantFiresplatter { FiresplatterAbility }
+		else if choice == WantFrostsplatter { FrostsplatterAbility }
+		else if choice == WantEnergyMines { EnergyMinesAbility }
+		else if choice == WantHalo { HaloAbility }
+		else if choice == WantReverberate { ReverberateAbility }
+		else { SlotWithoutAbility }
+
+		SlotPopup<MeleeSlot> { MeleeSlotEditor }
+	}
+}
+
+pub fn this.MeleeSlotEditor(.. owner, ui) {
+	SlotEditor<MeleeSlot> {
+		OverloadOption
+		FiresplatterOption
+		FrostsplatterOption
+		EnergyMinesOption
+		HaloOption
+		ReverberateOption
+	}
+}
+
+pub fn owner.RandomizeMeleeSlot {
+	MeleeSlot = PickRandom([
+		WantOverload,
+		WantFiresplatter,
+		WantFrostsplatter,
+		WantEnergyMines,
+		WantHalo,
+		WantReverberate,
+	])
+}

@@ -1,0 +1,12 @@
+pub accumulator owner.NumGames
+pub accumulator owner.NumGames:Session
+
+pub fn NumGames:Accumulate {
+	for human in (QueryPlayers.WhereIsHuman(true).FindAll) {
+		human.Accumulate<NumGames>(1, showOnLeaderboard=true)
+
+		human.Accumulate<NumGames:Session>(1)
+		let numGames:session = human.NumGames:Session
+		human.AccumulateLater<NumGames:Session>(-numGames:session, after=1h, key=$session)
+	}
+}

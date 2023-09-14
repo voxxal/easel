@@ -1,0 +1,35 @@
+pub behavior fn this.Proximity:OnArrival(prey, range=CloseEnough, body) .. {
+	loop {
+		await Tick
+
+		let prey = Prey:Find(prey)
+		if !prey { break }
+
+		let thisPos = body?.Pos
+		if !thisPos { break }
+
+		let distance = Length(prey - thisPos)
+		if distance < range {
+			break
+		}
+	}
+	delve()
+}
+
+pub behavior fn this.Proximity:OnRetreat(prey, range, body) .. {
+	loop {
+		await Tick
+
+		let prey = Prey:Find(prey)
+		if !prey { break }
+
+		let thisPos = body?.Pos
+		if !thisPos { break }
+
+		let distance = Length(prey - thisPos)
+		if distance > range {
+			break
+		}
+	}
+	delve()
+}

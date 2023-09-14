@@ -1,0 +1,17 @@
+pub prop ability.Cooldown
+
+pub behavior fn ability.CooldownTicker(.. unit) {
+	Cooldown ??= 0
+	loop {
+		await Tick
+		let cooldown = Cooldown
+		if cooldown > 0 {
+			cooldown -= CooldownRate * UnitCooldownRate
+			Cooldown = Max(0, cooldown)
+
+		} else {
+			// Nothing to do, wait until the cooldown changes
+			await Cooldown
+		}
+	}
+}

@@ -1,0 +1,54 @@
+.. glyph=LightningHelix:Glyph, color=#c0ff0d, lifetime=15, cooldown=5s, fastProportion=3
+
+pub symbol WantPulseE
+
+pub fn PulseEOption(.. ui) {
+	SlotOption<WantPulseE> {
+		H1 { %("Flicker") }
+
+		P {
+			%("Disappear from sight momentarily and blink forwards.")
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+
+pub fn ability.PulseEAbility(unit, owner, btn) {
+	on BotRecovering {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	// Not very complex, just compose some stuff
+	// the use of `Tangibility` is so simple and easy
+	// This is basically a copy of vanish
+	Incantation {
+		.. radius=0.3
+		.. dissipation=60, shine=0, bloom=0, luminous=0, depth=Depth:Buff
+
+		CooldownRate(-1)
+		SpeedModifier(fastProportion)
+		Tangibility(Category:None)
+		Vanished(true)
+		Sing(PulseE:Sound)
+
+		Smoke(
+			flutter=Flutter:Swirl(1,period=5),
+			radius=0.2, feather=1, glare=0.4, bloom=1.5,
+			splatter=Splatter:Outwards(0.1,glide=0.3), count=10,interval=14,
+			shadow=0.5)
+
+		await Sleep(lifetime)
+	}
+}
+
+pub sound PulseE:Sound(duration=4s) {
+	BrownNoise
+	BandPass(freq=[400,100], q=10)
+	Envelope(attack=0.5s, sustain=0s)
+}

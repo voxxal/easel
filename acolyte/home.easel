@@ -1,0 +1,74 @@
+pub page fn owner.HomePage {
+	Nav {
+		Button(icon="fas fa-gamepad", onPress=Main) { %("Play") }
+		Button(icon="fas fa-eye", onPress=SpectatePage) { %("Spectate") }
+		Blank(lines=1)
+		Button(icon="fas fa-user", onPress=owner.UserId) { %("Profile") }
+		Button(icon="fas fa-trophy", onPress=HighestRatedLeaderboard) { %("Leaderboard") }
+		Blank(lines=1)
+		Button(icon="fas fa-cog", onPress=SettingsPage) { %("Settings") }
+		Button(icon="fas fa-info-circle", onPress=AboutPage) { %("About") }
+	}
+
+	Toolbar {
+		Button(icon="fas fa-trophy", onPress=HighestRatedLeaderboard) { %("Leaderboard") }
+	}
+
+	Landing<title>(placement=$hero) {
+		H1(animation=$scalingLoop) {
+			Span(animation=$flyFromLeft) { %("Acolyte") }
+			%(" ")
+			Span(animation=$flyFromRight) { %("Fight!") }
+		}
+		H2(animation=$flyFromBottom) {
+			%("Skillshot Arena")
+		}
+	}
+
+	Landing<menu> {
+		Span(animation=$flyFromBottom) {
+			P {
+				Span(scale=0.8) { %("Choose Your Name") }
+				%(LineBreak)
+				NameEditor(pixelWidth=350)
+			}
+
+			P(scale=1.5) {
+				Button(onPress=Main, tier=$primary, pixelWidth=350) { %("Play") }
+			}
+
+			P {
+				Button(onPress="bookmark:belowFold", tier=$secondary, pixelWidth=350) { %("Choose Your Abilities") }
+			}
+		}
+	}
+
+	Section {
+		Bookmark("belowFold")
+
+		hook PlayerName {
+			Fragment { H1 {%(PlayerName + ", your destiny awaits!")} }
+		}
+
+		P {
+			%("Our Warlocks have fallen! Their valiant sacrifice shall forever be remembered. ")
+			%("Young Acolyte, fate has hastened the hour of your destiny, as your vulnerable homeland now turns to you to as one of the last remaining keepers of magic. ")
+			%("With no mentors to guide you, the path to mastery lies in your hands. ")
+		}
+
+		P {
+			%("Venture into the enigmatic mirror dimension within your school of magic, challenging your fellow Acolytes to battle. ")
+			%("Together you will hone your skills, forging unbreakable bonds while rediscovering the lost arcane wisdom that once made the Warlocks so formidable. ")
+			%("Through perseverance and unity, you will rise as the new generation of Warlocks, standing resolute against the ever-encroaching darkness that threatens your homeland. ")
+		}
+
+		P {
+			%("Young Acolyte, you have much to learn, and the shadow of our adversaries grows ever closer. Embrace your destiny! ")
+		}
+		
+		H1 { %("Choose Your Abilities") }
+		SlotEditors
+	}
+
+	UnrankedTool(placement=$important)
+}

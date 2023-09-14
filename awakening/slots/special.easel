@@ -1,0 +1,38 @@
+.. btn="KeyW", slotDefault=WantPulseW
+
+pub preference owner.SpecialSlot
+
+pub fn unit.SpecialSlotAbility(.. owner, btnIndex?, btnSize=1) {
+	SlotAbility<SpecialSlot> choice {
+		if choice == WantPulseW { PulseWAbility }
+		else if choice == WantArcaneAgility { ArcaneAgilityAbility }
+		else if choice == WantOrbiter { OrbiterAbility }
+		else if choice == WantRepulsor { RepulsorAbility }
+		else if choice == WantEnsnare { EnsnareAbility }
+		else if choice == WantLink1 { LinkAbility }
+		else if choice == WantGrapple { GrappleAbility }
+		else if choice == WantWhirlwind { WhirlwindAbility }
+		else { SlotWithoutAbility }
+
+		SlotPopup<SpecialSlot> { SpecialSlotEditor }
+	}
+}
+
+pub fn this.SpecialSlotEditor(.. owner, ui) {
+	SlotEditor<SpecialSlot> {
+		PulseWOption
+	}
+}
+
+pub fn owner.RandomizeSpecialSlot {
+	SpecialSlot = PickRandom([
+		WantHoming,
+		WantOrbiter,
+		WantRepulsor,
+		WantEnsnare,
+		WantLink1,
+		WantGrapple,
+		WantWhirlwind,
+		WantArcaneAgility,
+	])
+}

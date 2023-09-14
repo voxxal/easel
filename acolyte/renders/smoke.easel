@@ -1,0 +1,43 @@
+pub behavior fn this.Smoke<Id?>(
+	body, radius,
+	..
+	count=1, interval=1,
+	flutter?, splatter?,
+
+	color, dissipation?=15, depth?=Depth:Particle,
+
+	audience?,
+	fade?,
+	bloom?=0, bloomAlpha?,
+	crater?,
+	diminish?,
+	feather?,
+	flicker?,
+	glare?, glareAlpha?,
+	luminous?,
+	owner?,
+	ownerColor?,
+	shading?, shadow?,
+	shine?,
+	strobe?,
+	taper?) {
+
+	let flutter = Flutter:Shorthand(flutter)
+	let splatter = Splatter:Shorthand(splatter)
+
+	loop {
+		if !body.Exists { break }
+
+		if body.Invisibility {
+			// go to sleep until we are visible again
+			await body.Invisibility
+
+		} else {
+			Puff(.. body count flutter splatter)
+		}
+
+		await SleepUntilTickEnd(interval.Max(1))
+	}
+}
+
+pub delete fn this.Smoke<Id?> { }

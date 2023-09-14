@@ -1,0 +1,25 @@
+.. glyph=Dodging:Glyph, color=#ff00aa, fastProportion=0.1
+
+pub symbol WantArcaneAgility
+
+pub fn ArcaneAgilityOption(.. ui) {
+	SlotOption<WantArcaneAgility> {
+		H1 { %("Arcane Agility") }
+
+		P {
+			Span(italic=true) { %("Passive ability. ") }
+			%("Awaken the arcane fire within and achieve unparalleled nimbleness. Like a flickering flame, deftly dodge your adversaries' attacks as you glide across the battlefield with the fluidity and grace of a dancing inferno.")
+		}
+
+		P {
+			SlotEffect("Flickering Swiftness", icon="fas fa-running") {
+				%("Permanently increase movement speed by " + (fastProportion * 100) + "%.")
+			}
+		}
+	}
+}
+
+pub fn ability.ArcaneAgilityAbility(unit, owner, btn) {
+	NoIncantation
+	SpeedModifier(fastProportion)
+}

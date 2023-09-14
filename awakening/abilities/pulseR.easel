@@ -1,0 +1,212 @@
+.. glyph=LightningHelix:Glyph, color=#c0ff0d, damage=5.0, lifesteal=0.3, cooldown=2s, pulseStacks=4
+
+pub symbol WantPulseR
+
+pub fn PulseROption(.. ui) {
+	SlotOption<WantPulseR> {
+		H1 { %("Divine Bladework") }
+
+		P {
+			%("After a short wind-up, strike the surrounding area three times, leaving behind an afterimage with each strike. After a set amount of time, afterimages will stab in the direction of the nearest enemy, each dealing 10 damage and granting you a stack of Superconduct.")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+// This is the most complex spell here so I'll have to explain a lot.
+// If you look at the previous spells, you can see that `LaunchBody`
+// is used in each one. If you look in `physics/body.easel` you can
+// find the function delcaration creates a physics body.
+
+// LanuchBody creates the body with an initial velocity, but we want
+// to spawn it at a certain position, so this function does exactly
+// that. It can replace LaunchBody in the spell to spawn it.
+fn body.AfterImageBody(
+	parent,
+	..
+	headingOffset?,
+	pos=parent.Pos, offset,
+	heading = parent.Heading + headingOffset, turnRate?,
+	immovable?, ccd?) {
+
+	Body(pos = parent.Pos + Direction(heading) * offset)
+}
+
+
+// This is the function that creates the after image projectile
+// We can spawn multiple projectiles just by using Spawn multiple
+// times.
+
+// SpawnAfterImage takes in the offset and headingOffset arguments
+fn SpawnAfterImage(offset, headingOffset?, unit, owner, btn) {
+	Spawn projectile {
+		// Set afterImage to the projectile.
+		// We'll use this later in the function
+		.. afterImage=projectile
+		.. parent=unit 
+		.. lifetime=50s, dissipation=30 
+		.. radius=1, speed=0.001
+		.. luminous=1.0, depth=Depth:Projectile
+		.. density=40, ccd=true
+		.. categories=Category:Projectile, durability=Durability:Medium
+		.. collideWith=Category:None
+		.. aoe=2
+
+		// We are using AfterImageBody here, it inherits offest
+		// and headingOffset implicitly
+		AfterImageBody
+		PrepareForCollision
+		PropulsiveMotion
+		ExpireAfterLifetime
+		Sing(Fireball:Sound)
+
+		Collider {
+			Shape:Circle
+		}
+		
+		// Use the circle sprite 
+		Sprite<afterimage>() {
+			Perimeter {
+				Shape:Circle(radius=)
+			}
+		}
+
+		// Explosion Render
+		Explosion(aoe, bloom=5.0, shine=1.0)
+
+		// This is the actual thing that deals damage
+		// It uses damage variable from line one
+		Aoe:ForEach that {
+			if that.Team != owner.Team {
+				Attack(that)
+
+				that.Tombstone victim {
+					NameBlock(owner)
+					%(" shocked ")
+					NameBlock(victim)
+					%(" with a lighting fast strike ")
+				}
+			}
+		}
+
+		// Wait a second and a half before having them strike nearby enemies
+		await Sleep(1.5s)
+		Spawn projectile {
+			.. parent=unit 
+			.. lifetime=7, dissipation=30 
+			.. radius=0.3, speed=120.0
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=0.01, ccd=true
+			.. categories=Category:Projectile, durability=99999
+			.. collideWith=Category:Solid ^ Category:Hero ^ Category:Projectile, sense=Category:Projectile | Category:Hero
+
+			// We want to launch the projectile from the afterImage position,
+			// so we need to use the afterImage variable above which is a reference
+			// to the original afterimage projectile
+			LaunchBody(pos=afterImage.Pos)
+			Velocity:RedirectTowards(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(this.Pos))
+			PrepareForCollision
+			PropulsiveMotion
+			Smoke(splatter=0.15)
+			RayEmitter
+			ExpireAfterLifetime
+			Sing(Fireball:Sound)
+
+			Collider {
+				Shape:Circle
+			}
+
+			let canHurtSelf = false
+			on BeforeCollide that {
+				if canHurtSelf || that.Team != owner.Team {
+					// Instead of using the attack variable from line 1
+					// we instead explicitly set it to 10 damage.
+					Attack(that, 10)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" set ")
+						NameBlock(victim)
+						%("'s blood on fire")
+					}
+				}
+			}
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+				}
+
+				if that.Durability >= this.Durability {
+					Strobe(growth=0.5, shine=1.0)
+					Puff(count=10, splatter=1)
+					Hear(Fireball:HitSound)
+					Expire
+				}
+			}
+		}
+		Smoke(
+			flutter=Flutter:Swirl(1,period=5),
+			radius=0.2, feather=1, glare=0.4, bloom=1.5,
+			splatter=Splatter:Outwards(0.1,glide=0.3), count=10,interval=14,
+			shadow=0.5)
+		Expire
+	}
+}
+
+pub fn ability.PulseRAbility(unit, owner, btn) {
+	// PulseStacker with 4 stacks (defined at top)
+	PulseStacker
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+		// Reset pulse stacks
+		PulseStacks = pulseStacks
+
+		// Charge for 18 ticks
+		SpeedModifier(-1)
+		TurnRateModifier(-1)
+
+		await ChargeForDuration(18) {
+			ChargingIndicator
+		}
+
+		// Spawn 3 after images, waiting 4 ticks between each spawn
+		// at the position...
+		SpawnAfterImage(offset=0)
+		await Sleep(4)
+		// 7 units ahead of facing...
+		SpawnAfterImage(offset=7)
+		await Sleep(4)
+		// 7 units 60 degrees off the facing...
+		SpawnAfterImage(offset=7, headingOffset=60deg)
+
+		// Then teleport the unit to the 3rd after image
+		unit.Pos = unit.Pos + Direction(unit.Heading + 60deg) * 7
+	}
+}
+
+sound Fireball:Sound(duration=1.5s, cutoff=0.5s) {
+	BrownNoise
+	BandPass(freq=[220,330], q=[1,5])
+	Envelope(attack=0.25s, release=0.5s)
+}
+
+sound Fireball:HitSound(duration=1s) {
+	Vibrato(freqModulation=350) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[500,0], q=1)
+	Peaking(freq=165, db=12)
+	Envelope(attack=0.01s, decay=0.05s, sustain=0s, sustainVolume=0.2)
+}

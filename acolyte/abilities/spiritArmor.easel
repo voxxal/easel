@@ -1,0 +1,24 @@
+.. glyph=WingedShield:Glyph, color=#9900ff, armorProportion=0.15
+
+pub symbol WantSpiritArmor
+
+pub fn SpiritArmorOption(.. ui) {
+	SlotOption<WantSpiritArmor> {
+		H1 { %("Spirit Armor") }
+
+		P {
+			%("Enshroud yourself in Spirit Armor, a divine protection that emanates from your very being. Feel as the blows of your enemies are blunted by the armor's divine intervention, emboldening you to face the trials of battle without fear. ")
+		}
+
+		P {
+			SlotEffect("Divine Protection", icon="fas fa-shield") {
+				%("Permently reduce damage received by " + (armorProportion * 100) + "%. Applies to all forms of damage, including void damage.")
+			}
+		}
+	}
+}
+
+pub fn ability.SpiritArmorAbility(unit, owner, btn) {
+	NoIncantation
+	Vulnerability(-armorProportion)
+}

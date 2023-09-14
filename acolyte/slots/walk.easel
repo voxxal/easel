@@ -1,0 +1,17 @@
+.. slotDefault=WantFollowCursor
+
+pub preference owner.WalkSlot
+
+pub fn unit.WalkSlotAbility(owner) {
+	SlotAbility<WalkSlot> choice {
+		if choice == WantFollowCursor { FollowCursorAbility }
+		else if choice == WantClickToMove { ClickToMoveAbility }
+	}
+}
+
+pub fn this.WalkSlotEditor(.. owner, ui) {
+	SlotDropdown<WalkSlot> {
+		DropdownOption<WantFollowCursor>("Follow Cursor")
+		DropdownOption<WantClickToMove>("Click/Tap to Move")
+	}
+}

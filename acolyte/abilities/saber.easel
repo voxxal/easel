@@ -1,0 +1,125 @@
+.. glyph=WaveStrike:Glyph, color=#6600ff, damage=0, cooldown=7.5s, lifetime=1s, length=7.0
+
+pub symbol WantSaber
+
+pub fn SaberOption(.. ui) {
+	SlotOption<WantSaber> {
+		H1 { %("Lightsaber") }
+
+		P {
+			%("Wield a formidable saber forged from pure light. Its incandescent blade can expertly parry incoming projectiles and forcefully knock back your enemies with each swift and decisive strike. ")
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.SaberAbility(unit, owner, btn) {
+	on BotAttacking target {
+		if Cooldown == 0 && Distance(target, unit.Pos) <= length {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		on Interrupt interruptor {
+			if interruptor & Interruptor:Self {
+				StopIncantation
+			}
+		}
+
+		on BotChannelling target {
+			if Distance(target, unit.Pos) <= length {
+				BotKeepChannelling(spin=true)
+			}
+		}
+
+		Subspawn saber {
+			.. parent=unit
+			.. dissipation=10, luminous=1.0
+			.. radius=0.25
+			.. ccd=true
+			.. categories=Category:Shield, durability=Durability:Shield
+			.. depth=Depth:Saber
+			.. fade=1, shadow=0.25, luminous=1, glare=1, glareAlpha=1, bloom=4, bloomAlpha=1
+
+			PrepareForCollision
+			SynchronizeBody
+			Sing(Saber:Sound)
+			SpeedModifier(-0.25)
+			TurnRateModifier(-0.95)
+
+			// Main saber collider is actually attached to the unit's body, which means it will transmit forces back onto the unit (e.g. recoil)
+			Collider(unit, collideWith=Category:Hero, density=2.0) {
+				// Deflector is attached to the saber's independent body so projectiles cannot knock the unit back through the saber
+				Collider<deflector>(collideWith=Category:Projectile, density=5.0) {
+					// Sprite is attached to the unit (not the independent deflector body) so it does not visually lag behind
+					Sprite(unit, shadow=) {
+						Shape:Capsule(extent=length/2.0, posOffset=@(extent, 0))
+					}
+				}
+			}
+			
+			SwoopEmitter(radius=length, depth=depth+1)
+
+			on Movement:Turned step {
+				// A strong swing will detach any tethers
+				if Abs(step) > 0.05rev {
+					SeverTethers
+				}
+			}
+
+			on Hurt {
+				Strobe(dissipation=10, shine=1.0)
+			}
+
+			on BeforeCollide that { // Main collider hits units
+				Hear(Saber:HitSound)
+
+				if that.Team != owner.Team {
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" slashed ")
+						NameBlock(victim)
+						%(" into bite-sized pieces ")
+					}
+
+					await Sleep(0.25s)
+					StopIncantation
+				}
+			}
+
+			on BeforeCollide<deflector> that { // Secondary collider hits projectiles only
+				Hear(Saber:HitSound)
+			}
+		}
+
+		await Sleep(lifetime)
+	}
+}
+
+sound Saber:Sound(duration=5s) {
+	Vibrato(freqModulation=1) {
+		Oscillator(freq=[5,4])
+	}
+	Oscillator(wave=$square, freq=15.3, harmonics=[1,2,4,8,16])
+	LowPass(freq=100)
+	Tremolo(volumeModulation=0.4) {
+		Oscillator(freq=7)
+	}
+	Envelope(attack=0.15s, sustain=0s)
+	Gain(volume=0.25s)
+}
+
+sound Saber:HitSound(duration=0.5s) {
+	Vibrato(freqModulation=100) {
+		Oscillator(freq=200)
+	}
+	Oscillator(wave=$sine, freq=100)
+	LowPass(freq=100)
+	Envelope(attack=0.01s, sustain=0s)
+}

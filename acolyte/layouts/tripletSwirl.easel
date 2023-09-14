@@ -1,0 +1,43 @@
+pub fn scene.TripletSwirlLayout {
+	Lava
+	Shrink
+	SolidBackground(color=#2c1b23)
+
+	Spawn turf {
+		Turf(color=#413038) {
+			hook ShrinkScale {
+				Shape:Circle(radius=32 * ShrinkScale)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=24, numObstacles=3, angleOffset=0.18rev, headingOffset=0.125rev) {
+		Spawn obstacle {
+			Volcano {
+				Shape:Equilateral(numPoints=6, radius=2)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=11.2, numObstacles=3, angleOffset=0.28rev, headingOffset=0.125rev) {
+		Spawn obstacle {
+			Boulder(maxHp=20) {
+				Shape:Equilateral(numPoints=3, radius=0.6)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=17.6, numObstacles=3, angleOffset=0.23rev, headingOffset=0.125rev) {
+		Spawn obstacle {
+			Boulder(maxHp=20) {
+				Shape:Equilateral(numPoints=3, radius=0.9)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=4.8, numObstacles=15, angleOffset=0.055rev + 1rev/6, pattern=[1,1,1,0,0]) {
+		Spawn obstacle {
+			Explosive(radius=0.4)
+		}
+	}
+}

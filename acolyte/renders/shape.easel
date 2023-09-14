@@ -1,0 +1,49 @@
+const DistancePerDivision=1
+const MinDivisions=4
+
+pub fn Shape:Circle(shape, radius, posOffset?) {
+	Circle(.. shape)
+}
+
+pub fn Shape:Sector(shape, arc, angleOffset, radius, posOffset?) {
+	Sector(.. shape angleOffset arc)
+}
+
+pub fn Shape:Equilateral(shape, numPoints, radius, angleOffset=0, posOffset?) {
+	Equilateral(.. shape radius)
+}
+
+pub fn Shape:Capsule(shape, extent, radius, angleOffset=0, posOffset?) {
+	Capsule(.. shape extent radius angleOffset)
+}
+
+pub fn Shape:Arc(shape, orbit, arc, radius, numDivisions=Max(MinDivisions,Ceil(orbit * arc / DistancePerDivision)), cap=false) {
+	let arcExtent = arc / 2.0
+	let origin = @(-orbit,0)
+	let points = []
+	for i in Range(0,numDivisions+1) {
+		let angle = -arcExtent + i * arc / numDivisions
+		points.Append(origin + Direction(angle) * orbit)
+	}
+
+	Line(
+		headTilt=-arcExtent / numDivisions,
+		tailTilt=arcExtent / numDivisions,
+		.. shape radius points cap)
+}
+
+pub fn Shape:Trapezoid(shape, arc, radius, orbit, cap=false) {
+	let origin = @(-orbit,0)
+	let adjacentAngle = Min(arc / 2.0, 1rev / 3.0)
+	let hypotenuseMultipler = 1.0 / Cos(adjacentAngle)
+
+	let points = [
+		origin + Direction(-adjacentAngle) * (hypotenuseMultipler * orbit),
+		origin + Direction(adjacentAngle) * (hypotenuseMultipler * orbit),
+	]
+
+	Line(
+		headTilt=-adjacentAngle,
+		tailTilt=adjacentAngle,
+		.. shape points radius cap)
+}

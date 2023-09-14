@@ -1,0 +1,120 @@
+.. glyph=CrossedSlashes:Glyph, color=#ff0088, damage=20.0
+.. numBolts=2, buffDuration=4s, lifesteal=0.3, cooldown=1.5s
+
+pub symbol WantDifire
+
+pub fn DifireOption(.. ui) {
+	SlotOption<WantDifire> {
+		H1 { %("Difire") }
+
+		P {
+			%("Unleash twin bolts of scorching flame that ignite and inflict a prolonged burn. Additional Difire bolts intensify the burn, but only if used before the flames subside.")
+		}
+
+		P {
+			SlotEffect("Stacking Burn", icon="fas fa-flame") {
+				const boltDps = damage / (buffDuration / TicksPerSecond) / numBolts
+				%("Each bolt of Difire will add another stack of " + boltDps + " damage per second to your enemy. ")
+				%("You must hit them with Difire at least once every " + (buffDuration / TicksPerSecond) + " seconds to keep the fire burning. ")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.DifireAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		await Spray(duration=0, count=numBolts, spray=0.25revs) headingOffset {
+			.. damage = damage / count
+
+			Spawn projectile {
+				.. parent=unit
+				.. lifetime=1.5s, dissipation=15
+				.. radius=0.22, speed=40.0
+				.. density=14, ccd=true
+				.. luminous=1.0, depth=Depth:Projectile
+				.. categories=Category:Projectile, durability=Durability:Medium
+
+				const initialCursor = Pointer
+
+				LaunchBody(headingOffset=)
+				PrepareForCollision
+				PropulsiveMotion
+				RayEmitter(dissipation=8, shadow=0.25)
+				Sing(Difire:Sound)
+				ExpireAfterLifetime
+
+				once<redirect> Sleep(4) {
+					PropulsiveMotion(0.05, speed=52.5)
+					Velocity:RedirectTowards(initialCursor)
+				}
+
+				Collider {
+					Shape:Circle
+				}
+
+				let canHurtSelf = false
+				on BeforeCollide that {
+					if canHurtSelf || that.Team != owner.Team {
+						Attack(that, damage=0) // All damage is done by Poison, not this - this is to do other things like interrupt the enemy
+						if that.HasHp {
+							that.StackBuff<burning>(cleansable=true, maxStacks=(that.Category & Category:Hero ? 99 : 0)) stacks {
+								ExpireAfterLifetime(buffDuration)
+								Poison(that, damage * (stacks + 1), buffDuration)
+								Smoke(that,
+									radius=1.0, depth=Depth:Particle,
+									color=color.WithOpacity(0.15 + 0.1 * stacks), fade=1,
+									flutter=$perimeter, splatter=Splatter:Outwards(12))
+
+								that.Tombstone victim {
+									NameBlock(owner)
+									%(" ignited ")
+									NameBlock(victim)
+									if stacks > 0 {
+										%(" and watched them burn ")
+									}
+								}
+							}
+						}
+					}
+				}
+				on AfterCollide that {
+					if that.Category & Category:Shield {
+						canHurtSelf = true // Can bounce off shield to hurt self
+					}
+					if that.Durability >= this.Durability && !((that.Category & Category:Projectile) && (that.Owner == this.Owner)) {
+						Strobe(shine=1.0)
+						Puff(count=5, splatter=1, dissipation=30)
+						Hear(Difire:HitSound)
+						Expire
+					}
+				}
+			}
+		}
+	}
+}
+
+sound Difire:Sound(duration=1.5s) {
+	BrownNoise
+	BandPass(freq=735, q=[5,15])
+	Envelope(attack=0.25s, sustain=0s)
+	Gain(volume=0.5)
+}
+sound Difire:HitSound(duration=0.33s) {
+	Oscillator(wave=$square, freq=[100,0], harmonics=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2])
+	LowPass(freq=250)
+	Envelope(attack=0.01s, decay=0.1s, sustainVolume=0.3, sustain=0s)
+}

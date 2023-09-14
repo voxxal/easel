@@ -1,0 +1,37 @@
+pub fn scene.MirrorhengeLayout {
+	Lava
+	Shrink
+	SolidBackground(color=#29221e)
+
+	Spawn turf {
+		Turf(color=#413834) {
+			hook ShrinkScale {
+				Shape:Circle(radius=32 * ShrinkScale)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=14.4, numObstacles=4, angleOffset=1rev / 12) {
+		Spawn obstacle {
+			Boost {
+				Shape:Trapezoid(radius=0.24, arc=1rev / numObstacles)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=5.8, numObstacles=3, angleOffset=0.2rev) {
+		Spawn obstacle {
+			Boulder(turningDecay=0.01) {
+				Shape:Trapezoid(radius=1.44, arc=0.03rev)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=28, numObstacles=36, angleOffset=0.125rev, pattern=[1,1,0,0,0,1]) {
+		Spawn obstacle {
+			Mirror {
+				Shape:Trapezoid(radius=0.4, arc=0.02rev)
+			}
+		}
+	}
+}

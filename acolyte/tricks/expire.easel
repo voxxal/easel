@@ -1,0 +1,4 @@
+pub behavior fn this.ExpireAfterLifetime(lifetime) {
+    await Sleep(lifetime)
+    Expire
+}

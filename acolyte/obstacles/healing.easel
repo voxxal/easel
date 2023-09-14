@@ -1,0 +1,62 @@
+.. owner=null
+
+pub fn obstacle.Healing(pos, heading?=0, maxHp=50, heal=4, selfDamage=4, decayDamage=2, radius=0.25) .. shape {
+	.. healInterval=1s 
+	.. color=#0f9, fade=#0f94,
+	.. bloom=2.0, bloomAlpha=0.3, luminous=1
+	.. shading=0, shadow=0, depth=Depth:Zone
+	.. categories=(Category:Zone | Category:HurtByLava)
+	.. collideWith=Category:None, sense=Category:Hero
+	.. durability=Durability:Maximum, density=1
+	.. isSensor=true, immovable=true, ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	Health
+
+	BuffOnContact<healing>(filter=Category:Hero) that {
+		Smoke(that,
+			radius=1.0, dissipation=30, interval=15, depth=Depth:Particle,
+			color=color.Fade(0.5), fade=1,
+			luminous=1, feather=1, bloom=0,
+			splatter=Splatter:Outwards(8.0))
+		hook<heal> Sleep(healInterval) {
+			that.Heal(healInterval * heal / TicksPerSecond)
+			obstacle.TakeDamage(selfDamage)
+		}
+	}
+
+	if decayDamage > 0 {
+		hook<decay> Sleep(healInterval) {
+			obstacle.TakeDamage(decayDamage)
+		}
+	}
+
+	Collider {
+		Sprite {
+			Perimeter {
+				delve()
+			}
+		}
+	}
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps
+		Smoke(
+			interval=4, dissipation=30,
+			luminous=1.0, shine=0.2, bloom=0, shadow=0,
+			splatter=Splatter:Outwards(4.0),
+			flutter=$area)
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=2.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}

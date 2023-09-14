@@ -1,0 +1,10 @@
+pub fn Hide:Shorthand(hide) {
+	if hide == $whenInvisible { return Hide:WhenInvisible() }
+	else { return hide }
+}
+
+pub fn Hide:WhenInvisible {
+	return (body) => {
+		return body.Vanished
+	}
+}

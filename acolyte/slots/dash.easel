@@ -1,0 +1,36 @@
+.. btn=["KeyA", "SecondaryClick", "DoubleTap"], slotDefault=WantCharge
+
+pub preference owner.DashSlot
+
+pub fn unit.DashSlotAbility(.. owner, btnIndex?, btnSize=1) {
+	SlotAbility<DashSlot> choice {
+		if choice == WantCharge { ChargeAbility }
+		else if choice == WantTeleport { TeleportAbility }
+		else if choice == WantVoidRush { VoidRushAbility }
+		else if choice == WantSwap { SwapAbility }
+		else if choice == WantVanish { VanishAbility }
+		else { SlotWithoutAbility }
+
+		SlotPopup<DashSlot> { DashSlotEditor }
+	}
+}
+
+pub fn this.DashSlotEditor(.. owner, ui) {
+	SlotEditor<DashSlot> {
+		ChargeOption
+		TeleportOption
+		VoidRushOption
+		SwapOption
+		VanishOption
+	}
+}
+
+pub fn owner.RandomizeDashSlot {
+	DashSlot = PickRandom([
+		WantCharge,
+		WantTeleport,
+		WantVoidRush,
+		WantSwap,
+		WantVanish,
+	])
+}

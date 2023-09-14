@@ -1,0 +1,44 @@
+// This signal should NEVER be fired.
+pub signal this.Never
+
+// Log function
+/*
+Example:
+Debug:Log("hello")
+*/
+pub fn this.Debug:Log(message) {
+    Transmission<debug> {
+        P(scale=0.9) {
+            %("DEBUG: " + message)
+        }
+    }
+}
+
+pub fn this.Debug:Warn(message) {
+    Transmission<warn> {
+        P(scale=0.9, color=#e8e412) {
+            %("WARN: " + message)
+        }
+    }
+}
+
+pub fn this.Debug:Error(message) {
+    Transmission<error> {
+        P(scale=0.9, color=#d62f20, bold=true) {
+            %("ERROR: " + message)
+        }
+    }
+}
+
+// LaunchBody with offset
+pub fn body.LaunchBodyFrom(
+	parent,
+	..
+    offset?,
+	headingOffset?,
+	pos=parent.Pos + offset, speed,
+	heading = parent.Heading + headingOffset, turnRate?,
+	immovable?, ccd?) {
+
+	Body(velocity = Direction(heading) * speed)
+}

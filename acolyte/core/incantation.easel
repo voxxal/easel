@@ -1,0 +1,64 @@
+pub fn ability.NoIncantation(.. owner, glyph) {
+	CommandIcon(opacity=0.5, color=#333, glyphColor=#aaa .. glyph)
+}
+
+pub fn ability.Incantation(.. unit, owner, glyph, color, cooldown, btn) .. *incantation {
+	CommandBinding(btn, owner=)
+
+    CooldownTicker
+    Silenceable
+
+	hook Cooldown {
+		let cooldown = Cooldown
+		let color = color
+		let glyphColor = #fff
+		if cooldown >= 1s {
+			color = #222
+			glyphColor = #999
+		} else if cooldown > 0.1s {
+			color = #777
+			glyphColor = #eee
+		} else if cooldown > 0s {
+			color = #111
+			glyphColor = #777
+		}
+
+		let text = null
+		if cooldown > 1s {
+			text = FormatToFixed(cooldown / TicksPerSecond, 0)
+		} else if cooldown > 0s {
+			text = FormatToFixed(cooldown / TicksPerSecond, 1)
+		}
+
+		CommandIcon(.. glyph color glyphColor)
+		CommandText(text)
+	}
+	
+	on ability.InvokeCommand {
+		RecheckCommenceCountdown
+	
+		ability.Subscope incantation {
+			Incantation:Queue
+			if Cooldown == 0 {
+				Cooldown = cooldown
+				delve()
+			}
+		}
+	}
+}
+
+field unit.CurrentIncantation
+fn incantation.Incantation:Queue(unit) {
+	Interrupt(Interruptor:Self) // This may cancel an existing incantation if it is cancellable, freeing up the queue
+	loop {
+		let current = unit.CurrentIncantation
+		if !Exists(current) { break } // No current incantation, time for us to take over!
+		await current.Expire
+		await Tick // Wait until the next tick to ensure the incumbent has expired
+	}
+	unit.CurrentIncantation = incantation
+}
+
+pub fn StopIncantation(incantation) {
+	incantation.Expire
+}

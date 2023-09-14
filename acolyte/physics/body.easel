@@ -1,0 +1,28 @@
+pub fn body.LaunchBody(
+	parent,
+	..
+	headingOffset?,
+	pos=parent.Pos, speed,
+	heading = parent.Heading + headingOffset, turnRate?,
+	immovable?, ccd?) {
+
+	Body(velocity = Direction(heading) * speed)
+}
+
+pub fn body.SynchronizeBody(unit .. ccd?) {
+	Body(pos=unit.Pos, heading=unit.Heading, velocity=unit.Velocity, turnRate=unit.TurnRate)
+
+	// Match the internal forces on the with the unit so it swoops between positions and collides with everything during the physics simulation.
+	// If we just copied the position it might tunnel through objects and this would not happen.
+	Movement:WalkWith(unit)
+	Movement:TurnWith(unit)
+
+	// Update the position and heading of the deflector each tick to be the same as the unit
+	// This is needed in addition to the above because the unit have external forces applied
+	on PhysicsStart {
+		body.Pos = unit.Pos
+		body.Heading = unit.Heading
+		body.Velocity = unit.Velocity
+		body.TurnRate = unit.TurnRate
+	}
+}

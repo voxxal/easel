@@ -1,0 +1,122 @@
+.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=8
+
+pub symbol WantEnergyMines
+
+pub fn EnergyMinesOption(.. ui) {
+	SlotOption<WantEnergyMines> {
+		H1 { %("Energy Mines") }
+
+		P {
+			%("Mark your territory with solid ingots of volatile energy, protecting you from all who dare come too close.")
+		}
+
+		P {
+			SlotEffect("Stabilizing Presence", icon="fas fa-anchor") {
+				%("Your sustained presence stabilizes the mines' volatile energy. Stray too far and they will expire.")
+			}
+			SlotEffect("Arming Delay", icon="fas fa-stopwatch") {
+				%("Energy mines take a moment to activate and only do damage after " + (armDelay / TicksPerSecond) + "s.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.EnergyMinesAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+	
+		TurnRateModifier(-1)
+
+		Hear(Mines:LaunchSound)
+		await Spray(duration=5, count=5, spray=0.35revs) index {
+			const proportion = index / count
+
+			Spawn projectile {
+				.. parent=unit
+				.. lifetime=4.5s, dissipation=15
+				.. radius=0.32, speed=40.0, impulse=100.0
+				.. density=1.0, ccd=true
+				.. ownerColor=Alliance:Self, bloom=1.5, bloomAlpha=0.3, luminous=1.0, depth=Depth:Projectile
+				.. categories=Category:Projectile | Category:Aoe, durability=Durability:None
+				.. sense=Category:Projectile
+
+				LaunchBody
+				PrepareForCollision
+				DriftingMotion
+				ExpireAfterLifetime
+
+				Proximity:OnRetreat(unit, range = proportion.Mix(12,8)) {
+					Expire
+				}
+
+				Sprite(shadow=0.5) {
+					Collider {
+						Shape:Circle
+					}
+				}
+
+				let armed = false
+				on BeforeCollide that {
+					if that.Team != owner.Team {
+						Attack(that, armed ? damage : 0)
+						Aoe:Impulse
+
+						that.Tombstone victim {
+							NameBlock(owner)
+							%(" blew ")
+							NameBlock(victim)
+							%("'s mined")
+						}
+					}
+				}
+				on AfterCollide that {
+					if that.Durability >= this.Durability {
+						Strobe(shine=1.0)
+						Expire
+					}
+				}
+
+				once Expire {
+					Explosion(1.2, shine=1.0)
+					Hear(Mines:HitSound)
+				}
+
+				once<arm> Sleep(armDelay) {
+					Speed = 0
+					DecayingMotion
+					armed = true
+				}
+			}
+		}
+	}
+}
+
+sound Mines:LaunchSound(duration=0.17s) {
+	Vibrato(freqModulation=[3000,12588]) {
+		Oscillator(freq=30)
+	}
+	Oscillator(wave=$triangle, freq=[6000,6400], harmonics=[1, 1.33, 1.5])
+	Tremolo(volumeModulation=0.2) {
+		Oscillator(freq=30)
+	}
+	Envelope(attack=0.05s, release=0.05s)
+	Gain(volume=0.1)
+}
+
+sound Mines:HitSound(duration=1s) {
+	Oscillator(wave=$triangle, freq=[50,0], harmonics=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2])
+	LowPass(freq=[300,0])
+	Envelope(attack=0.01s, sustain=0s)
+}

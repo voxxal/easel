@@ -1,0 +1,64 @@
+.. owner = null
+
+pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=400, radius=0.4, aoe=4.0, density=10.0) {
+
+	.. dissipation=30,
+	.. color=#fc0,
+	.. bloom=0, luminous=0,
+	.. shading=0.25, depth=Depth:Obstacle,
+	.. categories=(Category:Obstacle | Category:CanGrab | Category:HurtByLava | Category:Aoe),
+	.. collideWith=Category:Solid, sense=Category:Zone,
+	.. durability=Durability:Maximum,
+	.. ccd=true
+
+	Body(pos, heading=)
+	PrepareForCollision
+	DecayingMotion(turningDecay=0.05)
+
+	Health
+	on Hurt {
+		Strobe(dissipation=10, shine=0.25, growth=0.2)
+	}
+
+	Anchored(pos, heading)
+	once AfterCommence { delete Anchored }
+
+	// Circular collider to make it more predictable where it will go when hit,
+	// but triangular avatar to give it a distinctive shape
+	Collider {
+		Shape:Circle(radius=)
+	}
+	Sprite(shadow=0.5) {
+		Shape:Equilateral(numPoints=3, radius=)
+	}
+
+	on BeforeCollide that {
+		if HasCommenced && (that.Category & Category:Hero) {
+			Puff(count=10, splatter=Splatter:Outwards(26), luminous=1)
+			Explosion(aoe)
+			Hear(Obstacle:Explosive)
+
+			Aoe:ForEach that {
+				Aoe:ImpulseAttenuated(that, attentuate=0.4)
+				that.Interrupt
+			}
+
+			Expire
+			break
+		}
+	}
+
+	once BeforeOutOfHealth {
+		Puff(count=3, shine=1, luminous=1, splatter=Splatter:Outwards(12))
+	}
+}
+
+sound Obstacle:Explosive(duration=1s) {
+	Vibrato(freqModulation=1000) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[300,0])
+	LowShelf(freq=80, db=12)
+	Envelope(attack=0.01s, decay=0.07s, sustain=0s, sustainVolume=0.5)
+}

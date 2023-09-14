@@ -1,0 +1,37 @@
+pub fn scene.ReturnLayout {
+	.. orientation=0.2rev
+
+	Lava
+	Shrink
+	SolidBackground(color=#2b1c22)
+
+	Spawn turf {
+		Turf(color=#433239, heading=orientation) {
+			hook ShrinkScale {
+				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=6)
+			}
+		}
+	}
+
+	Spawn obstacle {
+		Volcano(pos=@(0,0), heading=orientation + 0.5rev) {
+			Shape:Equilateral(numPoints=3, radius=2)
+		}
+	}
+
+	ArrangeRing(orbit=12, numObstacles=3, angleOffset=orientation) {
+		Spawn obstacle {
+			Conveyor(convey=@(-5,0), maxHp=200) {
+				Shape:Trapezoid(radius=8, arc=0.01rev)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=20, numObstacles=3, angleOffset=orientation + 0.5rev / numObstacles) {
+		Spawn obstacle {
+			Boulder {
+				Shape:Equilateral(numPoints=4, radius=0.8)
+			}
+		}
+	}
+}

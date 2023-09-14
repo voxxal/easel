@@ -1,0 +1,74 @@
+.. glyph=FireDash:Glyph, color=#ff00cc, damage=0, speed=100, cooldown=10.0s
+
+pub symbol WantCharge
+
+pub fn ChargeOption(.. ui) {
+	SlotOption<WantCharge> {
+		H1 { %("Charge") }
+
+		P {
+			%("Charge forward with thunderous force, knocking away anything in your path.")
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.ChargeAbility(unit, owner, btn, btnIndex?, btnSize) {
+	hook IsInLava {
+		CooldownRate(IsInLava ? 1.0 : 0.0)
+	}
+
+	on BotRecovering {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. lifetime=12 
+		.. radius=2.0, dissipation=12
+		.. ownerColor=true, depth=Depth:Projectile
+		.. shine=1.0, glare=0.7, bloom=3.0, luminous=1.0
+
+		CleanseBuffs
+		SeverTethers
+		Sing(Charge:Sound)
+
+		// Set the new target to be the same as where we're charging towards.
+		// This is to stop the unit walking backwards after the thrust is complete when using click-to-move
+		Movement:WalkTo(Pointer)
+		
+		// Don't allow other movement to interfere with the charge
+		SpeedModifier(-1)
+		DensityModifier(100)
+		SizeModifier(1)
+		Thrust(Pointer, speed=)
+		RayEmitter(fade=1, shadow=0.5)
+
+		Proximity:OnArrival(Pointer) {
+			StopIncantation
+		}
+
+		on unit.BeforeCollide that {
+			Attack(that)
+
+			that.Tombstone victim {
+				NameBlock(owner)
+				%(" smashed ")
+				NameBlock(victim)
+				%(" with thunderous force ")
+			}
+		}
+
+		await Sleep(lifetime)
+	}
+}
+
+sound Charge:Sound(duration=0.25s) {
+	BrownNoise
+	LowPass(freq=600)
+	Envelope(attack=0.05s, sustain=0s)
+}

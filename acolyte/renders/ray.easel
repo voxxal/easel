@@ -1,0 +1,34 @@
+pub behavior fn this.RayEmitter<Id?>(
+	radius, body,
+	..
+	color, depth, dissipation,
+
+	flutter?,
+
+	audience?,
+	fade?,
+	bloom?=3, bloomAlpha?=1,
+	crater?,
+	diminish?,
+	feather?,
+	flicker?,
+	glare?=1, glareAlpha?,
+	luminous?=1.0,
+	owner?, ownerColor?,
+	phase=0,
+	shading?,
+	shadow?=0.25,
+	shine?,
+	strobe?,
+	taper?) {
+
+	let flutter = Flutter:Shorthand(flutter)
+	loop {
+		let pos = body.Pos
+		if flutter {
+			pos += IsFunc(flutter) ? flutter(body, phase) : flutter
+		}
+		Ray<Id>(pos)
+		await TickEnd
+	}
+}

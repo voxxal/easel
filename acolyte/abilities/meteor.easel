@@ -1,0 +1,88 @@
+.. glyph=CometSpark:Glyph, color=#ff0000, damage=0.0, cooldown=9.0s
+
+pub symbol WantMeteor
+
+pub fn MeteorOption(.. ui) {
+	SlotOption<WantMeteor> {
+		H1 { %("Meteor") }
+
+		P {
+			%("Summon a colossal meteor that hurtles towards your foes, shielding you from harm with its unstoppable momentum and unwavering absorption of all incoming attacks, enduring them without so much as a flinch. ")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.MeteorAbility(unit, owner, btn) {
+	on BotDeflecting {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		Spawn projectile {
+			.. parent=unit
+			.. lifetime=2s, dissipation=24
+			.. radius=2.88, speed=16.0
+			.. feather=0, bloom=0, shine=0, glare=0, luminous=0.0, depth=Depth:Projectile+10
+			.. density=100, restitution=0, ccd=true
+			.. categories = Category:Projectile | Category:CanGrab | Category:Aoe | Category:Massive, durability=Durability:Maximum
+			.. collideWith = Category:Solid ^ Category:Shield
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion(0.2)
+			Hear(Meteor:LaunchSound)
+			Sing(Meteor:Sound)
+			ExpireAfterLifetime
+
+			// we're only using the avatar for the bloom
+			// depth+1 to place avatar behind the particles - the bloom will surround them
+			Sprite(depth=depth+1, bloom=5, crater=1, luminous=0) {
+
+				// passthroughSiblings=false so the Grapple can immediately collide with a sibling like a Meteor even when it is spawned inside of the Meteor
+				Collider(passthroughSiblings=false) {
+					Shape:Circle
+				}
+			}
+
+			Smoke(splatter=0.5, fade=#900, shadow=0.25)
+
+			on Hurt {
+				Strobe(shine=1.0)
+			}
+
+			on BeforeCollide that {
+				if that.Team != owner.Team {
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" drove ")
+						NameBlock(victim)
+						%(" to their downfall ")
+					}
+				}
+			}
+		}
+	}
+}
+
+sound Meteor:LaunchSound(duration=0.33s) {
+	Oscillator(wave=$square, freq=[20,1], harmonics=[1, 2, 3, 4, 5, 6, 7, 8])
+	HighPass(freq=40)
+	LowPass(freq=300)
+	Envelope(attack=0.1s, sustain=0s)
+}
+
+sound Meteor:Sound(duration=2s) {
+	Oscillator(wave=$square, freq=[1,10], harmonics=[1, 1.5, 2, 2.1, 2.16, 3.5, 6.7, 8.2])
+	HighPass(freq=40)
+	LowPass(freq=100)
+	Envelope(attack=0.16s, sustain=0.5s)
+}

@@ -1,0 +1,31 @@
+pub fn scene.SquareLayout {
+	.. orientation = 0.5rev / 4
+
+	Lava
+	Shrink
+	SolidBackground(color=#2a1b2c)
+
+	Spawn turf {
+		Turf(color=#413243, heading=orientation) {
+			hook ShrinkScale {
+				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=4)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=16, numObstacles=2, angleOffset=orientation) {
+		Spawn obstacle {
+			Boost(maxHp=200) {
+				Shape:Arc(radius=0.16, arc=0.25rev, cap=true)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=26.4, numObstacles=2, angleOffset=orientation) {
+		Spawn obstacle {
+			Boulder {
+				Shape:Equilateral(numPoints=4, radius=0.72)
+			}
+		}
+	}
+}

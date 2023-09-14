@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Easel",
+  "patterns": [
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    }
+  ],
+  "repository": {
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.easel",
+          "match": "\\b(fn|set|delete|if|else|pub|return|static|const|let|while|for|in|loop|continue|break|true|false|null|undefined|once|on|hook|fn|alias|await)\\b"
+        }
+      ]
+    },
+    "typeKeywords": {
+      "patterns": [
+        {
+          "name": "keyword.type.easel",
+          "match": "\\b(mode|page|prop|signal|field|accumulator|preference|meld|sound|glyph|meta|behavior|this|delve|owner|ui|shape)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.easel",
+          "match": "\\b(=|>|<|!|~|?|:|==|<=|>=|!=|&&||||++|--|+|-|*|/|&|||^|%|<<|>>|>>>|+=|-=|*=|/=|&=||=|^=|%=|<<=|>>=|>>>=|**)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.easel",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.easel",
+          "match": "\\\\."
+        }
+      ]
+    }
+  },
+  "scopeName": "source.easel"
+}

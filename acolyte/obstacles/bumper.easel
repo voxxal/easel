@@ -1,0 +1,61 @@
+.. owner=null
+
+pub fn obstacle.Bumper(pos, heading?=0, maxHp=100.0, impulse=200, radius=1.0, density=1.0) .. shape {
+	.. color=#c94, fade=#753,
+	.. bloom=0, luminous=0,
+	.. shading=0.25, depth=Depth:Obstacle,
+	.. categories=(Category:Obstacle | Category:CanGrab | Category:HurtByLava | Category:Aoe),
+	.. collideWith=Category:Solid,
+	.. durability=Durability:Maximum,
+	.. ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	DecayingMotion(turningDecay=0.05)
+
+	Health(maxHp)
+
+	Collider {
+		Sprite {
+			Perimeter shape {
+				delve()
+			}
+		}
+	}
+
+	Anchored(pos, heading)
+	once AfterCommence { delete Anchored }
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps(shadow=0.5)
+	}
+
+	on BeforeCollide that {
+		if that.Category & (Category:Hero | Category:Obstacle) {
+			that.Velocity:ImpulseAway(this.Pos)
+			Strobe(dissipation=10, shine=0.5, growth=0.5)
+			Hear(Obstacle:Bumper)
+		}
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=1.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}
+
+sound Obstacle:Bumper(duration=0.5s) {
+	Vibrato(freqModulation=120) {
+		Oscillator(freq=240)
+	}
+	Oscillator(wave=$square, freq=120)
+	LowPass(freq=120)
+	HighPass(freq=40)
+	Envelope(attack=0.001s, sustain=0s)
+}

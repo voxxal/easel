@@ -1,0 +1,27 @@
+pub fn scene.Inside5Layout {
+	Lava
+	Shrink
+	SolidBackground(color=#2a1d20)
+
+	Spawn turf {
+		Turf(color=#413034) {
+			hook ShrinkScale {
+				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=5)
+			}
+		}
+	}
+
+	Spawn obstacle {
+		Volcano(pos=@(0,0)) {
+			Shape:Circle(radius=2)
+		}
+	}
+
+	ArrangeRing(orbit=12, numObstacles=5, angleOffset=0.5rev / numObstacles, headingOffset=0.5rev) {
+		Spawn obstacle {
+			Boulder {
+				Shape:Equilateral(numPoints=3, radius=1.2)
+			}
+		}
+	}
+}

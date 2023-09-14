@@ -1,0 +1,10 @@
+pub behavior fn unit.Tombstone() [victim .. ui] {
+	if !(unit.Category & Category:Hero) { return }
+	await unit.BeforeOutOfHealth
+
+	.. victim = unit.Owner
+	Transmission<tombstone> {
+		P { delve() }
+	}
+}
+pub delete fn unit.Tombstone() { }

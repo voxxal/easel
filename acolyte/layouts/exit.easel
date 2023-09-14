@@ -1,0 +1,35 @@
+pub fn scene.ExitLayout {
+	Lava
+	Shrink
+	SolidBackground(color=#2b1f1d)
+
+	Spawn turf {
+		Turf(color=#433632) {
+			hook ShrinkScale {
+				Shape:Circle(radius=32 * ShrinkScale)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=8, numObstacles=3) {
+		Spawn obstacle {
+			Conveyor(convey=@(5,0), maxHp=200) {
+				Shape:Arc(radius=2.4, arc=0.5rev / numObstacles)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=18.4, numObstacles=3, angleOffset=0.5rev / numObstacles) {
+		Spawn obstacle {
+			Boost {
+				Shape:Arc(radius=0.16, arc=0.15rev, cap=true)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=20, numObstacles=30, angleOffset=0.5rev / 3, pattern=[1,1,1,0,0,0,0,0,1,1]) {
+		Spawn obstacle {
+			Explosive(radius=0.4)
+		}
+	}
+}

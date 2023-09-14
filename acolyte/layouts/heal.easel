@@ -1,0 +1,44 @@
+pub fn scene.HealLayout {
+	Lava
+	Shrink
+	SolidBackground(color=#2b1d1d)
+
+	Spawn turf {
+		Turf(color=#413130) {
+			hook ShrinkScale {
+				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=6)
+			}
+		}
+	}
+
+	Spawn obstacle {
+		Healing(pos=@(0,0), heading=0.5rev / 6) {
+			Shape:Equilateral(numPoints=6, radius=1.6)
+		}
+	}
+
+	ArrangeRing(orbit=6.8, numObstacles=6) {
+		Spawn obstacle {
+			Boost {
+				Shape:Trapezoid(radius=0.24, arc=1rev / numObstacles)
+			}
+		}
+	}
+
+	ArrangeRing(orbit=20, numObstacles=6) {
+		Spawn obstacle {
+			Boulder {
+				Shape:Trapezoid(radius=2, arc=0.008rev)
+			}
+		}
+	}
+
+	once BeforeCommence {
+		Transmission<heal>(duration=15s) {
+			P {
+				%("Fight over this ")
+				Span(bold=true, color=#0f9) { %("healing pool!") }
+			}
+		}
+	}
+}

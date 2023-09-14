@@ -1,0 +1,12 @@
+pub await fn Barrage(count, interval) index {
+	let start = Tick()
+	for index in Range(0,count) {
+		// Wait for the appropriate time to fire the next shot
+		let next = start + interval * index
+		let sleep = Floor(next - Tick)
+		await Sleep(sleep)
+
+		// Fire
+		delve(index)
+	}
+}

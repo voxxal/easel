@@ -1,0 +1,68 @@
+pub signal this.Hurt
+
+const DamageMitigationInterval = 2s
+const UnmitigatedDamageProportion = 0.25
+field unit.DamagePerAttacker
+field unit.CurrentAttacker
+
+pub prop unit.NumAttackers
+
+pub fn Attack(that, damage, .. lifesteal?, minHealth?, noHurt?, noRelay?, noInterrupt?, noLavasteal?, unit?) {
+    if !that { return 0 }
+
+	let loss = damage > 0 ? that.TakeDamage(that.MitigateDamage(damage, attacker=unit)) : 0
+
+    if unit && lifesteal > 0.0 && loss > 0.0 && that.Owner && (that.Category & Category:Hero) {
+        // Lifesteal back to owner, but only if the target is owned by another enemy player
+        unit.Heal(damage * lifesteal)
+    }
+
+    if !noHurt && (loss > 0 || damage == 0) {
+        // Send hurt event if either was actually hurt, or if this was not meant to hurt (maybe just a knockback-only spell)
+        that.Hurt
+    }
+
+    if !noInterrupt {
+        that.Interrupt
+    }
+    
+    if !noLavasteal && unit && (that.Category & Category:HurtByLava) && that.Owner {
+        that.LavaLifestealer = unit
+    }
+
+	return loss
+}
+
+// If an acolyte gets attacked by multiple enemies at once, only the one who does the most damage will do full damage.
+fn unit.MitigateDamage(damage, attacker) {
+    if (!(damage > 0 && unit && attacker && (unit.Category & Category:Hero) && (attacker.Category & Category:Hero))) {
+        // Do not waste computation on non-heroes or zero damage
+        return damage
+    }
+
+    const damagePerAttacker = unit.DamagePerAttacker ??= {}
+
+    const incumbentDamage = damagePerAttacker[unit.CurrentAttacker] ?? 0
+    const previousDamage = damagePerAttacker[attacker]
+    if !previousDamage {
+        unit.NumAttackers += 1
+    }
+    const newDamage = previousDamage + damage
+
+    let acceptedDamage = UnmitigatedDamageProportion * damage
+    if newDamage > incumbentDamage {
+        acceptedDamage = Max(acceptedDamage, newDamage - incumbentDamage)
+        unit.CurrentAttacker = attacker
+        unit.TimeoutDamageMitigationAfter(DamageMitigationInterval)
+    }
+    damagePerAttacker[attacker] = newDamage
+
+    return acceptedDamage
+}
+
+behavior fn unit.TimeoutDamageMitigationAfter(timeout) {
+    await Sleep(timeout)
+    delete unit.DamagePerAttacker
+    delete unit.CurrentAttacker
+    unit.NumAttackers = 0
+}

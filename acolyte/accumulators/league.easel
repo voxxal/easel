@@ -1,0 +1,28 @@
+const Leagues = GenerateLeagues()
+
+fn GenerateLeagues {
+	return {
+		grandmaster = { name="Grandmaster", glyph=StarsStack:Glyph, color=#00ffff, minRating=2100 }
+		master = { name="Master", glyph=Rank3:Glyph, color=#00b7ff, minRating=1800 }
+		diamond = { name="Diamond", glyph=Rank2:Glyph, color=#0066ff, minRating=1600 }
+		platinum = { name="Platinum", glyph=Rank1:Glyph, color=#ff0088, minRating=1500 }
+		gold = { name="Gold", glyph=Sergeant:Glyph, color=#ffd600, minRating=1300 }
+		silver = { name="Silver", glyph=Corporal:Glyph, color=#f1f1f1, minRating=1200 }
+		bronze = { name="Bronze", glyph=Private:Glyph, color=#ff7300, minRating=1100 }
+		wood = { name="Wood", glyph=Person:Glyph, color=#42e900, minRating=0 }
+	}
+}
+
+pub fn FindLeague(rating) {
+	let last = null
+	for kv in Leagues {
+		let [id, league] = kv
+
+		if rating >= league.minRating {
+			return league
+		} else {
+			last = league
+		}
+	}
+	return last
+}

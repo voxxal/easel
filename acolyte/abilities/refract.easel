@@ -1,0 +1,144 @@
+.. glyph=ArcingBolt:Glyph, color=#00ff7f
+.. damage=12.5, lifesteal=0.3, cooldown=1.5s, bonusProportion=1.0, bonusDuration=1s
+
+pub symbol WantRefract
+
+pub fn RefractOption(.. ui) {
+	SlotOption<WantRefract> {
+		H1 { %("Refract") }
+
+		P {
+			%("Invoke a vigilant burst of energy that obeys the whims of your will, allowing you to redirect Refract's path of destruction towards your enemies.")
+		}
+
+		P {
+			SlotEffect("Refractable Path", icon="fas fa-arrows") {
+				%("Hold down the button to launch, then release the button to redirect towards your cursor. ")
+			}
+
+			SlotEffect("Radiance Unleashed", icon="fas fa-star-exclamation") {
+				%("After redirection, Refract grows in power, ramping up to " + (bonusProportion+1) + "x bonus damage after " + (bonusDuration / TicksPerSecond) + " second, so take an indirect path for maximum effect.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.RefractAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		CooldownRate(-1)
+
+		Spawn projectile {
+			.. parent=unit
+			.. radius=0.35, speed=30.0, alignHeadingToVelocity=true
+			.. lifetime=120, dissipation=15
+			.. ownerColor=Alliance:Self, luminous=1.0, depth=Depth:Projectile
+			.. density=54.0, ccd=true
+			.. categories=Category:Projectile, durability=Durability:Medium
+
+			const birth = Tick
+
+			on BotChannelling {
+				const channelDuration=0.75s
+
+				let age = Tick - birth
+				if age < channelDuration {
+					BotKeepChannelling
+				}
+			}
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			Sing(Refract:Sound)
+			ExpireAfterLifetime
+
+			once Expire {
+				// End the incantation even if the owner is still holding down the button
+				// so the cooldown starts ticking again
+				StopIncantation
+			}
+
+			Collider {
+				Shape:Circle
+			}
+
+			RayEmitter<ray1>(radius)
+			RayEmitter<ray2>(radius * 0.5, bloom=0, glare=0, fade=1, flutter=Flutter:Helix(radius=0.6, period=9))
+
+			let releasedTick = false
+			once ability.ReleaseCommand {
+				Velocity:RedirectTowards(Pointer)
+				releasedTick = Tick
+			}
+
+			let canHurtSelf = false
+			on BeforeCollide that {
+				if canHurtSelf || that.Team != owner.Team {
+					const bonusFactor = releasedTick ? (bonusProportion * ((Tick - releasedTick) / bonusDuration).Min(1)) : 0
+					Attack(that, damage * (1 + bonusFactor))
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" illuminated ")
+						NameBlock(victim)
+						if releasedTick {
+							%(" with twisted magic ")
+						}
+					}
+				}
+			}
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+				}
+				if that.Durability >= this.Durability {
+					Strobe(growth=1.0, shine=0.5)
+					Explosion(2)
+					Puff(count=10, splatter=1)
+					Hear(Refract:HitSound)
+					Expire
+				}
+			}
+		}
+
+		await ability.ReleaseCommand
+	}
+}
+
+sound Refract:Sound(duration=2s) {
+	BrownNoise
+	BandPass(freq=1800, q=1)
+	Envelope(attack=0.25s, sustain=0s)
+	Gain(volume=0.1)
+	Output
+
+	Vibrato(freqModulation=300) {
+		Oscillator(freq=1900)
+	}
+	Oscillator(wave=$sine, freq=900, harmonics=[1,1.5])
+	LowPass(freq=200)
+	Tremolo(volumeModulation=0.6) {
+		Oscillator(freq=8)
+	}
+	Envelope(attack=0.5s, sustain=0s)
+}
+
+sound Refract:HitSound(duration=0.5s) {
+	Oscillator(wave=$square, freq=[80,0], harmonics=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2])
+	LowPass(freq=300)
+	Envelope(attack=0.01s, sustain=0s)
+}

@@ -1,0 +1,93 @@
+.. glyph=Thunderball:Glyph, color=#ff8800, damage=16.0, lifesteal=0.3, cooldown=1.5s
+
+pub symbol WantFireball
+
+pub fn FireballOption(.. ui) {
+	SlotOption<WantFireball> {
+		H1 { %("Fireball") }
+
+		P {
+			%("From your outstretched hand, a fierce, blazing orb of fire hurtles forward, sending enemies tumbling backward. With its short cooldown, you can unleash this swift and reliable spell time and time again.")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.FireballAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		Spawn projectile {
+			.. parent=unit 
+			.. lifetime=90, dissipation=30 
+			.. radius=0.3, speed=60.0
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=40, ccd=true
+			.. categories=Category:Projectile, durability=Durability:Medium
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			Smoke(splatter=0.15)
+			RayEmitter
+			ExpireAfterLifetime
+			Sing(Fireball:Sound)
+
+			Collider {
+				Shape:Circle
+			}
+
+			let canHurtSelf = false
+			on BeforeCollide that {
+				if canHurtSelf || that.Team != owner.Team {
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" scorched ")
+						NameBlock(victim)
+					}
+				}
+			}
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+				}
+
+				if that.Durability >= this.Durability {
+					Strobe(growth=0.5, shine=1.0)
+					Puff(count=10, splatter=1)
+					Hear(Fireball:HitSound)
+					Expire
+				}
+			}
+		}
+	}
+}
+
+sound Fireball:Sound(duration=1.5s, cutoff=0.5s) {
+	BrownNoise
+	BandPass(freq=[220,330], q=[1,5])
+	Envelope(attack=0.25s, release=0.5s)
+}
+
+sound Fireball:HitSound(duration=1s) {
+	Vibrato(freqModulation=350) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[500,0], q=1)
+	Peaking(freq=165, db=12)
+	Envelope(attack=0.01s, decay=0.05s, sustain=0s, sustainVolume=0.2)
+}

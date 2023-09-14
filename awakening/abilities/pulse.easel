@@ -1,0 +1,55 @@
+.. glyph=LightningHelix:Glyph, color=#c0ff0d
+
+pub symbol WantPulsePassive
+
+pub fn PulsePassiveOption(.. ui) {
+	SlotOption<WantPulsePassive> {
+		H1 { %("Pulse") }
+
+		P {
+			Span(italic=true) { %("Passive ability. ") }
+			%("Raised in a rural town somewhere in the Southwest province. He was found as a baby, abandoned at the thunderstruck center of a crop field. A close-ranged fighter with great mobility and a very flashy burst combo. ")
+		}
+
+		P {
+			SlotEffect("Kit", icon="far fa-box-open") {
+				%("Steel Current ; Discharge ; Flicker ; Divine Bladework")
+			}
+		}
+	}
+}
+
+pub fn ability.PulsePassiveAbility(unit, owner, btn) {
+	NoIncantation
+}
+
+// The signal PulseStack signals that we want to add a pulse stack
+pub signal unit.PulseStack
+
+// This is a variable that is set on all abilities. If we compose the
+// PulseStacker function on it, Cooldown will be set to PulseStacks * 60
+// always which means that the cooldown is based off of the pulse stacks
+pub prop ability.PulseStacks
+
+// The Stacker itself. It takes in a variable, pulseStacks and units
+pub behavior fn ability.PulseStacker(pulseStacks, .. unit) {
+	// Init PulseStacks to our passed in variable
+	PulseStacks ??= pulseStacks
+
+	// Remove the stacks when the game starts
+	once AfterCommence {
+		PulseStacks = pulseStacks
+	}
+	
+	// When we recieve a PulseStack signal, subtract one from PulseStacks, but
+	// make sure it doesn't go into negatives because negative cooldowns break
+	on PulseStack {
+		PulseStacks = Max(PulseStacks - 1, 0)
+	}
+
+	// On every tick, set Cooldown to PulseStacks * 60
+	loop {
+		await Tick
+		Cooldown = PulseStacks * 60
+	}
+}

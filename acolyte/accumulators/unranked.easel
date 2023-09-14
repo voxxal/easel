@@ -1,0 +1,28 @@
+pub preference owner.Unranked
+
+pub fn this.UnrankedTool(owner, placement?) {
+	let rating = owner.Rating
+	if rating == 0 { return } // Don't show the button to new players
+
+	hook Unranked {
+		Toolbar<unrankedTool>(placement=) {
+			if Unranked {
+				Button(onPress=$toggleUnranked, tooltip="Unranked Mode", tier=$tertiary) {
+					Icon("fas fa-gamepad")
+				}
+			} else {
+				Button(onPress=$toggleUnranked, tooltip="Ranked Mode", tier=$tertiary) {
+					Icon("fas fa-trophy-alt")
+					Blank(chars=0.5)
+					Span(bold=true) { %(FindLeague(rating).name) }
+					%(" ")
+					Span(bold=false) { %(FormatToFixed(rating, 0)) }
+				}
+			}
+		}
+	}
+
+	on ButtonPress($toggleUnranked) {
+		Unranked = !Unranked
+	}
+}

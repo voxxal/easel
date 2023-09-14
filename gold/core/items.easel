@@ -1,0 +1,9 @@
+pub preference owner.ShopBasic
+pub symbol None
+pub symbol Sword
+pub symbol Shield
+
+pub fn item.ItemCost {
+    if item == Sword { return 100 }
+    else if item == Shield { return 50 }
+}

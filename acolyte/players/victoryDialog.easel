@@ -1,0 +1,30 @@
+pub fn this.VictoryDialog(ranking) {
+	if !ranking { return }
+
+	Subspawn {
+		let winningTeam = ranking[0]?.Team
+		let winners = []
+		for player in ranking {
+			if player.Team == winningTeam {
+				winners.Append(player)
+			}
+		}
+
+		Section {
+			Panel {
+				H1 {
+					let len = Length(winners)
+					let last = len - 1
+					for i in Range(0, len) {
+						if i > 0 {
+							%(i == last ? " & " : ", ")
+						}
+						NameBlock(winners[i])
+					}
+					%(len == 1 ? " wins!" : " win!")
+				}
+				Button(tier=$primary, onPress=Mode) { %("Play Again") }
+			}
+		}
+	}
+}

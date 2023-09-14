@@ -1,0 +1,112 @@
+.. glyph=LightningHelix:Glyph, color=#c0ff0d, damage=10.0, lifesteal=0.3, cooldown=2s, pulseStacks=2
+
+pub symbol WantPulseW
+
+pub fn PulseWOption(.. ui) {
+	SlotOption<WantPulseW> {
+		H1 { %("Discharge") }
+
+		P {
+			%("Fire an orb of pure electricity, stunning and damaging the first enemy struck for 1.5 seconds and granting a stack of Superconduct. Superconduct lasts 6 seconds and can stack indefinitely. Each stack of Superconduct reduces Steel Current's cooldown.")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.PulseWAbility(unit, owner, btn) {
+	// Use a PulseStacker, pulseStacks is defined on line 1
+	// then used implicitly here.
+	PulseStacker
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+		// When we cast the spell, set the PulseStacks to 2
+		PulseStacks = pulseStacks
+
+		Spawn projectile {
+			.. parent=unit 
+			.. lifetime=3s, dissipation=30 
+			.. radius=0.9, speed=40.0
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=0.1, ccd=true
+			.. categories=Category:Projectile, durability=Durability:Medium
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			Smoke(splatter=0.01)
+			ExpireAfterLifetime
+			Sing(Fireball:Sound)
+
+			Collider {
+				Shape:Circle
+			}
+
+			let canHurtSelf = false
+			on BeforeCollide that {
+				if canHurtSelf || that.Team != owner.Team {
+					Attack(that)
+
+					that.Tombstone victim {
+						NameBlock(owner)
+						%(" shocked ")
+						NameBlock(victim)
+					}
+					
+					// Stun Effect
+					that.ReplaceBuff<pulseWStun>(cleansable=true) {
+						ExpireAfterLifetime(1.5s)
+						SpeedModifier(-1, that)
+						Smoke(that,
+							color=#d8ff0d, fade=1, feather=0.5, radius=0.3,
+							dissipation=20, depth=Depth:Particle,
+							flutter=$perimeter, splatter=Splatter:Outwards(2))
+					}
+
+					// It does stack superconduct effect but it doesn't actually do anything right now
+					unit.StackBuff<superconduct>(maxStacks=4) stacks {
+						ExpireAfterLifetime(6s)
+					}
+				}
+			}
+			on AfterCollide that {
+				if that.Category & Category:Shield {
+					canHurtSelf = true // Can bounce off shield to hurt self
+				}
+
+				if that.Durability >= this.Durability {
+					Strobe(growth=0.5, shine=1.0)
+					Puff(count=10, splatter=1)
+					Hear(Fireball:HitSound)
+					Expire
+				}
+			}
+		}
+	}
+}
+
+sound Fireball:Sound(duration=1.5s, cutoff=0.5s) {
+	BrownNoise
+	BandPass(freq=[220,330], q=[1,5])
+	Envelope(attack=0.25s, release=0.5s)
+}
+
+sound Fireball:HitSound(duration=1s) {
+	Vibrato(freqModulation=350) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[500,0], q=1)
+	Peaking(freq=165, db=12)
+	Envelope(attack=0.01s, decay=0.05s, sustain=0s, sustainVolume=0.2)
+}

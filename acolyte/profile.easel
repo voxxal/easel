@@ -1,0 +1,66 @@
+pub page fn owner.ProfilePage(userId) {
+	// Display a loading screen while fetching the data
+	Section<profile> {
+		P { %("Loading profile...") }
+	}
+	Section<history> { }
+
+	once FetchProfile(userId) player {
+		Section<profile> {
+			let rating = player.Rating
+			let league = FindLeague(rating)
+
+			H1 { %(player.PlayerName) }
+
+			Sash(backgroundColor=league.color, align=$center, scale=4) {
+				Medal(glyph=league.glyph, backgroundColor=league.color, scale=1.2)
+
+				Span {
+					Span(bold=true) {
+						%(league.name)
+					}
+					%(" ")
+					%(FormatToFixed(rating, 0))
+				}
+			}
+
+			Row {
+				DigitCard(heading="Games Played") { %(player.NumGames) }
+				DigitCard(heading="Outlasts") { %(player.NumOutlasts) }
+				DigitCard(heading="Wins") { %(player.NumWins) }
+			}
+		}
+	}
+
+	once FetchUserEpisodeHistory(userId) episodes {
+		Section<history> {
+			H1 { %("Recent Games") }
+
+			if episodes.Length == 0 {
+				P { %("No recent games") }
+				return
+			}
+
+			for episode in episodes {
+				Sash(backgroundColor=#777) {
+					P {
+						let isFirst = true
+						for player in episode.EpisodeRanking {
+							if isFirst { isFirst = false }
+							else { %(", ") }
+
+							Link(onPress=player.UserId) { %(player.PlayerName) }
+						}
+					}
+
+					Right {
+						Link(onPress=episode.EpisodeId) {
+							Icon("fa-solid fa-video")
+							%(" Replay")
+						}
+					}
+				}
+			}
+		}
+	}
+}

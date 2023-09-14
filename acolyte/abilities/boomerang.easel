@@ -1,0 +1,129 @@
+.. glyph=CrackedBallDunk:Glyph, color=#00ffff, damage=16.0, lifesteal=0.3, cooldown=1.5s, secondStrikeBonus=0.25
+
+pub symbol WantBoomerang
+
+pub fn BoomerangOption(.. ui) {
+	SlotOption<WantBoomerang> {
+		H1 { %("Boomerang") }
+
+		P {
+			%("Send forth a projectile that slices through the air before returning to your hand. With the potential to strike enemies twice, Boomerang becomes a fearsome weapon in the hands of a skilled wielder.")
+		}
+
+		P {
+			SlotEffect("Second Strike", icon="fas fa-sword") {
+				%("The second strike of Boomerang, if successfully landed, delivers an additional " + (secondStrikeBonus * 100) + "% damage, capitalizing on the vulnerability left by the first strike.")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.BoomerangAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		Spawn projectile {
+			.. parent=unit
+			.. lifetime=90, dissipation=25
+			.. radius=0.16, speed=53.0
+			.. ownerColor=true, luminous=1.0, depth=Depth:Projectile
+			.. density=1, ccd=true
+			.. categories=Category:Projectile, durability=Durability:High
+			.. sense = Category:Hero | Category:Projectile, collideWith = Category:Shield | Category:Obstacle
+			.. noLavasteal=true // Not enough knockback to push others into lava
+
+			LaunchBody
+			PrepareForCollision
+			PropulsiveMotion
+			RayEmitter(fade=0.5)
+			Sing(Boomerang:Sound)
+			ExpireAfterLifetime
+
+			once<redirect> Sleep(33) {
+				Velocity:RedirectTowards(unit.Pos)
+				Homing(unit)
+			}
+
+			Collider(restitution=0) {
+				Shape:Circle
+			}
+
+			on BeforeCollide that {
+				if that == unit {
+					// The boomerang has returned, time to expire
+					Expire
+				}
+
+				if that.Team != owner.Team {
+					if that.Category & Category:Hero {
+						Strobe(growth=2, shine=1.0)
+						that.StackBuff<boomerang>(cleansable=true, maxStacks=1) stacks {
+							ExpireWith(projectile)
+							Attack(that, damage * (1.0 + secondStrikeBonus * stacks))
+							Hear(Boomerang:HitSound)
+							BloomIndicator(that, audience=owner)
+
+							that.Tombstone victim {
+								NameBlock(owner)
+								%(" sliced ")
+								if stacks > 0 {
+									%("and diced ")
+								}
+								NameBlock(victim)
+							}
+						}
+					} else {
+						Attack(that)
+					}
+				}
+
+				if (that.Category & Category:Projectile) && that.Durability >= this.Durability {
+					Strobe(growth=2, shine=1.0)
+					Expire
+				}
+			}
+		}
+	}
+}
+
+sound Boomerang:Sound(duration=1.5s) {
+	BrownNoise
+	BandPass(freq=1900)
+	Envelope(attack=0.25s, sustain=0s)
+	Gain(volume=0.25)
+	Output
+
+	Vibrato(freqModulation=300) {
+		Oscillator(freq=2000)
+	}
+	Oscillator(wave=$sine, freq=1900, harmonics=[1,1.5])
+	Tremolo(volumeModulation=1.0) {
+		Oscillator(freq=21)
+	}
+	LowPass(freq=400)
+	Envelope(attack=0.01s, sustain=0s)
+}
+
+sound Boomerang:HitSound(duration=0.3s) {
+	Vibrato(freqModulation=2400) {
+		Oscillator(freq=2000)
+	}
+	Oscillator(wave=$sine, freq=1900, harmonics=[1,1.5])
+	Tremolo(volumeModulation=1.0) {
+		Oscillator(freq=21)
+	}
+	LowPass(freq=125)
+	Envelope(attack=0.01s, sustain=0s)
+}

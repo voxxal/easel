@@ -1,0 +1,54 @@
+.. owner=null
+
+pub fn obstacle.Volcano(pos, heading?=0, maxHp=50, owner?, damage=36, radius=1.0) .. shape {
+	.. damageInterval = 5
+	.. color=#f08e, fade=#f084
+	.. bloom=2, bloomAlpha=0.5, luminous=0
+	.. shading=0, shadow=0, depth=Depth:Zone
+	.. categories=(Category:Zone | Category:HurtByLava)
+	.. collideWith=Category:None, sense=Category:Hero
+	.. durability=Durability:Maximum, density=1
+	.. isSensor=true, immovable=true, ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	Health
+
+	BuffOnContact<volcano>(filter=Category:Hero) that {
+		Smoke(that,
+			color=, fade=1, luminous=1, feather=1, bloom=0,
+			radius=1.0, dissipation=15, interval=4, depth=Depth:Particle,
+			flutter=$perimeter, splatter=Splatter:Outwards(8.0))
+		hook<dps> Sleep(damageInterval) {
+			that.TakeDamage(damageInterval * damage / TicksPerSecond)
+		}
+	}
+
+	Collider {
+		Sprite {
+			Perimeter {
+				delve()
+			}
+		}
+	}
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps
+		Smoke(
+			color=, fade=#0000, luminous=0,
+			shine=0, bloom=0, shadow=0, feather=1,
+			interval=8, dissipation=30, splatter=Splatter:Outwards(8.0),
+			flutter=$area, depth=Depth:Buff)
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=2.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}

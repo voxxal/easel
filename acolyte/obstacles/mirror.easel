@@ -1,0 +1,41 @@
+.. owner=null
+
+pub fn obstacle.Mirror(pos, heading?=0, maxHp=100.0, radius=1.0, density=100.0) .. shape {
+	.. color=#0cf, fade=#48f,
+	.. bloom=0.5, luminous=1,
+	.. shading=0.25, depth=Depth:Obstacle,
+	.. categories=(Category:Shield | Category:CanGrab | Category:HurtByLava | Category:Aoe),
+	.. collideWith=Category:Solid,
+	.. durability=Durability:Shield,
+	.. ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	Anchored(pos, heading)
+	DecayingMotion(turningDecay=0.05)
+
+	Health
+
+	Collider {
+		Sprite {
+			Perimeter shape {
+				delve()
+			}
+		}
+	}
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps(shadow=0.5)
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=1.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}

@@ -1,0 +1,2 @@
+pub meld this.CooldownRate(modifier, @ability) = (modifiers) => BuffMultiplier(modifiers)
+pub meld this.UnitCooldownRate(modifier, @unit) = (modifiers) => BuffMultiplier(modifiers)

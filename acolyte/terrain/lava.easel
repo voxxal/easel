@@ -1,0 +1,29 @@
+pub prop body.IsInLava
+pub field this.LavaLifestealer
+
+pub behavior fn this.Lava(damageInterval=20, damagePerSecond=12.5, lifesteal=0.3) {
+	let damage = (damagePerSecond / TicksPerSecond) * damageInterval
+	loop {
+		for that in QueryColliders.WhereCategory(Category:HurtByLava).FindAll {
+			let isInLava = !QueryColliders.WhereCategory(Category:Turf).FindAnyAtPos(that.Pos)
+
+			// Apply lava damage
+			if isInLava {
+				let damage = damage * that.LavaDamageModifier
+				if damage > 0.0 {
+					that.TakeDamage(damage)
+					that.LavaLifestealer.Heal(damage * lifesteal)
+					if that.Category & Category:Hero {
+						that.Hurt
+					}
+				}
+			}
+
+			if that.IsInLava != isInLava {
+				that.IsInLava = isInLava
+			}
+		}
+
+		await Sleep(damageInterval)
+	}
+}

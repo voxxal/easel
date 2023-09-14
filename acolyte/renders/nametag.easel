@@ -1,0 +1,29 @@
+symbol NametagSprite
+
+pub fn this.Nametag(
+	body,
+	..
+	shape?,
+	owner,
+	depth=Depth:Label,
+	color=#fff4, ownerColor?, luminous?=1,
+	pixelWidth=200, pixelHeight=22, offset,
+	anchorTop=false, anchorBottom=false,
+
+	audience?,
+	bloom?, bloomAlpha?,
+	crater?, feather?,
+	strobe=false,
+	flicker?,
+	glare?, glareAlpha?,
+	noRotation?,
+	shading?, shadow?, shine?) {
+
+	Sprite<NametagSprite>(body, noRotation=true, .. luminous) {
+		Label(text=owner?.PlayerName, posOffset=@(0.0, offset), ..  pixelWidth pixelHeight anchorTop anchorBottom)
+	}
+}
+
+pub delete fn this.Nametag {
+	delete Sprite<NametagSprite>
+}

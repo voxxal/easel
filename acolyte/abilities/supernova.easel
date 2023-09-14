@@ -1,0 +1,95 @@
+.. glyph=CrownedExplosion:Glyph, color=#ff9a00, damage=0, cooldown=7.5s, explodeDelay=0.25s
+
+pub symbol WantSupernova
+
+pub fn SupernovaOption(.. ui) {
+	SlotOption<WantSupernova> {
+		H1 { %("Supernova") }
+
+		P {
+			%("Launch a condensed sphere of pulsating energy which, after a brief delay, explodes with the fury of a supernova, flinging your enemies towards the edges of the universe.")
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.SupernovaAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		Spawn projectile {
+			.. parent=unit
+			.. impulse=600.0, aoe=4.0
+			.. radius=0.1, speed=26.0
+			.. lifetime=65, dissipation=30
+			.. luminous=1.0, depth=Depth:Projectile
+			.. density=5.0, ccd=true
+			.. categories=Category:Projectile, collideWith=Category:None
+
+			LaunchBody
+			DriftingMotion
+			RayEmitter(shadow=0.5)
+			Sing(Supernova:Sound)
+
+			once<deploy> Sleep(Velocity:TicksTo(Pointer).Min(lifetime)) {
+				Speed = 0
+
+				await Tween(duration=explodeDelay, initial=1.0, final=0.0) factor {
+					Aoe:Indicator(aoe * factor, color=Fade(color, 0.95))
+				}
+
+				Expire
+			}
+
+			once Expire {
+				Puff(count=10, splatter=Splatter:Outwards(26))
+				Explosion(aoe)
+				Hear(Supernova:ExplodeSound)
+
+				Aoe:ForEach that {
+					if that.Team != owner.Team {
+						Attack(that)
+						Aoe:ImpulseAttenuated(that, attentuate=0.4)
+
+						that.Tombstone victim {
+							NameBlock(owner)
+							%(" launched ")
+							NameBlock(victim)
+							%(" to the edge of the universe ")
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+sound Supernova:Sound(duration=1s) {
+	Vibrato(freqModulation=1000) {
+		Oscillator(freq=1000)
+	}
+	Oscillator(wave=$triangle, freq=[900,1000])
+	LowPass(freq=450)
+	Tremolo(volumeModulation=0.6) {
+		Oscillator(freq=7)
+	}
+	Envelope(attack=0.1s, sustain=0s)
+}
+
+sound Supernova:ExplodeSound(duration=1.25s) {
+	Vibrato(freqModulation=1000) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[300,0])
+	LowShelf(freq=80, db=12)
+	Envelope(attack=0.01s, decay=0.07s, sustain=0s, sustainVolume=0.5)
+}

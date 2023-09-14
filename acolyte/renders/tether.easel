@@ -1,0 +1,46 @@
+symbol TetherRay
+
+pub behavior fn this.Tether<Id?>(
+	body, ancestor,
+	..
+	color, depth, radius,
+
+	segments=5, // the tether recreates this many points each tick, so don't make this too large
+
+	audience?,
+	fade?,
+	bloom?=2, bloomAlpha?=1,
+	crater?,
+	diminish?,
+	feather?,
+	flicker?,
+	glare?=1, glareAlpha?,
+	luminous?=1.0,
+	owner?, ownerColor?,
+	shading?, shadow?=0.25,
+	shine?,
+	strobe?,
+	taper?=0) {
+
+	.. dissipation=segments
+
+	loop {
+		await TickEnd
+		if radius == 0 { break }
+
+		let from = ancestor?.Pos
+		let to = body?.Pos
+		if !(from && to) { break }
+
+		let points = []
+		for index in RangeInclusive(0, segments) {
+			let pos = (index / segments).Mix(from, to)
+			points.ArrayPush(pos)
+		}
+		Ray<TetherRay+Id>(points)
+	}
+}
+
+pub delete fn this.Tether<Id?>() {
+	delete Ray<TetherRay+Id>
+}

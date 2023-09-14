@@ -1,0 +1,117 @@
+.. glyph=GlowingHands:Glyph, color=#44ddff, damage=150.0, duration=2s, lifesteal=0.3, cooldown=5.0s
+
+pub symbol WantBeam
+
+pub fn BeamOption(.. ui) {
+	SlotOption<WantBeam> {
+		H1 { %("Beam") }
+
+		P {
+			%("Harness the power of your indomitable focus to unleash a searing beam that obliterates all in its path. ")
+		}
+
+		P {
+			SlotEffect("Interruptible", icon="fas fa-hand-paper") {
+				%("Should you suffer a strike from a foe, the flow of energy will come to a sudden halt as your concentration fractures. ")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
+			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.BeamAbility(unit, owner, btn) {
+	on BotAttacking {
+		if Cooldown == 0 {
+			BotUseAbility(utility=Utility:High)
+		}
+	}
+
+	Incantation {
+		.. damage = damage * unit.DamageModifier
+
+		on BotChannelling target {
+			let angleDelta = AngleDelta(unit.Heading, Angle(target - unit.Pos))
+			if angleDelta.Abs() < 0.025rev { // Only keep firing the beam if they are still within range
+				BotKeepChannelling
+			}
+		}
+
+		SpeedModifier(-1)
+		TurnRateModifier(-0.9999)
+		CooldownRate(-1)
+
+		once Interrupt {
+			StopIncantation
+		}
+
+		Sing(Beam:ChargingSound)
+		await ChargeForDuration(0.3s) {
+			ChargingIndicator
+		}
+
+		Sing(Beam:ChannellingSound)
+		await Barrage(interval=3, count=duration / interval) index {
+			.. damage = damage / count, decay = 1 - index / count
+
+			Spawn projectile {
+				.. parent=unit
+				.. ownerColor=true
+				.. lifetime=30, dissipation=6
+				.. radius=0.4, speed=240
+				.. density=0.01, ccd=true
+				.. luminous=1.0, depth=Depth:Projectile
+				.. categories = Category:Projectile | Category:Massive, durability=Durability:High
+
+				LaunchBody
+				PrepareForCollision
+				PropulsiveMotion
+				ExpireAfterLifetime
+
+				Collider {
+					Shape:Circle
+				}
+
+				RayEmitter(shadow=0, taper=0, diminish=0)
+
+				let canHurtSelf = false
+				on BeforeCollide that {
+					if canHurtSelf || that.Team != owner.Team {
+						Attack(that)
+
+						that.Tombstone victim {
+							NameBlock(owner)
+							%(" incinerated ")
+							NameBlock(victim)
+							%(" into nothingness ")
+						}
+					}
+				}
+				on AfterCollide that {
+					if that.Category & Category:Shield {
+						canHurtSelf = true // Can bounce off shield to hurt self
+					}
+					if that.Durability >= this.Durability {
+						Expire
+					}
+				}
+			}
+		}
+	}
+}
+
+sound Beam:ChargingSound(duration=0.5s, cutoff=0.5s) {
+	Oscillator(wave=$sawtooth, freq=[4,18], harmonics=[1,2.16,4.16,8.16])
+	LowPass(freq=[20,250], q=1)
+	Envelope(attack=0.49s, sustain=0s)
+}
+
+sound Beam:ChannellingSound(duration=0.25s, repeat=0.1s, cutoff=0.25s) {
+	Oscillator(wave=$sawtooth, freq=[18,18.1], harmonics=[1,2.16,4.16])
+	LowPass(freq=200, q=1)
+	Envelope(attack=0.1s, release=0.15s)
+}

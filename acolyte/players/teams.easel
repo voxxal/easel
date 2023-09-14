@@ -1,0 +1,7 @@
+pub fn Teams:Individual {
+	for player in (QueryPlayers.FindAll) {
+		// Reuse the same entity as both the player and the team
+		MakeTeam(player)
+		player.Team = player
+	}
+}

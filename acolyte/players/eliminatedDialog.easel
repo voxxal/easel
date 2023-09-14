@@ -1,0 +1,12 @@
+pub fn owner.EliminatedDialog() .. ui {
+	if !Victory {
+		Subspawn {
+			Section {
+				Panel { delve() }
+			}
+
+			await Victory
+			Despawn
+		}
+	}
+}

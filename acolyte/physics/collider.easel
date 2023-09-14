@@ -1,0 +1,6 @@
+// This sets properties which may be read when this entity collides with another.
+pub fn body.PrepareForCollision(owner, categories, durability?=Durability:None) {
+	body.Category = categories
+	body.Owner = owner
+	body.Durability = durability
+}

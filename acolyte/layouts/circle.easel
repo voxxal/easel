@@ -1,0 +1,13 @@
+pub fn scene.CircleLayout {
+	Lava
+	Shrink
+	SolidBackground(color=#2a1b2c)
+
+	Spawn turf {
+		Turf(color=#413243) {
+			hook ShrinkScale {
+				Shape:Circle(radius=32 * ShrinkScale)
+			}
+		}
+	}
+}

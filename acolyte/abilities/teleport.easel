@@ -1,0 +1,104 @@
+.. glyph=Teleport:Glyph, color=#2200ff, cooldown=12.0s, teleportDelay=0.25s, interruptCooldown=0.75s, maxDistance=24
+
+pub symbol WantTeleport
+
+pub fn TeleportOption(.. ui) {
+	SlotOption<WantTeleport> {
+		H1 { %("Teleport") }
+
+		P {
+			%("Master the art of instantaneous travel with Teleport, allowing you to transport yourself to a chosen destination after " + (teleportDelay / TicksPerSecond) + " seconds of concentration. ")
+		}
+
+		P {
+			SlotEffect("Interruptible", icon="fas fa-hand-paper") {
+				%("Any disturbance during the teleportation process will cause it to fail, forcing you to wait for " + (interruptCooldown / TicksPerSecond) + "s before attempting another escape. ")
+			}
+		}
+
+		SlotStats {
+			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+		}
+	}
+}
+
+pub fn ability.TeleportAbility(unit, owner, btn) {
+	hook IsInLava {
+		CooldownRate(IsInLava ? 1.0 : 0.0)
+	}
+
+	on BotRecovering {
+		if Cooldown == 0 {
+			BotUseAbility
+		}
+	}
+
+	Incantation {
+		.. radius=1.0, indicatorRadius=3.0
+		.. luminous=1.0, depth=Depth:Projectile, dissipation=20
+
+		const target = Pointer
+
+		SpeedModifier(-1)
+		TurnRateModifier(-1)
+		CooldownRate(-1)
+
+		on Interrupt interruptor {
+			if interruptor & Interruptor:NotSelf {
+				Cooldown = interruptCooldown
+				StopIncantation
+			}
+		}
+
+		await ChargeForDuration(teleportDelay) {
+			Sing(Teleport:ChargingSound)
+			hook ChargeProportion {
+				Sprite(crater=0.7, bloom=3, feather=0.5, shadow=0.25, flicker=ChargeProportion.Mix(0.0, 0.5)) {
+					Shape:Circle(radius=ChargeProportion.Mix(indicatorRadius, radius))
+				}
+			}
+		}
+
+		Hear(Teleport:DepartingSound)
+		CleanseBuffs
+		SeverTethers
+
+		ApplyTeleport(target, maxDistance=, blockFilter=Category:Shield, against=Alliance:Enemy)
+
+		Hear(Teleport:ArrivingSound)
+		Explosion(indicatorRadius, crater=0.7)
+	}
+}
+
+fn body.ApplyTeleport(target, .. maxDistance=null, owner, against=Alliance:All, blockFilter=Category:None) {
+	let step = target - body.Pos
+	let direction = Direction(step)
+	let distance = Length(step).Min(maxDistance)
+
+	if blockFilter {
+		let [found,foundDistance] = QueryColliders.WhereCategory(blockFilter).WhereAlliance(owner, against).FindNearestAlongRay(body, direction, maxDistance=distance)
+		distance = Min(distance, foundDistance)
+	}
+
+	body.Pos = body.Pos + distance * direction
+}
+
+sound Teleport:ChargingSound(duration=0.5s) {
+	BrownNoise
+	BandPass(freq=[100,400], q=10)
+	Envelope(attack=0.45s, sustain=0s)
+	Gain(volume=0.25)
+}
+
+sound Teleport:DepartingSound(duration=0.1s) {
+	BrownNoise
+	BandPass(freq=800, q=10)
+	Envelope(attack=0.03s, sustain=0s)
+	Gain(volume=0.5)
+}
+
+sound Teleport:ArrivingSound(duration=0.25s) {
+	BrownNoise
+	BandPass(freq=1100, q=10)
+	Envelope(attack=0.03s, sustain=0s)
+}

@@ -1,0 +1,51 @@
+.. owner = null
+
+pub fn obstacle.Ice(pos, heading?=0, maxHp=50, radius=0.25) .. shape {
+	.. density=1.0,
+	.. color=#4ffc, fade=#4ff4,
+	.. bloom=2, bloomAlpha=0.3, luminous=1,
+	.. shading=0, shadow=0, depth=Depth:Zone,
+	.. categories=(Category:Zone | Category:HurtByLava),
+	.. collideWith=Category:None, sense=Category:Hero,
+	.. durability=Durability:Maximum,
+	.. isSensor=true, immovable=true, ccd=false
+
+	Body(pos, heading=)
+	PrepareForCollision
+	Health
+
+	BuffOnContact<ice>(filter=Category:Hero) that {
+		SpeedModifier(-0.5, that)
+		Smoke(that,
+			radius=1.0, dissipation=20, depth=Depth:Particle,
+			color=#4ff4, fade=1, feather=0.5, bloom=0,
+			splatter=Splatter:Outwards(12), flutter=$perimeter)
+	}
+
+	Collider {
+		Sprite {
+			Perimeter shape {
+				delve()
+			}
+		}
+	}
+
+	hook Hp {
+		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
+		.. color = HpProportion.Mix(fade, color)
+
+		SpriteProps
+		Smoke(
+			radius=, luminous=1.0, shine=0.2, bloom=0, shadow=0,
+			dissipation=15, splatter=Splatter:Outwards(4.0),
+			flutter=$area)
+	}
+
+	once BeforeOutOfHealth {
+		Puff(
+			count=10, shadow=0,
+			luminous=1.0, shine=1.0, bloom=2.0,
+			dissipation=30, splatter=Splatter:Outwards(10.0),
+			flutter=$area)
+	}
+}
