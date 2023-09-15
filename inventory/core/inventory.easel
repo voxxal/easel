@@ -1,0 +1,161 @@
+/*
+Inventory by voxal
+
+USAGE:
+Include `InventoryService` somwhere in the `players/hero.easel` file.
+
+InventoryService options:
+    maxSlots: number (default: -1)
+        maxSlots is the maximum number of item slots you can have in
+        your inventory. A stack counts as a single item slot. if
+        maxSlots is -1, there will be no limit on the number of slots
+
+    stacking: boolean
+        stacking determines whether items will stack. If the option is
+        true, any call to AddItem with an already existing item id
+        will add the amount to the already existing item slot. If the
+        option is false, items will have a max stack size of 1.
+
+
+NOTE ON IDS:
+    ids can be *anything*, numbers, strings, symbols whatever. Just 
+    make sure its unique. If you are feeling lazy, id defaults to name.
+    I recomend you use symbols but honestly it doesn't really matter,
+    its not enforced.
+
+
+METHODS
+    AddItem(.. name="", id=name, description="", glyph=ArcingBolt:Glyph, color=#000, amount=1)
+        Adds an item with an id. name, description, glyph, color will
+        all be used for the inventory menu on the toolbar.
+
+    RemoveItem(id, amount=1)
+        Removes an item with an id. If stacking is on, you can remove
+        more than 1 item from the stack.
+
+    HasItem(id)
+        Checks if the unit has an item in their inventory
+
+    GetItem(id)
+        Gets item with id in their inventory. Returns null if the unit
+        does not have it.
+*/
+
+
+pub prop unit.Inventory
+pub prop unit.Inventory:MaxSlots
+pub prop unit.Inventory:Stacking
+
+// Signal needed to signal when the unit's Inventory changes
+// im not entirely sure the difference between props and fields yet
+// so im using this
+signal unit.InventoryUpdated
+
+// Misc stuff for the toolbar
+symbol InventoryMenu
+symbol Item
+preference owner.InventoryInner
+
+// TODO add duplicates option
+pub fn unit.InventoryService(.. owner, maxSlots=-1, stacking) {
+    Inventory ??= []
+    Inventory:MaxSlots ??= maxSlots
+    Inventory:Stacking ??= stacking
+    InventoryToolbar
+    hook owner.Preference<InventoryInner> {        
+        owner.Preference<InventoryInner> = $None
+    }
+}
+
+fn unit.InventoryToolbar(.. owner, placement=$important, icon="fas fa-shop") {
+    hook InventoryUpdated {
+        const showInventoryDialog = Modal<inventoryDialog> {
+            H1 { %("Inventory") }
+            PipTabs<InventoryMenu> {
+                for item in Inventory {
+                    PipTab<Item+item>(glyph=item.glyph, color=item.color) {
+                        H1 { %(item.name) }
+                        P { %(item.description) }
+                        if Inventory:Stacking {
+                            P { %("Amount: " + FormatToFixed(item.amount, 0)) }
+                        }
+                    }
+                }
+                // I don't want to mess around with the preference stuff for now
+                // I'm sure i could disable the behavior but im lazy
+                hook owner.Preference<InventoryInner> {
+                    Select(owner.Preference<InventoryInner>)
+                }
+            }
+            on Selected<InventoryInner> choice {
+                owner.Preference<InventoryInner> = choice
+            }
+        }
+        Toolbar<loadoutTool>(placement=) {
+            Button(onPress=showInventoryDialog, icon=, collapsable=true, repeatable=true) {
+                %("Inventory")
+            }
+        }
+    }
+}
+
+pub fn unit.AddItem(.. name="", id=name, description="", glyph=ArcingBolt:Glyph, color=#000, amount=1) {
+    if Inventory:MaxSlots != -1 && Inventory.Length >= Inventory:MaxSlots { return }
+    if amount == 0 { return }
+    // If stacking is on, do not have an amount over 1
+    let amount = amount
+    if !Inventory:Stacking {
+        amount = 1
+    }
+
+    if Inventory:Stacking && HasItem(id) {
+        GetItem(id).amount += amount
+    } else {
+        Inventory.ArrayPush({id, name, description, glyph, color, amount})
+    }
+    
+    InventoryUpdated
+}
+
+pub fn unit.RemoveItem(id, amount=1) {
+    let newInv = []
+    for item in Inventory {
+        if item.id != id {
+            newInv.ArrayPush(item)
+        } else if item.amount > amount {
+            let newItem = item
+            newItem.amount -= amount
+            newInv.ArrayPush(item)
+        }
+    }
+    unit.Inventory = newInv
+    InventoryUpdated
+}
+
+pub fn unit.HasItem(id) {
+    for item in Inventory {
+        if item.id == id {
+            return true
+        }
+    }
+    return false
+}
+
+pub fn unit.GetItem(id) {
+    for item in Inventory {
+        if item.id == id {
+            return item
+        }
+    }
+    return null
+}
+
+pub fn unit.ItemIndex(id) {
+    for i in Range(0, Inventory.Length) {
+        let item = Inventory[i]
+        if item.id == id {
+            return i
+        }
+    }
+    return -1
+}
