@@ -5477,7 +5477,7 @@ pub fn this.BuyItem(item, .. unit) {
     if item == None { return }
     let cost = ItemCost
     if unit.Gold >= cost {
-        unit.Gold -= cost
+        GainGold(-cost)
         Debug:Log("Bought " + item)
         if item == Shield {
             unit.Hp += 50
