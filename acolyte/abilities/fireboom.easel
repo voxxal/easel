@@ -37,11 +37,11 @@ pub fn ability.FireboomAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit 
-			.. aoe = 3.6 / maxScale, radius = 0.5 / maxScale
-			.. impulse=120.0, speed=23.0
-			.. lifetime=90, dissipation=18
+			.. aoe = 2.88 / maxScale, radius = 0.4 / maxScale
+			.. impulse=107, speed=18.4
+			.. lifetime=2s, dissipation=18
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=9.0, ccd=true
+			.. density=7.0, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			LaunchBody
@@ -81,6 +81,7 @@ pub fn ability.FireboomAbility(unit, owner, btn) {
 						if canHurtSelf || that.Team != owner.Team {
 							Attack(that)
 							Aoe:Impulse(that)
+							Aoe:Destroy(that)
 
 							that.Tombstone victim {
 								NameBlock(owner)

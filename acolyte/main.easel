@@ -44,10 +44,6 @@ pub mode fn World.Main {
 				%(" died")
 			}
 
-			once Expire {
-				Eliminate(owner)
-			}
-
 			once BeforePlayerLeave {
 				if IsReadyToBegin && !HasConcluded {
 					// During the game, no one leaves, instead wait until the game is complete
@@ -63,6 +59,17 @@ pub mode fn World.Main {
 					delete Bot
 				} else {
 					Bot
+				}
+			}
+
+			once Expire {
+				Eliminate(owner)
+
+				// Spawn a ghost unit and attach abilities to it so the player can still edit their spells after they are dead
+				.. parent = unit
+				Spawn unit {
+					Ghost
+					SlotAbilities
 				}
 			}
 		}

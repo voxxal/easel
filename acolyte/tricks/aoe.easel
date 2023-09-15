@@ -17,10 +17,16 @@ pub fn body.Aoe:Impulse(that, impulse) {
 	}
 }
 
-pub fn body.Aoe:ImpulseAttenuated(that, impulse, aoe, attentuate=1.0) {
+pub fn body.Aoe:ImpulseAttenuated(that, impulse, aoe, attenuate=1.0) {
 	if that.Category & Category:Aoe {
 		let outward = that.Pos - body.Pos
-		let impulse = impulse * (Length(outward) / aoe).Mix(1.0, attentuate)
+		let impulse = impulse * (Length(outward) / aoe).Mix(1.0, attenuate)
 		that.ApplyImpulse(impulse * Direction(outward))
+	}
+}
+
+pub fn body.Aoe:Destroy(that, .. owner) {
+	if that.Category & Category:Destructible && (Alliance(that, owner) & Alliance:NotFriendly) {
+		that.Expire
 	}
 }

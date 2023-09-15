@@ -1,4 +1,4 @@
-.. glyph=CrackedBallDunk:Glyph, color=#00ffff, damage=16.0, lifesteal=0.3, cooldown=1.5s, secondStrikeBonus=0.25
+.. glyph=CrackedBallDunk:Glyph, color=#00ffff, damage=20.0, lifesteal=0.3, cooldown=2s, secondStrikeBonus=0.25
 
 pub symbol WantBoomerang
 
@@ -36,7 +36,7 @@ pub fn ability.BoomerangAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. lifetime=90, dissipation=25
+			.. lifetime=2s, dissipation=25
 			.. radius=0.16, speed=53.0
 			.. ownerColor=true, luminous=1.0, depth=Depth:Projectile
 			.. density=1, ccd=true
@@ -46,13 +46,14 @@ pub fn ability.BoomerangAbility(unit, owner, btn) {
 
 			LaunchBody
 			PrepareForCollision
-			PropulsiveMotion
+			DriftingMotion
 			RayEmitter(fade=0.5)
 			Sing(Boomerang:Sound)
 			ExpireAfterLifetime
 
 			once<redirect> Sleep(33) {
-				Velocity:RedirectTowards(unit.Pos)
+				Velocity:RedirectTowards(unit.Pos, speed=)
+				PropulsiveMotion
 				Homing(unit)
 			}
 

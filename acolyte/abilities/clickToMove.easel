@@ -1,7 +1,7 @@
 pub symbol WantClickToMove
 
 pub fn ability.ClickToMoveAbility(unit, owner) {
-	CommandBinding(["Click", "Tap"])
+	CommandBinding("Click")
 
 	on ability.InvokeCommand {
 		await Subscope {

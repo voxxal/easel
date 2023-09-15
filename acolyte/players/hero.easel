@@ -77,6 +77,10 @@ pub fn unit.Hero(owner, pos=@(0,0), radius=1.0, density=1) {
 		SeverTethers
 	}
 
+	hook<categories> FilterCategoriesModifier, AlsoCategoriesModifier {
+		unit.Category = categories & FilterCategoriesModifier | AlsoCategoriesModifier
+	}
+
 	hook<render> SizeModifier, Vanished {
 		await TickEnd // Don't change anything until the tick is finished and we are abougt to render so we can collate multiple changes together
 		.. radius = radius * SizeModifier

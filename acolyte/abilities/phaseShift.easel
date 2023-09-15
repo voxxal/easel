@@ -1,4 +1,4 @@
-.. glyph=Resonance:Glyph, color=#ff00dd, maxDuration=1s, cooldown=5s
+.. glyph=Resonance:Glyph, color=#ff00dd, maxDuration=0.75s, cooldown=5s
 
 pub symbol WantPhaseShift
 
@@ -47,6 +47,7 @@ pub fn ability.PhaseShiftAbility(unit, owner, btn) {
 		SpeedModifier(-1)
 		Vulnerability(-1)
 		Tangibility(Category:None)
+		FilterCategoriesModifier(Category:All ^ Category:Aoe)
 		Vanished(true)
 		Invisibility(true)
 		SeverTethers
@@ -60,8 +61,8 @@ pub fn ability.PhaseShiftAbility(unit, owner, btn) {
 			Hear(PhaseShift:Sound)
 		}
 
-		hook Tick {
-			Cooldown += 7
+		on<coolup> Tick {
+			Cooldown += 5
 		}
 
 		once Sleep(maxDuration) {

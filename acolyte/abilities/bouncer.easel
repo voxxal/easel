@@ -1,4 +1,4 @@
-.. glyph=Divert:Glyph, color=#00ff44, damage=8, maxHits=8, lifesteal=0.3, cooldown=7.5s
+.. glyph=Divert:Glyph, color=#00ff44, damage=12, maxHits=8, lifesteal=0.3, cooldown=7.5s
 
 
 pub symbol WantBouncer

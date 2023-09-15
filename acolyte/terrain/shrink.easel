@@ -2,7 +2,7 @@
 // Smaller than this and we will quickly shrink to the proportional area (not radius) for that number of players
 const ShrinkMaxPlayers = 8
 const ShrinkRatePerTick = 0.003 // This is the rate at which the turf will shrink to its target size
-const ShrinkPower = 0.75 // Reshape the shrink curve according to this power - less than 1 means the shrinking is slower at start and faster at end, the opposite for greater than 1
+const ShrinkPower = 0.5 // Reshape the shrink curve according to this power - less than 1 means the shrinking is slower at start and faster at end, the opposite for greater than 1
 
 field scene.ShrinkStartTick
 pub prop scene.ShrinkScale

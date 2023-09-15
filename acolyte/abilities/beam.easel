@@ -56,7 +56,7 @@ pub fn ability.BeamAbility(unit, owner, btn) {
 
 		Sing(Beam:ChannellingSound)
 		await Barrage(interval=3, count=duration / interval) index {
-			.. damage = damage / count, decay = 1 - index / count
+			.. damage = damage / count
 
 			Spawn projectile {
 				.. parent=unit

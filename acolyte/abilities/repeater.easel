@@ -1,7 +1,7 @@
 .. glyph=SonicLightning:Glyph, color=#00ff00
-.. damage=11, lifesteal=0.3, cooldown=9s
-.. rangedProportion=1, rangedDuration=0.4s
-.. bonusProportion=0.33, buffDuration=5s
+.. damage=12, lifesteal=0.3, cooldown=9s
+.. rangedBonus=1, rangedDuration=0.4s
+.. secondHitBonus=0.33, buffDuration=5s
 
 pub symbol WantRepeater
 
@@ -18,10 +18,10 @@ pub fn RepeaterOption(.. ui) {
 		P {
 			SlotEffect("Harmonic Resonance", icon="fas fa-undo") {
 				%("Each time Repeater hits, its cooldown resets, allowing you to fire it again immediately. ")
-				%("Hitting the same enemy a second time grants " + (bonusProportion * 100.0) + "% bonus damage. ")
+				%("Hitting the same enemy a second time grants " + (secondHitBonus * 100.0) + "% bonus damage. ")
 			}
 			SlotEffect("Soaring Crescendo", icon="fas fa-star-exclamation") {
-				%("Damage increases with range, building up to " + (rangedProportion+1) + "x bonus damage after " + (rangedDuration / TicksPerSecond) + " seconds.")
+				%("Damage increases with range, building up to " + (rangedBonus+1) + "x bonus damage after " + (rangedDuration / TicksPerSecond) + " seconds.")
 			}
 		}
 
@@ -50,11 +50,11 @@ pub fn ability.RepeaterAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. lifetime=60, dissipation=18
+			.. lifetime=1s, dissipation=18
 			.. maxStacks=2
-			.. radius=0.16, speed=64.0
+			.. radius=0.16, speed=64
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=28, ccd=true
+			.. density=14, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 			.. collideWith = Category:Solid ^ Category:Projectile
 
@@ -91,8 +91,9 @@ pub fn ability.RepeaterAbility(unit, owner, btn) {
 							ExpireAfterLifetime(buffDuration)
 							BloomIndicator(that, audience=owner)
 
-							const growthFactor = rangedProportion * ((Tick - birth) / rangedDuration).Min(1.0)
-							Attack(that, growthFactor * (damage + stacks * bonusProportion))
+							const secondHitMultiplier = 1 + stacks * secondHitBonus
+							const rangedMultiplier = 1 + rangedBonus * ((Tick - birth) / rangedDuration).Min(1.0)
+							Attack(that, damage * rangedMultiplier * secondHitMultiplier)
 
 							once RepeaterMiss { // miss once and the buff expires too
 								Expire

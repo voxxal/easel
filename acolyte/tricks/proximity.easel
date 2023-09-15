@@ -2,7 +2,7 @@ pub behavior fn this.Proximity:OnArrival(prey, range=CloseEnough, body) .. {
 	loop {
 		await Tick
 
-		let prey = Prey:Find(prey)
+		let prey = FindPrey(prey)
 		if !prey { break }
 
 		let thisPos = body?.Pos
@@ -20,7 +20,7 @@ pub behavior fn this.Proximity:OnRetreat(prey, range, body) .. {
 	loop {
 		await Tick
 
-		let prey = Prey:Find(prey)
+		let prey = FindPrey(prey)
 		if !prey { break }
 
 		let thisPos = body?.Pos

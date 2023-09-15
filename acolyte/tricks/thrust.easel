@@ -2,7 +2,7 @@ pub behavior fn this.Thrust(prey, speed, body) {
 	loop {
 		await PhysicsStart
 
-		let prey = Prey:Find(prey)
+		let prey = FindPrey(prey)
 		if !prey { break }
 
 		let pos = body?.Pos

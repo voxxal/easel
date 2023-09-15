@@ -35,7 +35,7 @@ pub fn obstacle.Bumper(pos, heading?=0, maxHp=100.0, impulse=200, radius=1.0, de
 
 	on BeforeCollide that {
 		if that.Category & (Category:Hero | Category:Obstacle) {
-			that.Velocity:ImpulseAway(this.Pos)
+			that.ApplyImpulse(impulse * Direction(that.Pos - this.Pos))
 			Strobe(dissipation=10, shine=0.5, growth=0.5)
 			Hear(Obstacle:Bumper)
 		}

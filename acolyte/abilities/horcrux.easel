@@ -38,10 +38,10 @@ pub fn ability.HorcruxAbility(unit, owner, btn) {
 			.. parent=unit
 			.. lifetime=3s, dissipation=15
 			.. interval=6, damagePerInterval = interval * damage / duration, maxHits = damage / damagePerInterval
-			.. radius=0.3, aoe=3.2, speed=28
+			.. radius=0.28, aoe=3.2, speed=28
 			.. luminous=1, depth=Depth:Projectile
 			.. density=1, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Low
+			.. categories=Category:Projectile | Category:Destructible, durability=Durability:Low
 			.. noLavasteal=true // Not enough knockback to push others into lava
 
 			const birth = Tick
@@ -64,7 +64,7 @@ pub fn ability.HorcruxAbility(unit, owner, btn) {
 				}
 			}
 
-			Collider {
+			Collider(collideWith = Category:Solid ^ Category:Projectile) { // No collisions with projectiles while deploying
 				Shape:Circle
 			}
 
@@ -87,6 +87,8 @@ pub fn ability.HorcruxAbility(unit, owner, btn) {
 
 			hook<aoe> Sleep(interval) {
 				.. damage = damage * interval / TicksPerSecond
+
+				ColliderProps(collideWith=Category:Solid) // Restore collisions with projectiles after deployment
 
 				Aoe:ForEach(filter=Category:Hero) that {
 					if that.Team != owner.Team && TakeHitIfWithinLimit(that, maxHits=) {

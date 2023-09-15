@@ -1,4 +1,4 @@
-.. glyph=EnergyBreath:Glyph, color=#22ee88, damage=15.0, lifesteal=1.0, cooldown=5.0s
+.. glyph=EnergyBreath:Glyph, color=#22ee88, damage=15, lifesteal=1.0, cooldown=5.0s
 
 pub symbol WantDrain
 
@@ -32,10 +32,10 @@ pub fn ability.DrainAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. radius=0.15, speed=16.0
+			.. radius=0.16, speed=16
 			.. lifetime=2s, dissipation=15
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=2.0, ccd=true
+			.. density=2.8, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Low
 
 			LaunchBody

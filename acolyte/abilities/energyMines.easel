@@ -1,4 +1,4 @@
-.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=8
+.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=8, retreatDelay=1s
 
 pub symbol WantEnergyMines
 
@@ -40,26 +40,20 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 		TurnRateModifier(-1)
 
 		Hear(Mines:LaunchSound)
-		await Spray(duration=5, count=5, spray=0.35revs) index {
-			const proportion = index / count
-
+		await Spray(duration=5, count=5, spray=0.35revs) {
 			Spawn projectile {
 				.. parent=unit
 				.. lifetime=4.5s, dissipation=15
-				.. radius=0.32, speed=40.0, impulse=100.0
-				.. density=1.0, ccd=true
+				.. radius=0.32, speed=40.0, impulse=75, aoe=1.2
+				.. density=1.5, ccd=true
 				.. ownerColor=Alliance:Self, bloom=1.5, bloomAlpha=0.3, luminous=1.0, depth=Depth:Projectile
-				.. categories=Category:Projectile | Category:Aoe, durability=Durability:None
+				.. categories = Category:Projectile | Category:Destructible | Category:AlwaysBlow, durability=Durability:None
 				.. sense=Category:Projectile
 
 				LaunchBody
 				PrepareForCollision
 				DriftingMotion
 				ExpireAfterLifetime
-
-				Proximity:OnRetreat(unit, range = proportion.Mix(12,8)) {
-					Expire
-				}
 
 				Sprite(shadow=0.5) {
 					Collider {
@@ -69,20 +63,9 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 
 				let armed = false
 				on BeforeCollide that {
-					if that.Team != owner.Team {
-						Attack(that, armed ? damage : 0)
-						Aoe:Impulse
-
-						that.Tombstone victim {
-							NameBlock(owner)
-							%(" blew ")
-							NameBlock(victim)
-							%("'s mined")
-						}
-					}
-				}
-				on AfterCollide that {
-					if that.Durability >= this.Durability {
+					if that.Durability >= this.Durability && !(that.Owner == this.Owner && !(that.Category & Category:Hero)) {
+						// Expire on everything unless it is an entity owned by the same player but not the hero.
+						// This lets us push mines around with meteors, for example.
 						Strobe(shine=1.0)
 						Expire
 					}
@@ -91,12 +74,32 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 				once Expire {
 					Explosion(1.2, shine=1.0)
 					Hear(Mines:HitSound)
+
+					Aoe:ForEach that {
+						if that.Team != owner.Team {
+							Attack(that, armed ? damage : 1)
+							Aoe:Impulse
+
+							that.Tombstone victim {
+								NameBlock(owner)
+								%(" blew ")
+								NameBlock(victim)
+								%("'s mined")
+							}
+						}
+					}
 				}
 
 				once<arm> Sleep(armDelay) {
+					armed = true
 					Speed = 0
 					DecayingMotion
-					armed = true
+				}
+
+				once<retreat> Sleep(retreatDelay) {
+					Proximity:OnRetreat(unit, range=12) {
+						Expire
+					}
 				}
 			}
 		}

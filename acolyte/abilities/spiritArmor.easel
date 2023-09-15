@@ -19,6 +19,7 @@ pub fn SpiritArmorOption(.. ui) {
 }
 
 pub fn ability.SpiritArmorAbility(unit, owner, btn) {
-	NoIncantation
-	Vulnerability(-armorProportion)
+	NoIncantation {
+		Vulnerability(-armorProportion)
+	}
 }

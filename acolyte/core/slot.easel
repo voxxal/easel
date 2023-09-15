@@ -2,6 +2,7 @@ pub prop owner.SlotsUneditable(uneditable)
 
 field unit.PreviousAbility<Slot>(ability)
 
+/// Spawns an ability on the unit, and replaces the spawn whenever the slot changes
 pub fn unit.SlotAbility<Slot>(.. owner, slotDefault?, btnIndex?, btnSize?) choice .. *ability {
 	hook owner.Preference<Slot> {
         // Destroy previous ability
@@ -18,12 +19,13 @@ pub fn unit.SlotAbility<Slot>(.. owner, slotDefault?, btnIndex?, btnSize?) choic
 	}
 }
 
-// If the slot has no ability, this displays a blank icon for the slot which allows a new ability to be selected instead
+/// If the slot has no ability, this displays a blank icon for the slot which allows a new ability to be selected instead
 pub fn ability.SlotWithoutAbility(.. owner) {
 	CommandIcon(opacity=0.5, color=#333, glyphColor=#aaa, glyph=BlankGlyph)
 }
 
-pub fn this.SlotPopup<Slot>(.. ability, owner) .. ui {
+/// Attachs a popup to an ability which allows the ability to be changed
+pub fn ability.SlotPopup<Slot>(.. owner) .. ui {
 	hook SlotsUneditable {
 		if SlotsUneditable {
 			delete Modal<Slot+slotPopup>
@@ -38,6 +40,7 @@ pub fn this.SlotPopup<Slot>(.. ability, owner) .. ui {
 	}
 }
 
+/// Adds a SlotEditor pip tab panel to the UI
 pub fn this.SlotEditor<Slot>(ui .. btn?, owner, slotDefault?) .. ui {
 	PipTabs<Slot> {
 		delve()
@@ -55,6 +58,7 @@ pub fn this.SlotEditor<Slot>(ui .. btn?, owner, slotDefault?) .. ui {
         owner.Preference<Slot> = choice
     }
 }
+/// Adds a SlotEditor dropdown to the UI
 pub fn this.SlotDropdown<Slot>(ui .. owner, slotDefault?) .. ui {
 	Dropdown<Slot> {
 		delve()
@@ -67,6 +71,7 @@ pub fn this.SlotDropdown<Slot>(ui .. owner, slotDefault?) .. ui {
     }
 }
 
+/// Adds an option tab for one particular ability to a SlotEditor - must be called within SlotEditor
 pub fn SlotOption<Id>(.. ui, glyph, color) .. ui {
 	PipTab<Id> { delve() }
 }
@@ -124,24 +129,19 @@ pub fn this.SlotLoadoutTool(tooltip .. owner, placement=null, icon="fas fa-ballo
 	}
 }
 
-pub fn this.SlotRandomizeTool(tooltip .. owner, hidden=false, placement=null, icon="fas fa-dice") .. {
+pub fn this.SlotRandomizeTool(tooltip .. owner, placement=null, icon="fas fa-dice") .. {
 	hook SlotsUneditable {
 		if SlotsUneditable {
 			delete Toolbar<randomizeTool>
 
 		} else {
 			Toolbar<randomizeTool>(placement=) {
-				if !hidden {
-					Button(onPress=$randomize, icon=, collapsable=true, repeatable=true) {
-						%(tooltip)
-					}
+				Button(onPress=$randomize, icon=, collapsable=true, repeatable=true) {
+					%(tooltip)
 				}
 			}
-
-			if !hidden {
-				on ButtonPress($randomize) {
-					delve()
-				}
+			on ButtonPress($randomize) {
+				delve()
 			}
 		}
 	}

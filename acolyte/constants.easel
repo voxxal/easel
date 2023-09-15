@@ -1,10 +1,12 @@
-pub const Alliance:None=0b0000
-pub const Alliance:All=0b1111
+pub const Alliance:None             = 0b0000
+pub const Alliance:All              = 0b1111
+pub const Alliance:Friendly         = 0b0011
+pub const Alliance:NotFriendly      = 0b1100
 
-pub const Alliance:Self=0b0001
-pub const Alliance:Ally=0b0010
-pub const Alliance:Enemy=0b0100
-pub const Alliance:Neutral=0b1000
+pub const Alliance:Self             = 0b0001
+pub const Alliance:Ally             = 0b0010
+pub const Alliance:Enemy            = 0b0100
+pub const Alliance:Neutral          = 0b1000
 
 pub const Utility:None=-1
 pub const Utility:Minimum=0
@@ -30,7 +32,10 @@ pub const Category:Massive          = 0b00000000000000000000000001000000 // Mete
 pub const Category:Grabber          = 0b00000000000000010000000000000000 // This is a grapple
 pub const Category:CanGrab          = 0b00000000000000100000000000000000 // Grapple can hold onto this
 pub const Category:HurtByLava       = 0b00000000000001000000000000000000 // Can be hurt by lava
-pub const Category:Aoe              = 0b00000000000010000000000000000000 // By default affected by area-of-effect
+pub const Category:Aoe              = 0b00000000000010000000000000000000 // Affected by area-of-effect
+pub const Category:AlwaysBlow       = 0b00000000000100000000000000000000 // Always affected by whirlwind, even when on the same team
+pub const Category:Destructible     = 0b00000000001000000000000000000000 // Destroyed by explosions
+pub const Category:Ghost            = 0b10000000000000000000000000000000 // A unit for a dead player
 
 pub const CloseEnough=0.0001
 

@@ -52,7 +52,7 @@ pub fn ability.SaberAbility(unit, owner, btn) {
 			TurnRateModifier(-0.95)
 
 			// Main saber collider is actually attached to the unit's body, which means it will transmit forces back onto the unit (e.g. recoil)
-			Collider(unit, collideWith=Category:Hero, density=2.0) {
+			Collider(unit, collideWith=Category:Hero, density=2.5) {
 				// Deflector is attached to the saber's independent body so projectiles cannot knock the unit back through the saber
 				Collider<deflector>(collideWith=Category:Projectile, density=5.0) {
 					// Sprite is attached to the unit (not the independent deflector body) so it does not visually lag behind
@@ -95,6 +95,7 @@ pub fn ability.SaberAbility(unit, owner, btn) {
 
 			on BeforeCollide<deflector> that { // Secondary collider hits projectiles only
 				Hear(Saber:HitSound)
+				if that.Category & Category:Destructible { that.Expire }
 			}
 		}
 

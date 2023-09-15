@@ -1,4 +1,4 @@
-.. glyph=FireRay:Glyph, color=#00ffff, damage=75.0, lifesteal=0.3, cooldown=5.0s
+.. glyph=FireRay:Glyph, color=#00ffff, damage=40.0, lifesteal=0.3, cooldown=5.0s
 
 pub symbol WantBlast
 
@@ -40,7 +40,6 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 		const birth = Tick
 
 		SpeedModifier(-0.5)
-		TurnRateModifier(-0.97)
 
 		once Interrupt { StopIncantation }
 
@@ -65,11 +64,12 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. damage = damage * ChargeProportion
-			.. radius = 1.5 * ChargeProportion, speed=50.0
-			.. lifetime=90, dissipation=7
+			.. radius = ChargeProportion.Mix(0.3, 1.2), speed=40.0
+			.. aoe=2, impulse = 70 * ChargeProportion
+			.. lifetime=2s, dissipation=7
 			.. luminous=1.0, depth=Depth:Projectile
 			.. feather=1, glare=0.5
-			.. density = 100 * ChargeProportion, ccd=true
+			.. density = 140 * ChargeProportion, ccd=true
 			.. categories = Category:Projectile | Category:Massive, durability=Durability:Maximum
 
 			LaunchBody
@@ -104,9 +104,17 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 				}
 				if that.Durability >= this.Durability {
 					Strobe(growth=0.5)
-					Puff(count=5, splatter=1)
 					Hear(Blast:HitSound)
 					Expire
+				}
+			}
+			once Expire {
+				Puff(count=5, splatter=1)
+				Aoe:ForEach that {
+					if that.Team != owner.Team {
+						Aoe:Impulse(that)
+						Aoe:Destroy(that)
+					}
 				}
 			}
 		}

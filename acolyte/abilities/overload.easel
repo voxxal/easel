@@ -1,5 +1,5 @@
 .. glyph=DeadlyStrike:Glyph, color=#ff9900
-.. damage=30.0, impulse=600, selfDamage=10.0, lifesteal=0.3, cooldown=5s, aoe=4.0
+.. damage=30, impulse=1400, selfDamage=10, lifesteal=0.3, cooldown=5s, aoe=4.0
 
 pub symbol WantOverload
 
@@ -45,6 +45,7 @@ pub fn ability.OverloadAbility(unit, owner, btn) {
 			}
 		}
 
+		CooldownRate(-1)
 		SpeedModifier(-1)
 		DensityModifier(5)
 
@@ -71,7 +72,8 @@ pub fn ability.OverloadAbility(unit, owner, btn) {
 
 		Aoe:ForEach that {
 			if that.Team != owner.Team {
-				Aoe:ImpulseAttenuated(that, attentuate=0.5)
+				Aoe:ImpulseAttenuated(that, attenuate=0.5)
+				Aoe:Destroy(that)
 				Attack(that)
 
 				that.Tombstone victim {

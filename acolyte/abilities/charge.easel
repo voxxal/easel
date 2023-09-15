@@ -1,4 +1,4 @@
-.. glyph=FireDash:Glyph, color=#ff00cc, damage=0, speed=100, cooldown=10.0s
+.. glyph=FireDash:Glyph, color=#ff00cc, damage=0, speed=120, cooldown=10.0s
 
 pub symbol WantCharge
 
@@ -28,8 +28,8 @@ pub fn ability.ChargeAbility(unit, owner, btn, btnIndex?, btnSize) {
 	}
 
 	Incantation {
-		.. lifetime=12 
-		.. radius=2.0, dissipation=12
+		.. lifetime=16
+		.. radius=1.5, dissipation=12
 		.. ownerColor=true, depth=Depth:Projectile
 		.. shine=1.0, glare=0.7, bloom=3.0, luminous=1.0
 
@@ -43,8 +43,8 @@ pub fn ability.ChargeAbility(unit, owner, btn, btnIndex?, btnSize) {
 		
 		// Don't allow other movement to interfere with the charge
 		SpeedModifier(-1)
-		DensityModifier(100)
-		SizeModifier(1)
+		DensityModifier(140)
+		SizeModifier(0.5)
 		Thrust(Pointer, speed=)
 		RayEmitter(fade=1, shadow=0.5)
 

@@ -1,4 +1,4 @@
-.. glyph=BoltSaw:Glyph, color=#44ffcc, damage=16.0, lifesteal=0.3, cooldown=9.0s
+.. glyph=BoltSaw:Glyph, color=#44ffcc, damage=16, lifesteal=0.3, cooldown=9.0s
 
 pub symbol WantHoming
 
@@ -39,11 +39,10 @@ pub fn ability.HomingAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=3.5s, dissipation=30, ownerColor=Alliance:Self
-			.. radius=0.24, speed=15.0, alignHeadingToVelocity=true
-			.. density=25.0, ccd=true
+			.. radius=0.24, speed=12, alignHeadingToVelocity=true
+			.. density=35, ccd=true
 			.. luminous=1.0, depth=Depth:Projectile
 			.. categories=Category:Projectile | Category:Aoe, durability=Durability:High
-			.. turnProportion=0.05
 
 			LaunchBody
 			PrepareForCollision
@@ -61,7 +60,7 @@ pub fn ability.HomingAbility(unit, owner, btn) {
 				.. owner = Repossessor ?? owner
 				RayEmitter<helix1>(radius, fade=0, flutter=Flutter:Helix(radius * 0.5, period=18))
 				RayEmitter<helix2>(radius * 0.5, fade=1, flutter=Flutter:Helix(radius * 2.0, period=18, angleOffset=0.4rev), bloom=0, glare=0)
-				Homing(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(Pointer), turnProportion=)
+				Homing(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(Pointer), turnProportion=0.05)
 			}
 
 			let canHurtSelf = false

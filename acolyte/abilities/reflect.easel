@@ -34,14 +34,14 @@ pub fn ability.ReflectAbility(unit, owner, btn) {
 		ability.Subspawn shield {
 			.. dissipation=10, radius=2.1, density=0.0, restitution=0.0
 			.. luminous=1.0, depth=Depth:Shield
-			.. categories=Category:Shield, durability=Durability:Shield, collideWith=Category:Projectile
+			.. categories=Category:Shield, durability=Durability:Shield, collideWith=Category:Projectile, ccd=true
 
 			PrepareForCollision
 			TurnRateModifier(-0.9)
 			Sing(Reflect:Sound)
 			ExpireAfterLifetime
 
-			Collider {
+			Collider(unit) { // Attach this Collider to the unit
 				Shape:Sector(angleOffset=-0.25rev, arc=0.5rev)
 			}
 

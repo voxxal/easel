@@ -36,7 +36,7 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 			.. radius=0.2, speed=72
 			.. depth=Depth:Tether
 			.. luminous=0, taper=0.3, shadow=0.5
-			.. density=10, restitution=0, ccd=true
+			.. density=1.5, restitution=0, ccd=true
 			.. categories = Category:Projectile | Category:Grabber, durability=Durability:Low
 			.. sense = Category:Hero | Category:Obstacle
 
@@ -46,24 +46,27 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 
 			LaunchBody(turnRate=3rev)
 			PrepareForCollision
-			DriftingMotion
+			DecayingMotion
 			CooldownRate(-1)
 			Sing(Grapple:Sound)
 			ExpireWith(unit)
 			ExpireAfterLifetime
+			Movement:WalkWith(unit)
+			
+			hook<followCursor> Pointer {
+				Homing(Pointer, turnRate=0.002rev)
+			}
 
-			once<redirect> Sleep(15) {
+			once<redirect> Sleep(35) {
 				Velocity:RedirectTowards(unit.Pos, speed=4)
+				delete hook<followCursor>
 				Homing(unit)
 				await Sleep(5)
-				Velocity:RedirectTowards(unit.Pos, speed=24)
+				Velocity:RedirectTowards(unit.Pos, speed=96)
+				PropulsiveMotion
 			}
 
 			once ability.ReleaseCommand {
-				Expire
-			}
-
-			Proximity:OnRetreat(unit, range=20) {
 				Expire
 			}
 
@@ -77,6 +80,7 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 			}
 
 			on BeforeCollide that {
+				if that == unit { Expire } // The grapple has returned, expire it
 				if that.Team != owner.Team {
 					Attack(that)
 
@@ -106,9 +110,9 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 				SpeedModifier(-1) // Stop the unit moving because otherwise they keep shortening the grapple as they move towards the target, reducing control
 				TurnRateModifier(-0.99)
 
-				Tether:Tow(unit, attractor=that)
+				TowTether(unit, attractor=that)
 				Tween(duration=0.5s, initial=0.0, final=1.0) factor {
-					Tether:Swing(that, unit=, turnProportion=factor * (isProjectile ? 0.01 : 0.05), momentumFactor=isProjectile ? 1.0 : 0.9)
+					SwingTether(that, unit=, turnProportion=factor * (isProjectile ? 0.01 : 0.05), momentumFactor=isProjectile ? 1.0 : 0.9)
 				}
 
 				once ability.ReleaseCommand { Expire }

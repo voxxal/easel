@@ -1,4 +1,4 @@
-.. glyph=Frostfire:Glyph, color=#44ffff, cooldown=5.0s, damage=0, slowProportion=0.5, buffDuration=1.25s
+.. glyph=Frostfire:Glyph, color=#44ffff, cooldown=5s, damage=0, slowProportion=0.5, buffDuration=1.25s
 
 pub symbol WantFrostsplatter
 
@@ -70,7 +70,7 @@ pub fn ability.FrostsplatterAbility(unit, owner, btn) {
 							Smoke(that,
 								color=#4ff4, fade=1, feather=0.5,
 								radius=1.0, dissipation=20, depth=Depth:Particle,
-								flutter=$perimeter, splatter=Splatter:Outwards(12))
+								flutter=$perimeter)
 						}
 					}
 				}
@@ -81,7 +81,7 @@ pub fn ability.FrostsplatterAbility(unit, owner, btn) {
 					}
 				}
 
-				Wind(1.0, radius=, filter=Category:Projectile, against=(Alliance:Enemy | Alliance:Neutral))
+				Wind(1.0, radius=)
 			}
 		}
 	}

@@ -5,6 +5,7 @@ pub preference owner.SpecialSlot
 pub fn unit.SpecialSlotAbility(.. owner, btnIndex?, btnSize=1) {
 	SlotAbility<SpecialSlot> choice {
 		if choice == WantHoming { HomingAbility }
+		else if choice == WantDrain { DrainAbility }
 		else if choice == WantArcaneAgility { ArcaneAgilityAbility }
 		else if choice == WantOrbiter { OrbiterAbility }
 		else if choice == WantRepulsor { RepulsorAbility }
@@ -22,6 +23,7 @@ pub fn this.SpecialSlotEditor(.. owner, ui) {
 	SlotEditor<SpecialSlot> {
 		HomingOption
 		OrbiterOption
+		DrainOption
 		RepulsorOption
 		EnsnareOption
 		LinkOption
@@ -35,6 +37,7 @@ pub fn owner.RandomizeSpecialSlot {
 	SpecialSlot = PickRandom([
 		WantHoming,
 		WantOrbiter,
+		WantDrain,
 		WantRepulsor,
 		WantEnsnare,
 		WantLink1,

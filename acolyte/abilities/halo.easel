@@ -1,4 +1,4 @@
-.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=3.0, lifesteal=1.0, lifetime=2.0s, cooldown=5s, numHalos=3, fastProportion=0.2
+.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=6, lifesteal=1.0, lifetime=3.0s, cooldown=7.5s, numHalos=3, fastProportion=0.2
 
 pub symbol WantHalo
 
@@ -38,13 +38,10 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		CooldownRate(-1)
 		SpeedModifier(fastProportion)
 
 		on Interrupt interruptor {
-			if interruptor & Interruptor:Self {
-				StopIncantation
-			}
+			StopIncantation
 		}
 
 		on BotChannelling target {
@@ -54,19 +51,16 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 			}
 		}
 
-		await Barrage(interval=0.8s, count=numHalos) index {
+		await Barrage(interval=1.5s, count=numHalos) index {
 			Subspawn projectile { // Subspawn so all halos expire at the same time when incantation ends
 				.. parent=unit
 				.. dissipation=15 
 				.. radius=0.1, speed=40.0
 				.. luminous=1.0, depth=Depth:Projectile
 				.. density=1, ccd=true
-				.. categories=Category:Projectile, durability=Durability:Minimum
+				.. categories=Category:Projectile | Category:Destructible, durability=Durability:Minimum
 				.. collideWith = Category:Solid ^ Category:Projectile
 				.. noLavasteal=true // Not enough knockback to push others into lava
-				
-				// Current halos expire if hit (but more may be spawned if the spell has not been completed yet)
-				once Interrupt interruptor { Expire }
 
 				LaunchBody
 				PrepareForCollision

@@ -1,6 +1,6 @@
 .. glyph=BubblingBeam:Glyph, color=#ff0044
 .. damage=50.0, lifesteal=0.3, cooldown=5.0s
-.. lifetime=12, speed=50.0, attackDistance=lifetime * speed / TicksPerSecond
+.. lifetime=12, speed=40.0, attackDistance=lifetime * speed / TicksPerSecond
 
 pub symbol WantFiresplatter
 
@@ -31,6 +31,7 @@ pub fn ability.FiresplatterAbility(unit, owner, btn) {
 		.. damage = damage * unit.DamageModifier
 
 		TurnRateModifier(-1)
+		SpeedModifier(-0.5)
 
 		Sing(Firesplatter:Sound)
 		await Spray(duration=20, count=10, spray=0.2revs) {

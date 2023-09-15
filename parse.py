@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-acolyte = open("acolyte.easel")
+acolyte = open("acolyte.esc")
 
 sections = re.split(r"(\[\[.+\]\])", acolyte.read())
 

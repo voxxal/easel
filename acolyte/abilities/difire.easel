@@ -37,29 +37,29 @@ pub fn ability.DifireAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		await Spray(duration=0, count=numBolts, spray=0.25revs) headingOffset {
+		await Spray(duration=1, count=numBolts, spray=0.125revs) headingOffset {
 			.. damage = damage / count
 
 			Spawn projectile {
 				.. parent=unit
 				.. lifetime=1.5s, dissipation=15
-				.. radius=0.22, speed=40.0
-				.. density=14, ccd=true
+				.. radius=0.2, speed=52.5
+				.. density=10, ccd=true
 				.. luminous=1.0, depth=Depth:Projectile
 				.. categories=Category:Projectile, durability=Durability:Medium
 
 				const initialCursor = Pointer
 
-				LaunchBody(headingOffset=)
+				LaunchBody(headingOffset=, speed=60)
 				PrepareForCollision
 				PropulsiveMotion
 				RayEmitter(dissipation=8, shadow=0.25)
 				Sing(Difire:Sound)
 				ExpireAfterLifetime
 
-				once<redirect> Sleep(4) {
-					PropulsiveMotion(0.05, speed=52.5)
-					Velocity:RedirectTowards(initialCursor)
+				once<redirect> Sleep(2) {
+					PropulsiveMotion(0.05, speed=)
+					Velocity:RedirectTowards(initialCursor, speed=)
 				}
 
 				Collider {

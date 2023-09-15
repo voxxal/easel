@@ -6,6 +6,9 @@ pub fn unit.SlotAbilities(owner) {
     SpecialSlotAbility(btnIndex=2, btnSize=0.9)
     UltimateSlotAbility(btnIndex=4, btnSize=0.9)
     MeleeSlotAbility(btnIndex=5, btnSize=0.75)
+
+    LeftClickBinding
+    RightClickBinding
 }
 
 pub fn owner.RandomizeAllSlots {

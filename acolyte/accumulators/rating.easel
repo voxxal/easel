@@ -82,7 +82,7 @@ pub fn owner.Rating:AnnounceChange(rating, delta) {
 }
 
 fn Rating:FormatDelta(delta) {
-	let formatted = Abs(delta) < 1 ? FormatToPrecision(delta, 0) : FormatToFixed(delta, 0)
+	let formatted = Abs(delta) < 1 ? FormatToPrecision(delta, 1) : FormatToFixed(delta, 0)
 	if delta >= 0.0 {
 		formatted = "+" + formatted
 	}

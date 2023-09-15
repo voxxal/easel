@@ -1,4 +1,4 @@
-pub fn Prey:Find(prey) {
+pub fn FindPrey(prey) {
 	let prey = prey
 	if IsFunc(prey) { prey = prey() }
 	if IsId(prey) { prey = prey?.Pos }

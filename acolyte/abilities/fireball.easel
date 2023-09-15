@@ -31,9 +31,9 @@ pub fn ability.FireballAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit 
 			.. lifetime=90, dissipation=30 
-			.. radius=0.3, speed=60.0
+			.. radius=0.24, speed=48.0
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=40, ccd=true
+			.. density=30.5, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			LaunchBody

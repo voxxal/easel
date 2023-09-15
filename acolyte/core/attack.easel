@@ -12,9 +12,9 @@ pub fn Attack(that, damage, .. lifesteal?, minHealth?, noHurt?, noRelay?, noInte
 
 	let loss = damage > 0 ? that.TakeDamage(that.MitigateDamage(damage, attacker=unit)) : 0
 
-    if unit && lifesteal > 0.0 && loss > 0.0 && that.Owner && (that.Category & Category:Hero) {
+    if unit && lifesteal > 0.0 && loss > 0.0 && (that.Category & Category:Hero) && that.Owner && that.Owner != unit.Owner {
         // Lifesteal back to owner, but only if the target is owned by another enemy player
-        unit.Heal(damage * lifesteal)
+        unit.Heal(loss * lifesteal)
     }
 
     if !noHurt && (loss > 0 || damage == 0) {

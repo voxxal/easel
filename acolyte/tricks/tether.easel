@@ -54,7 +54,7 @@ pub fn projectile.TetherBuffOnHit(
 }
 
 // Forces
-pub behavior fn this.Tether:Pull(that, attractor, impulse, minDistance=0, maxDistance) {
+pub behavior fn this.PullTether(that, attractor, impulse, minDistance=0, maxDistance) {
 	loop {
 		await Tick
 
@@ -70,7 +70,7 @@ pub behavior fn this.Tether:Pull(that, attractor, impulse, minDistance=0, maxDis
 	}
 }
 
-pub behavior fn this.Tether:Tow(that, attractor) {
+pub behavior fn this.TowTether(that, attractor) {
 	let thatPos = that?.Pos
 	if !thatPos { break }
 
@@ -97,7 +97,7 @@ pub behavior fn this.Tether:Tow(that, attractor) {
 	}
 }
 
-pub behavior fn this.Tether:Swing(that, unit, turnProportion, momentumFactor=1) {
+pub behavior fn this.SwingTether(that, unit, turnProportion, momentumFactor=1) {
 	loop {
 		await Tick
 
@@ -122,6 +122,7 @@ pub behavior fn this.Tether:Swing(that, unit, turnProportion, momentumFactor=1) 
 		let orthogonal = RotateRight(Direction(step))
 		velocity = (step * TicksPerSecond) + (Dot(velocity, orthogonal) * orthogonal * momentumFactor)
 		
+		that.ApplyTurningStep(turn)
 		that.Velocity = velocity
 	}
 }

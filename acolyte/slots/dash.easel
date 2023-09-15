@@ -1,4 +1,4 @@
-.. btn=["KeyA", "SecondaryClick", "DoubleTap"], slotDefault=WantCharge
+.. btn="KeyA", slotDefault=WantCharge
 
 pub preference owner.DashSlot
 

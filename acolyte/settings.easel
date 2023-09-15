@@ -24,6 +24,12 @@ pub page fn owner.SettingsPage {
                 WalkSlotEditor
                 Caption { %("Choose whether to continuously move towards your cursor, or only when you click/tap") }
             }
+            FormBlock("Left-click/Tap") {
+                LeftClickEditor
+            }
+            FormBlock("Right-click/Double Tap") {
+                RightClickEditor
+            }
         }
 	}
 }

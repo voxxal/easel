@@ -1,5 +1,5 @@
 .. glyph=ElectricWhip:Glyph, color=#ffaa00
-.. damage=32.0, lifesteal=1.0, cooldown=1.5s, lifetime=4, speed=110.0, fastProportion=0.2, buffDuration=3s
+.. damage=32.0, lifesteal=1.0, cooldown=1.5s, lifetime=4, speed=80.0, fastProportion=0.2, buffDuration=3s
 
 pub symbol WantElectroshock
 
@@ -71,9 +71,9 @@ pub fn ability.ElectroshockAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. dissipation=30 
-			.. radius=0.4, aoe=1.0, impulse=200.0
+			.. radius=0.4, aoe=1.0, impulse=142
 			.. color=#fffcb1, luminous=1.0, depth=Depth:Projectile
-			.. density=0.035, ccd=true
+			.. density=2.8, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 			.. collideWith = Category:Shield | Category:Obstacle
 
@@ -107,6 +107,7 @@ pub fn ability.ElectroshockAbility(unit, owner, btn) {
 					if canHurtSelf || that.Team != owner.Team {
 						Attack(that)
 						Aoe:Impulse(that)
+						Aoe:Destroy(that)
 
 						that.Tombstone victim {
 							NameBlock(owner)

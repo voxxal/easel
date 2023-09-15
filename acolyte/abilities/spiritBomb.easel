@@ -1,4 +1,4 @@
-.. glyph=MightyForce:Glyph, color=#ff0099, damage=0, cooldown=5s
+.. glyph=MightyForce:Glyph, color=#ff0099, damage=0, cooldown=5s, slowDuration=1.5s, slowProportion=0.9
 
 pub symbol WantSpiritBomb
 
@@ -40,14 +40,13 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 	Incantation {
 		.. lifetime=2.25s
 
-		CooldownRate(-1)
-		SpeedModifier(-1)
+		SpeedModifier(-0.95)
 
 		Spawn projectile {
 			.. parent=unit
-			.. dissipation=20, impulse=300.0, radius=0.4, aoe=2.25, speed=17, turnProportion=0.012
+			.. dissipation=20, impulse=570, radius=0.4, aoe=2.25, speed=17.5, turnProportion=0.012
 			.. ownerColor=true, luminous=1.0, depth=Depth:Projectile
-			.. density=1, ccd=true
+			.. density=1.5, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			let leash = LeashRange
@@ -68,7 +67,7 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 			ExpireAfterLifetime
 
 			hook Pointer {
-				Homing(Pointer)
+				Homing(Pointer, turnRate=0.006rev)
 			}
 
 			Collider {
@@ -99,7 +98,19 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 					Aoe:ForEach that {
 						if that.Team != owner.Team {
 							Attack(that)
-							Aoe:Impulse(that, impulse=)
+							Aoe:ImpulseAttenuated(that, impulse=, attenuate=0.75)
+							Aoe:Destroy(that)
+
+							if that.Category & Category:Hero {
+								that.ReplaceBuff<stun>(cleansable=true) {
+									ExpireAfterLifetime(slowDuration)
+									SpeedModifier(-slowProportion, that)
+									Smoke(that,
+										color=#4ff4, fade=1, feather=0.5,
+										radius=1.0, dissipation=20, depth=Depth:Particle,
+										flutter=$perimeter)
+								}
+							}
 
 							that.Tombstone victim {
 								NameBlock(owner)

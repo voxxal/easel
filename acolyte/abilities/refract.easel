@@ -1,5 +1,5 @@
 .. glyph=ArcingBolt:Glyph, color=#00ff7f
-.. damage=12.5, lifesteal=0.3, cooldown=1.5s, bonusProportion=1.0, bonusDuration=1s
+.. damage=15, lifesteal=0.3, cooldown=1.5s, bonusProportion=1.0, slowProportion=0.5, bonusDuration=1s
 
 pub symbol WantRefract
 
@@ -43,10 +43,10 @@ pub fn ability.RefractAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. radius=0.35, speed=30.0, alignHeadingToVelocity=true
-			.. lifetime=120, dissipation=15
+			.. radius=0.28, speed=32, acceleration=32, alignHeadingToVelocity=true
+			.. lifetime=2s, dissipation=15
 			.. ownerColor=Alliance:Self, luminous=1.0, depth=Depth:Projectile
-			.. density=54.0, ccd=true
+			.. density=83, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			const birth = Tick
@@ -60,10 +60,11 @@ pub fn ability.RefractAbility(unit, owner, btn) {
 				}
 			}
 
-			LaunchBody
+			LaunchBody(speed=24)
 			PrepareForCollision
 			PropulsiveMotion
 			Sing(Refract:Sound)
+			SpeedModifier(-slowProportion)
 			ExpireAfterLifetime
 
 			once Expire {
@@ -76,20 +77,27 @@ pub fn ability.RefractAbility(unit, owner, btn) {
 				Shape:Circle
 			}
 
+			on<accelerate> PhysicsStart {
+				if speed < Speed {
+					Speed = Min(speed, Speed + acceleration / TicksPerSecond)
+				}
+			}
+
 			RayEmitter<ray1>(radius)
 			RayEmitter<ray2>(radius * 0.5, bloom=0, glare=0, fade=1, flutter=Flutter:Helix(radius=0.6, period=9))
 
 			let releasedTick = false
 			once ability.ReleaseCommand {
-				Velocity:RedirectTowards(Pointer)
+				Velocity:RedirectTowards(Pointer, speed=16)
 				releasedTick = Tick
+				delete SpeedModifier
 			}
 
 			let canHurtSelf = false
 			on BeforeCollide that {
 				if canHurtSelf || that.Team != owner.Team {
-					const bonusFactor = releasedTick ? (bonusProportion * ((Tick - releasedTick) / bonusDuration).Min(1)) : 0
-					Attack(that, damage * (1 + bonusFactor))
+					const bonusMultiplier = 1 + (releasedTick ? (bonusProportion * ((Tick - releasedTick) / bonusDuration).Min(1)) : 0)
+					Attack(that, damage * bonusMultiplier)
 
 					that.Tombstone victim {
 						NameBlock(owner)

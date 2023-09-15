@@ -11,7 +11,6 @@ pub fn unit.DefenseSlotAbility(.. owner, btnIndex, btnSize=1) {
 		else if choice == WantDualSaber { DualSaberAbility }
 		else if choice == WantMeteor { MeteorAbility }
 		else if choice == WantMeteorite { MeteoriteAbility }
-		else if choice == WantDrain { DrainAbility }
 		else if choice == WantHorcrux { HorcruxAbility }
 		else if choice == WantPhaseShift { PhaseShiftAbility }
 		else if choice == WantBlaze { BlazeAbility }
@@ -29,7 +28,6 @@ pub fn this.DefenseSlotEditor(.. owner, ui) {
 		DualSaberOption
 		MeteorOption
 		MeteoriteOption
-		DrainOption
 		HorcruxOption
 		PhaseShiftOption
 		BlazeOption
@@ -45,7 +43,6 @@ pub fn owner.RandomizeDefenseSlot {
 		WantDualSaber,
 		WantMeteor,
 		WantMeteorite,
-		WantDrain,
 		WantHorcrux,
 		WantPhaseShift,
 		WantBlaze,

@@ -30,10 +30,10 @@ pub fn ability.MeteoriteAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=2.0s, dissipation=12
-			.. radius=1.44, speed=24.0, propulsion=0.2
+			.. radius=1.44, speed=24, propulsion=0.2
 			.. feather=0, bloom=0, shine=0, glare=0, luminous=0.0
 			.. fade=#803, depth=Depth:Projectile+10
-			.. density=100, restitution=0, ccd=true
+			.. density=140, restitution=0, ccd=true
 			.. categories = Category:Projectile | Category:CanGrab | Category:Aoe | Category:Massive, durability=Durability:Maximum
 			.. collideWith = Category:Solid ^ Category:Shield
 

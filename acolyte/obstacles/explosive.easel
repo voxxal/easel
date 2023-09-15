@@ -1,6 +1,6 @@
 .. owner = null
 
-pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=400, radius=0.4, aoe=4.0, density=10.0) {
+pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=350, radius=0.4, aoe=4.0, density=10.0) {
 
 	.. dissipation=30,
 	.. color=#fc0,
@@ -39,7 +39,8 @@ pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=400, radius=0.4, 
 			Hear(Obstacle:Explosive)
 
 			Aoe:ForEach that {
-				Aoe:ImpulseAttenuated(that, attentuate=0.4)
+				Aoe:ImpulseAttenuated(that, attenuate=0.4)
+				Aoe:Destroy(that)
 				that.Interrupt
 			}
 

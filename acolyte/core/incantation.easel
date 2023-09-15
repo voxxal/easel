@@ -1,47 +1,60 @@
-pub fn ability.NoIncantation(.. owner, glyph) {
+pub fn ability.NoIncantation(.. unit, owner, glyph, btn) .. {
+	CommandBinding(btn, owner=) // Binding still needed so users can Shift+KeyBinding to edit their ability
 	CommandIcon(opacity=0.5, color=#333, glyphColor=#aaa .. glyph)
+	CommandText("") // Display no text on the button because the player cannot invoke this command
+
+    if !(unit.Category & Category:Ghost) {
+		// Ghosts can only edit their abilities, not use them
+		delve()
+	}
 }
 
 pub fn ability.Incantation(.. unit, owner, glyph, color, cooldown, btn) .. *incantation {
 	CommandBinding(btn, owner=)
 
-    CooldownTicker
-    Silenceable
+    if unit.Category & Category:Ghost {
+		// Ghosts can only edit their abilities, not use them
+		CommandIcon(.. glyph color)
 
-	hook Cooldown {
-		let cooldown = Cooldown
-		let color = color
-		let glyphColor = #fff
-		if cooldown >= 1s {
-			color = #222
-			glyphColor = #999
-		} else if cooldown > 0.1s {
-			color = #777
-			glyphColor = #eee
-		} else if cooldown > 0s {
-			color = #111
-			glyphColor = #777
+	} else {
+		CooldownTicker
+		Silenceable
+
+		hook Cooldown {
+			let cooldown = Cooldown
+			let color = color
+			let glyphColor = #fff
+			if cooldown >= 1s {
+				color = #222
+				glyphColor = #999
+			} else if cooldown > 0.1s {
+				color = #777
+				glyphColor = #eee
+			} else if cooldown > 0s {
+				color = #111
+				glyphColor = #777
+			}
+
+			let text = null
+			if cooldown > 1s {
+				text = FormatToFixed(cooldown / TicksPerSecond, 0)
+			} else if cooldown > 0s {
+				text = FormatToFixed(cooldown / TicksPerSecond, 1)
+			}
+
+			CommandIcon(.. glyph color glyphColor)
+			CommandText(text)
 		}
-
-		let text = null
-		if cooldown > 1s {
-			text = FormatToFixed(cooldown / TicksPerSecond, 0)
-		} else if cooldown > 0s {
-			text = FormatToFixed(cooldown / TicksPerSecond, 1)
-		}
-
-		CommandIcon(.. glyph color glyphColor)
-		CommandText(text)
-	}
-	
-	on ability.InvokeCommand {
-		RecheckCommenceCountdown
-	
-		ability.Subscope incantation {
-			Incantation:Queue
-			if Cooldown == 0 {
-				Cooldown = cooldown
-				delve()
+		
+		on ability.InvokeCommand {
+			RecheckCommenceCountdown
+		
+			ability.Subscope incantation {
+				Incantation:Queue
+				if Cooldown == 0 {
+					Cooldown = cooldown
+					delve()
+				}
 			}
 		}
 	}

@@ -21,8 +21,9 @@ pub fn ApexAcolyteOption(.. ui) {
 }
 
 pub fn ability.ApexAcolyteAbility(unit, owner, btn) {
-	NoIncantation
-	DamageModifier(amplifyProportion)
+	NoIncantation {
+		DamageModifier(amplifyProportion)
+	}
 }
 [[abilities/arcaneAgility.easel]]
 .. glyph=Dodging:Glyph, color=#ff00aa, fastProportion=0.1
@@ -47,8 +48,9 @@ pub fn ArcaneAgilityOption(.. ui) {
 }
 
 pub fn ability.ArcaneAgilityAbility(unit, owner, btn) {
-	NoIncantation
-	SpeedModifier(fastProportion)
+	NoIncantation {
+		SpeedModifier(fastProportion)
+	}
 }
 [[abilities/beam.easel]]
 .. glyph=GlowingHands:Glyph, color=#44ddff, damage=150.0, duration=2s, lifesteal=0.3, cooldown=5.0s
@@ -109,7 +111,7 @@ pub fn ability.BeamAbility(unit, owner, btn) {
 
 		Sing(Beam:ChannellingSound)
 		await Barrage(interval=3, count=duration / interval) index {
-			.. damage = damage / count, decay = 1 - index / count
+			.. damage = damage / count
 
 			Spawn projectile {
 				.. parent=unit
@@ -169,7 +171,7 @@ sound Beam:ChannellingSound(duration=0.25s, repeat=0.1s, cutoff=0.25s) {
 	Envelope(attack=0.1s, release=0.15s)
 }
 [[abilities/blast.easel]]
-.. glyph=FireRay:Glyph, color=#00ffff, damage=75.0, lifesteal=0.3, cooldown=5.0s
+.. glyph=FireRay:Glyph, color=#00ffff, damage=40.0, lifesteal=0.3, cooldown=5.0s
 
 pub symbol WantBlast
 
@@ -211,7 +213,6 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 		const birth = Tick
 
 		SpeedModifier(-0.5)
-		TurnRateModifier(-0.97)
 
 		once Interrupt { StopIncantation }
 
@@ -236,11 +237,12 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. damage = damage * ChargeProportion
-			.. radius = 1.5 * ChargeProportion, speed=50.0
-			.. lifetime=90, dissipation=7
+			.. radius = ChargeProportion.Mix(0.3, 1.2), speed=40.0
+			.. aoe=2, impulse = 70 * ChargeProportion
+			.. lifetime=2s, dissipation=7
 			.. luminous=1.0, depth=Depth:Projectile
 			.. feather=1, glare=0.5
-			.. density = 100 * ChargeProportion, ccd=true
+			.. density = 140 * ChargeProportion, ccd=true
 			.. categories = Category:Projectile | Category:Massive, durability=Durability:Maximum
 
 			LaunchBody
@@ -275,9 +277,17 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 				}
 				if that.Durability >= this.Durability {
 					Strobe(growth=0.5)
-					Puff(count=5, splatter=1)
 					Hear(Blast:HitSound)
 					Expire
+				}
+			}
+			once Expire {
+				Puff(count=5, splatter=1)
+				Aoe:ForEach that {
+					if that.Team != owner.Team {
+						Aoe:Impulse(that)
+						Aoe:Destroy(that)
+					}
 				}
 			}
 		}
@@ -353,7 +363,7 @@ pub fn ability.BlazeAbility(unit, owner, btn) {
 		.. shine=1.0, glare=0.7, bloom=3.0, luminous=1.0
 
 		SpeedModifier(-1) // Don't allow other movement to interfere with the charge
-		Tangibility(Category:Solid ^ Category:Hero ^ Category:Obstacle) // Pass through units and obstacles
+		Tangibility(Category:Shield) // Pass through everything except shields
 		SenseAlso(Category:Hero) // Sense units while charging so we can apply damage but don't collide with them
 		Sing(Blaze:Sound)
 
@@ -401,7 +411,7 @@ sound Blaze:Sound(duration=0.5s, cutoff=0.25s) {
 	Envelope(attack=0.05s, sustain=0s)
 }
 [[abilities/boomerang.easel]]
-.. glyph=CrackedBallDunk:Glyph, color=#00ffff, damage=16.0, lifesteal=0.3, cooldown=1.5s, secondStrikeBonus=0.25
+.. glyph=CrackedBallDunk:Glyph, color=#00ffff, damage=20.0, lifesteal=0.3, cooldown=2s, secondStrikeBonus=0.25
 
 pub symbol WantBoomerang
 
@@ -439,7 +449,7 @@ pub fn ability.BoomerangAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. lifetime=90, dissipation=25
+			.. lifetime=2s, dissipation=25
 			.. radius=0.16, speed=53.0
 			.. ownerColor=true, luminous=1.0, depth=Depth:Projectile
 			.. density=1, ccd=true
@@ -449,13 +459,14 @@ pub fn ability.BoomerangAbility(unit, owner, btn) {
 
 			LaunchBody
 			PrepareForCollision
-			PropulsiveMotion
+			DriftingMotion
 			RayEmitter(fade=0.5)
 			Sing(Boomerang:Sound)
 			ExpireAfterLifetime
 
 			once<redirect> Sleep(33) {
-				Velocity:RedirectTowards(unit.Pos)
+				Velocity:RedirectTowards(unit.Pos, speed=)
+				PropulsiveMotion
 				Homing(unit)
 			}
 
@@ -531,7 +542,7 @@ sound Boomerang:HitSound(duration=0.3s) {
 	Envelope(attack=0.01s, sustain=0s)
 }
 [[abilities/bouncer.easel]]
-.. glyph=Divert:Glyph, color=#00ff44, damage=8, maxHits=8, lifesteal=0.3, cooldown=7.5s
+.. glyph=Divert:Glyph, color=#00ff44, damage=12, maxHits=8, lifesteal=0.3, cooldown=7.5s
 
 
 pub symbol WantBouncer
@@ -654,7 +665,7 @@ sound Bouncer:BounceSound(duration=0.25s) {
 	Envelope(attack=0.001s, sustain=0s)
 }
 [[abilities/charge.easel]]
-.. glyph=FireDash:Glyph, color=#ff00cc, damage=0, speed=100, cooldown=10.0s
+.. glyph=FireDash:Glyph, color=#ff00cc, damage=0, speed=120, cooldown=10.0s
 
 pub symbol WantCharge
 
@@ -684,8 +695,8 @@ pub fn ability.ChargeAbility(unit, owner, btn, btnIndex?, btnSize) {
 	}
 
 	Incantation {
-		.. lifetime=12 
-		.. radius=2.0, dissipation=12
+		.. lifetime=16
+		.. radius=1.5, dissipation=12
 		.. ownerColor=true, depth=Depth:Projectile
 		.. shine=1.0, glare=0.7, bloom=3.0, luminous=1.0
 
@@ -699,8 +710,8 @@ pub fn ability.ChargeAbility(unit, owner, btn, btnIndex?, btnSize) {
 		
 		// Don't allow other movement to interfere with the charge
 		SpeedModifier(-1)
-		DensityModifier(100)
-		SizeModifier(1)
+		DensityModifier(140)
+		SizeModifier(0.5)
 		Thrust(Pointer, speed=)
 		RayEmitter(fade=1, shadow=0.5)
 
@@ -732,7 +743,7 @@ sound Charge:Sound(duration=0.25s) {
 pub symbol WantClickToMove
 
 pub fn ability.ClickToMoveAbility(unit, owner) {
-	CommandBinding(["Click", "Tap"])
+	CommandBinding("Click")
 
 	on ability.InvokeCommand {
 		await Subscope {
@@ -786,29 +797,29 @@ pub fn ability.DifireAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		await Spray(duration=0, count=numBolts, spray=0.25revs) headingOffset {
+		await Spray(duration=1, count=numBolts, spray=0.125revs) headingOffset {
 			.. damage = damage / count
 
 			Spawn projectile {
 				.. parent=unit
 				.. lifetime=1.5s, dissipation=15
-				.. radius=0.22, speed=40.0
-				.. density=14, ccd=true
+				.. radius=0.2, speed=52.5
+				.. density=10, ccd=true
 				.. luminous=1.0, depth=Depth:Projectile
 				.. categories=Category:Projectile, durability=Durability:Medium
 
 				const initialCursor = Pointer
 
-				LaunchBody(headingOffset=)
+				LaunchBody(headingOffset=, speed=60)
 				PrepareForCollision
 				PropulsiveMotion
 				RayEmitter(dissipation=8, shadow=0.25)
 				Sing(Difire:Sound)
 				ExpireAfterLifetime
 
-				once<redirect> Sleep(4) {
-					PropulsiveMotion(0.05, speed=52.5)
-					Velocity:RedirectTowards(initialCursor)
+				once<redirect> Sleep(2) {
+					PropulsiveMotion(0.05, speed=)
+					Velocity:RedirectTowards(initialCursor, speed=)
 				}
 
 				Collider {
@@ -868,7 +879,7 @@ sound Difire:HitSound(duration=0.33s) {
 	Envelope(attack=0.01s, decay=0.1s, sustainVolume=0.3, sustain=0s)
 }
 [[abilities/drain.easel]]
-.. glyph=EnergyBreath:Glyph, color=#22ee88, damage=15.0, lifesteal=1.0, cooldown=5.0s
+.. glyph=EnergyBreath:Glyph, color=#22ee88, damage=15, lifesteal=1.0, cooldown=5.0s
 
 pub symbol WantDrain
 
@@ -902,10 +913,10 @@ pub fn ability.DrainAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. radius=0.15, speed=16.0
+			.. radius=0.16, speed=16
 			.. lifetime=2s, dissipation=15
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=2.0, ccd=true
+			.. density=2.8, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Low
 
 			LaunchBody
@@ -1027,7 +1038,7 @@ pub fn ability.DualSaberAbility(unit, owner, btn) {
 			TurnRateModifier(-0.95)
 
 			// Main saber collider is actually attached to the unit's body, which means it will transmit forces back onto the unit (e.g. recoil)
-			Collider(unit, collideWith=Category:Hero, density=2.0) {
+			Collider(unit, collideWith=Category:Hero, density=2.5) {
 				// Deflector is attached to the saber's independent body so projectiles cannot knock the unit back through the saber
 				Collider<deflector>(collideWith=Category:Projectile, density=5.0) {
 					// Sprite is attached to the unit (not the independent deflector body) so it does not visually lag behind
@@ -1071,6 +1082,7 @@ pub fn ability.DualSaberAbility(unit, owner, btn) {
 
 			on BeforeCollide<deflector> that { // Secondary collider hits projectiles only
 				Hear(DualSaber:HitSound)
+				if that.Category & Category:Destructible { that.Expire }
 			}
 		}
 
@@ -1101,7 +1113,7 @@ sound DualSaber:HitSound(duration=0.5s) {
 }
 [[abilities/electroshock.easel]]
 .. glyph=ElectricWhip:Glyph, color=#ffaa00
-.. damage=32.0, lifesteal=1.0, cooldown=1.5s, lifetime=4, speed=110.0, fastProportion=0.2, buffDuration=3s
+.. damage=32.0, lifesteal=1.0, cooldown=1.5s, lifetime=4, speed=80.0, fastProportion=0.2, buffDuration=3s
 
 pub symbol WantElectroshock
 
@@ -1173,9 +1185,9 @@ pub fn ability.ElectroshockAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. dissipation=30 
-			.. radius=0.4, aoe=1.0, impulse=200.0
+			.. radius=0.4, aoe=1.0, impulse=142
 			.. color=#fffcb1, luminous=1.0, depth=Depth:Projectile
-			.. density=0.035, ccd=true
+			.. density=2.8, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 			.. collideWith = Category:Shield | Category:Obstacle
 
@@ -1209,6 +1221,7 @@ pub fn ability.ElectroshockAbility(unit, owner, btn) {
 					if canHurtSelf || that.Team != owner.Team {
 						Attack(that)
 						Aoe:Impulse(that)
+						Aoe:Destroy(that)
 
 						that.Tombstone victim {
 							NameBlock(owner)
@@ -1246,7 +1259,7 @@ sound Electroshock:HitSound(duration=0.15s) {
 	Gain(volume=0.2)
 }
 [[abilities/energyMines.easel]]
-.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=8
+.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=8, retreatDelay=1s
 
 pub symbol WantEnergyMines
 
@@ -1288,26 +1301,20 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 		TurnRateModifier(-1)
 
 		Hear(Mines:LaunchSound)
-		await Spray(duration=5, count=5, spray=0.35revs) index {
-			const proportion = index / count
-
+		await Spray(duration=5, count=5, spray=0.35revs) {
 			Spawn projectile {
 				.. parent=unit
 				.. lifetime=4.5s, dissipation=15
-				.. radius=0.32, speed=40.0, impulse=100.0
-				.. density=1.0, ccd=true
+				.. radius=0.32, speed=40.0, impulse=75, aoe=1.2
+				.. density=1.5, ccd=true
 				.. ownerColor=Alliance:Self, bloom=1.5, bloomAlpha=0.3, luminous=1.0, depth=Depth:Projectile
-				.. categories=Category:Projectile | Category:Aoe, durability=Durability:None
+				.. categories = Category:Projectile | Category:Destructible | Category:AlwaysBlow, durability=Durability:None
 				.. sense=Category:Projectile
 
 				LaunchBody
 				PrepareForCollision
 				DriftingMotion
 				ExpireAfterLifetime
-
-				Proximity:OnRetreat(unit, range = proportion.Mix(12,8)) {
-					Expire
-				}
 
 				Sprite(shadow=0.5) {
 					Collider {
@@ -1317,20 +1324,9 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 
 				let armed = false
 				on BeforeCollide that {
-					if that.Team != owner.Team {
-						Attack(that, armed ? damage : 0)
-						Aoe:Impulse
-
-						that.Tombstone victim {
-							NameBlock(owner)
-							%(" blew ")
-							NameBlock(victim)
-							%("'s mined")
-						}
-					}
-				}
-				on AfterCollide that {
-					if that.Durability >= this.Durability {
+					if that.Durability >= this.Durability && !(that.Owner == this.Owner && !(that.Category & Category:Hero)) {
+						// Expire on everything unless it is an entity owned by the same player but not the hero.
+						// This lets us push mines around with meteors, for example.
 						Strobe(shine=1.0)
 						Expire
 					}
@@ -1339,12 +1335,32 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 				once Expire {
 					Explosion(1.2, shine=1.0)
 					Hear(Mines:HitSound)
+
+					Aoe:ForEach that {
+						if that.Team != owner.Team {
+							Attack(that, armed ? damage : 1)
+							Aoe:Impulse
+
+							that.Tombstone victim {
+								NameBlock(owner)
+								%(" blew ")
+								NameBlock(victim)
+								%("'s mined")
+							}
+						}
+					}
 				}
 
 				once<arm> Sleep(armDelay) {
+					armed = true
 					Speed = 0
 					DecayingMotion
-					armed = true
+				}
+
+				once<retreat> Sleep(retreatDelay) {
+					Proximity:OnRetreat(unit, range=12) {
+						Expire
+					}
 				}
 			}
 		}
@@ -1369,7 +1385,7 @@ sound Mines:HitSound(duration=1s) {
 	Envelope(attack=0.01s, sustain=0s)
 }
 [[abilities/ensnare.easel]]
-.. glyph=AtomicSlashes:Glyph, color=#0ace00, damage=0.0, cooldown=5s, silenceDuration=0.5s, ensnareDuration=1.5s
+.. glyph=AtomicSlashes:Glyph, color=#0ace00, damage=0.0, cooldown=6s, silenceDuration=0.5s, ensnareDuration=2s
 
 pub symbol WantEnsnare
 
@@ -1407,7 +1423,7 @@ pub fn ability.EnsnareAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=1.5s, dissipation=15
-			.. radius=0.5, aoe=3.6, speed=28.0
+			.. radius=0.5, aoe=3.6, speed=28
 			.. luminous=1.0, depth=Depth:Buff
 			.. categories=Category:Projectile
 			.. isSensor=true, collideWith=Category:Hero
@@ -1456,7 +1472,7 @@ pub fn ability.EnsnareAbility(unit, owner, btn) {
 
 				hook<attractor> Tick {
 					Aoe:ForEach(filter=Category:Hero) that {
-						Aoe:ImpulseAttenuated(that, impulse=-5.0, attentuate=0.4)
+						Aoe:ImpulseAttenuated(that, impulse=-5.0, attenuate=0.4)
 					}
 				}
 
@@ -1523,9 +1539,9 @@ pub fn ability.FireballAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit 
 			.. lifetime=90, dissipation=30 
-			.. radius=0.3, speed=60.0
+			.. radius=0.24, speed=48.0
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=40, ccd=true
+			.. density=30.5, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			LaunchBody
@@ -1623,11 +1639,11 @@ pub fn ability.FireboomAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit 
-			.. aoe = 3.6 / maxScale, radius = 0.5 / maxScale
-			.. impulse=120.0, speed=23.0
-			.. lifetime=90, dissipation=18
+			.. aoe = 2.88 / maxScale, radius = 0.4 / maxScale
+			.. impulse=107, speed=18.4
+			.. lifetime=2s, dissipation=18
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=9.0, ccd=true
+			.. density=7.0, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			LaunchBody
@@ -1667,6 +1683,7 @@ pub fn ability.FireboomAbility(unit, owner, btn) {
 						if canHurtSelf || that.Team != owner.Team {
 							Attack(that)
 							Aoe:Impulse(that)
+							Aoe:Destroy(that)
 
 							that.Tombstone victim {
 								NameBlock(owner)
@@ -1714,7 +1731,7 @@ sound Fireboom:ExplodeSound(duration=1s) {
 [[abilities/firesplatter.easel]]
 .. glyph=BubblingBeam:Glyph, color=#ff0044
 .. damage=50.0, lifesteal=0.3, cooldown=5.0s
-.. lifetime=12, speed=50.0, attackDistance=lifetime * speed / TicksPerSecond
+.. lifetime=12, speed=40.0, attackDistance=lifetime * speed / TicksPerSecond
 
 pub symbol WantFiresplatter
 
@@ -1745,6 +1762,7 @@ pub fn ability.FiresplatterAbility(unit, owner, btn) {
 		.. damage = damage * unit.DamageModifier
 
 		TurnRateModifier(-1)
+		SpeedModifier(-0.5)
 
 		Sing(Firesplatter:Sound)
 		await Spray(duration=20, count=10, spray=0.2revs) {
@@ -1916,7 +1934,7 @@ sound Forcefield:HitSound(duration=0.5s) {
 	Gain(volume=0.5)
 }
 [[abilities/frostsplatter.easel]]
-.. glyph=Frostfire:Glyph, color=#44ffff, cooldown=5.0s, damage=0, slowProportion=0.5, buffDuration=1.25s
+.. glyph=Frostfire:Glyph, color=#44ffff, cooldown=5s, damage=0, slowProportion=0.5, buffDuration=1.25s
 
 pub symbol WantFrostsplatter
 
@@ -1988,7 +2006,7 @@ pub fn ability.FrostsplatterAbility(unit, owner, btn) {
 							Smoke(that,
 								color=#4ff4, fade=1, feather=0.5,
 								radius=1.0, dissipation=20, depth=Depth:Particle,
-								flutter=$perimeter, splatter=Splatter:Outwards(12))
+								flutter=$perimeter)
 						}
 					}
 				}
@@ -1999,7 +2017,7 @@ pub fn ability.FrostsplatterAbility(unit, owner, btn) {
 					}
 				}
 
-				Wind(1.0, radius=, filter=Category:Projectile, against=(Alliance:Enemy | Alliance:Neutral))
+				Wind(1.0, radius=)
 			}
 		}
 	}
@@ -2049,7 +2067,7 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 			.. radius=0.2, speed=72
 			.. depth=Depth:Tether
 			.. luminous=0, taper=0.3, shadow=0.5
-			.. density=10, restitution=0, ccd=true
+			.. density=1.5, restitution=0, ccd=true
 			.. categories = Category:Projectile | Category:Grabber, durability=Durability:Low
 			.. sense = Category:Hero | Category:Obstacle
 
@@ -2059,24 +2077,27 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 
 			LaunchBody(turnRate=3rev)
 			PrepareForCollision
-			DriftingMotion
+			DecayingMotion
 			CooldownRate(-1)
 			Sing(Grapple:Sound)
 			ExpireWith(unit)
 			ExpireAfterLifetime
+			Movement:WalkWith(unit)
+			
+			hook<followCursor> Pointer {
+				Homing(Pointer, turnRate=0.002rev)
+			}
 
-			once<redirect> Sleep(15) {
+			once<redirect> Sleep(35) {
 				Velocity:RedirectTowards(unit.Pos, speed=4)
+				delete hook<followCursor>
 				Homing(unit)
 				await Sleep(5)
-				Velocity:RedirectTowards(unit.Pos, speed=24)
+				Velocity:RedirectTowards(unit.Pos, speed=96)
+				PropulsiveMotion
 			}
 
 			once ability.ReleaseCommand {
-				Expire
-			}
-
-			Proximity:OnRetreat(unit, range=20) {
 				Expire
 			}
 
@@ -2090,6 +2111,7 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 			}
 
 			on BeforeCollide that {
+				if that == unit { Expire } // The grapple has returned, expire it
 				if that.Team != owner.Team {
 					Attack(that)
 
@@ -2119,9 +2141,9 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 				SpeedModifier(-1) // Stop the unit moving because otherwise they keep shortening the grapple as they move towards the target, reducing control
 				TurnRateModifier(-0.99)
 
-				Tether:Tow(unit, attractor=that)
+				TowTether(unit, attractor=that)
 				Tween(duration=0.5s, initial=0.0, final=1.0) factor {
-					Tether:Swing(that, unit=, turnProportion=factor * (isProjectile ? 0.01 : 0.05), momentumFactor=isProjectile ? 1.0 : 0.9)
+					SwingTether(that, unit=, turnProportion=factor * (isProjectile ? 0.01 : 0.05), momentumFactor=isProjectile ? 1.0 : 0.9)
 				}
 
 				once ability.ReleaseCommand { Expire }
@@ -2139,7 +2161,7 @@ sound Grapple:Sound(duration=1.25s) {
 	Envelope(attack=1s, sustain=0s)
 }
 [[abilities/halo.easel]]
-.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=3.0, lifesteal=1.0, lifetime=2.0s, cooldown=5s, numHalos=3, fastProportion=0.2
+.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=6, lifesteal=1.0, lifetime=3.0s, cooldown=7.5s, numHalos=3, fastProportion=0.2
 
 pub symbol WantHalo
 
@@ -2179,13 +2201,10 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		CooldownRate(-1)
 		SpeedModifier(fastProportion)
 
 		on Interrupt interruptor {
-			if interruptor & Interruptor:Self {
-				StopIncantation
-			}
+			StopIncantation
 		}
 
 		on BotChannelling target {
@@ -2195,19 +2214,16 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 			}
 		}
 
-		await Barrage(interval=0.8s, count=numHalos) index {
+		await Barrage(interval=1.5s, count=numHalos) index {
 			Subspawn projectile { // Subspawn so all halos expire at the same time when incantation ends
 				.. parent=unit
 				.. dissipation=15 
 				.. radius=0.1, speed=40.0
 				.. luminous=1.0, depth=Depth:Projectile
 				.. density=1, ccd=true
-				.. categories=Category:Projectile, durability=Durability:Minimum
+				.. categories=Category:Projectile | Category:Destructible, durability=Durability:Minimum
 				.. collideWith = Category:Solid ^ Category:Projectile
 				.. noLavasteal=true // Not enough knockback to push others into lava
-				
-				// Current halos expire if hit (but more may be spawned if the spell has not been completed yet)
-				once Interrupt interruptor { Expire }
 
 				LaunchBody
 				PrepareForCollision
@@ -2257,7 +2273,7 @@ sound Halo:HitSound(duration=0.3s) {
 	Gain(volume=0.25)
 }
 [[abilities/homing.easel]]
-.. glyph=BoltSaw:Glyph, color=#44ffcc, damage=16.0, lifesteal=0.3, cooldown=9.0s
+.. glyph=BoltSaw:Glyph, color=#44ffcc, damage=16, lifesteal=0.3, cooldown=9.0s
 
 pub symbol WantHoming
 
@@ -2298,11 +2314,10 @@ pub fn ability.HomingAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=3.5s, dissipation=30, ownerColor=Alliance:Self
-			.. radius=0.24, speed=15.0, alignHeadingToVelocity=true
-			.. density=25.0, ccd=true
+			.. radius=0.24, speed=12, alignHeadingToVelocity=true
+			.. density=35, ccd=true
 			.. luminous=1.0, depth=Depth:Projectile
 			.. categories=Category:Projectile | Category:Aoe, durability=Durability:High
-			.. turnProportion=0.05
 
 			LaunchBody
 			PrepareForCollision
@@ -2320,7 +2335,7 @@ pub fn ability.HomingAbility(unit, owner, btn) {
 				.. owner = Repossessor ?? owner
 				RayEmitter<helix1>(radius, fade=0, flutter=Flutter:Helix(radius * 0.5, period=18))
 				RayEmitter<helix2>(radius * 0.5, fade=1, flutter=Flutter:Helix(radius * 2.0, period=18, angleOffset=0.4rev), bloom=0, glare=0)
-				Homing(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(Pointer), turnProportion=)
+				Homing(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(Pointer), turnProportion=0.05)
 			}
 
 			let canHurtSelf = false
@@ -2409,10 +2424,10 @@ pub fn ability.HorcruxAbility(unit, owner, btn) {
 			.. parent=unit
 			.. lifetime=3s, dissipation=15
 			.. interval=6, damagePerInterval = interval * damage / duration, maxHits = damage / damagePerInterval
-			.. radius=0.3, aoe=3.2, speed=28
+			.. radius=0.28, aoe=3.2, speed=28
 			.. luminous=1, depth=Depth:Projectile
 			.. density=1, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Low
+			.. categories=Category:Projectile | Category:Destructible, durability=Durability:Low
 			.. noLavasteal=true // Not enough knockback to push others into lava
 
 			const birth = Tick
@@ -2435,7 +2450,7 @@ pub fn ability.HorcruxAbility(unit, owner, btn) {
 				}
 			}
 
-			Collider {
+			Collider(collideWith = Category:Solid ^ Category:Projectile) { // No collisions with projectiles while deploying
 				Shape:Circle
 			}
 
@@ -2458,6 +2473,8 @@ pub fn ability.HorcruxAbility(unit, owner, btn) {
 
 			hook<aoe> Sleep(interval) {
 				.. damage = damage * interval / TicksPerSecond
+
+				ColliderProps(collideWith=Category:Solid) // Restore collisions with projectiles after deployment
 
 				Aoe:ForEach(filter=Category:Hero) that {
 					if that.Team != owner.Team && TakeHitIfWithinLimit(that, maxHits=) {
@@ -2547,6 +2564,7 @@ pub fn ability.LinkAbility(unit, owner, btn) {
 			ExpireAfterLifetime
 			Sing(Link:Sound)
 			CooldownRate(-1)
+			Movement:WalkWith(unit)
 
 			Sprite(bloom=2) {
 				Shape:Equilateral(radius=, numPoints=3)
@@ -2578,8 +2596,8 @@ pub fn ability.LinkAbility(unit, owner, btn) {
 			TetherBuffOnHit(radius=0.2, bloomAlpha=0.5, shadow=0.5) that {
 				ExpireAfterLifetime(1.75s)
 				CooldownRate(-1)
-				Tether:Pull(that, attractor=unit, impulse=5, minDistance=2, maxDistance=10)
-				Tether:Tow(that, attractor=unit)
+				PullTether(that, attractor=unit, impulse=5, minDistance=2, maxDistance=10)
+				TowTether(that, attractor=unit)
 
 				if (that.Category & (Category:Hero | Category:Obstacle)) && that.Team != owner.Team {
 					Relay(that)
@@ -2599,7 +2617,7 @@ sound Link:Sound(duration=2s) {
 	Envelope(attack=1s, sustain=0s)
 }
 [[abilities/meteor.easel]]
-.. glyph=CometSpark:Glyph, color=#ff0000, damage=0.0, cooldown=9.0s
+.. glyph=CometSpark:Glyph, color=#ff0000, damage=0, cooldown=9.0s
 
 pub symbol WantMeteor
 
@@ -2629,9 +2647,9 @@ pub fn ability.MeteorAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=2s, dissipation=24
-			.. radius=2.88, speed=16.0
+			.. radius=2.88, speed=16
 			.. feather=0, bloom=0, shine=0, glare=0, luminous=0.0, depth=Depth:Projectile+10
-			.. density=100, restitution=0, ccd=true
+			.. density=140, restitution=0, ccd=true
 			.. categories = Category:Projectile | Category:CanGrab | Category:Aoe | Category:Massive, durability=Durability:Maximum
 			.. collideWith = Category:Solid ^ Category:Shield
 
@@ -2720,10 +2738,10 @@ pub fn ability.MeteoriteAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=2.0s, dissipation=12
-			.. radius=1.44, speed=24.0, propulsion=0.2
+			.. radius=1.44, speed=24, propulsion=0.2
 			.. feather=0, bloom=0, shine=0, glare=0, luminous=0.0
 			.. fade=#803, depth=Depth:Projectile+10
-			.. density=100, restitution=0, ccd=true
+			.. density=140, restitution=0, ccd=true
 			.. categories = Category:Projectile | Category:CanGrab | Category:Aoe | Category:Massive, durability=Durability:Maximum
 			.. collideWith = Category:Solid ^ Category:Shield
 
@@ -2835,7 +2853,7 @@ sound Meteorite:SubprojectileSound(duration=2s, cutoff=0.25s) {
 	Envelope(attack=0.16s, sustain=0.5s)
 }
 [[abilities/orbiter.easel]]
-.. glyph=BoomerangSun:Glyph, color=#ff00ff, damage=25.0, lifesteal=0.3, cooldown=11.0s
+.. glyph=BoomerangSun:Glyph, color=#ff00ff, damage=25.0, lifesteal=0.3, cooldown=9.0s
 
 pub symbol WantOrbiter
 
@@ -2868,9 +2886,9 @@ pub fn ability.OrbiterAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=4s, dissipation=30, ownerColor=Alliance:Self
-			.. radius=0.24, speed=48, bounceSpeed=10
+			.. radius=0.24, speed=48, bounceSpeed=5
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=1.0, ccd=true
+			.. density=1.5, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			LaunchBody
@@ -2885,7 +2903,7 @@ pub fn ability.OrbiterAbility(unit, owner, btn) {
 			}
 
 			RayEmitter(glare=0.5, luminous=0.5, dissipation=60)
-			Homing(unit, turnProportion=0.05)
+			Homing(unit, turnProportion=0.04875)
 			on BeforeCollide that {
 				if that.Team != owner.Team {
 					Attack(that)
@@ -2937,7 +2955,7 @@ sound Orbiter:HitSound(duration=0.33s) {
 }
 [[abilities/overload.easel]]
 .. glyph=DeadlyStrike:Glyph, color=#ff9900
-.. damage=30.0, impulse=600, selfDamage=10.0, lifesteal=0.3, cooldown=5s, aoe=4.0
+.. damage=30, impulse=1400, selfDamage=10, lifesteal=0.3, cooldown=5s, aoe=4.0
 
 pub symbol WantOverload
 
@@ -2983,6 +3001,7 @@ pub fn ability.OverloadAbility(unit, owner, btn) {
 			}
 		}
 
+		CooldownRate(-1)
 		SpeedModifier(-1)
 		DensityModifier(5)
 
@@ -3009,7 +3028,8 @@ pub fn ability.OverloadAbility(unit, owner, btn) {
 
 		Aoe:ForEach that {
 			if that.Team != owner.Team {
-				Aoe:ImpulseAttenuated(that, attentuate=0.5)
+				Aoe:ImpulseAttenuated(that, attenuate=0.5)
+				Aoe:Destroy(that)
 				Attack(that)
 
 				that.Tombstone victim {
@@ -3054,7 +3074,7 @@ sound Overload:ExplodeSound(duration=1s) {
 	Output
 }
 [[abilities/phaseShift.easel]]
-.. glyph=Resonance:Glyph, color=#ff00dd, maxDuration=1s, cooldown=5s
+.. glyph=Resonance:Glyph, color=#ff00dd, maxDuration=0.75s, cooldown=5s
 
 pub symbol WantPhaseShift
 
@@ -3103,6 +3123,7 @@ pub fn ability.PhaseShiftAbility(unit, owner, btn) {
 		SpeedModifier(-1)
 		Vulnerability(-1)
 		Tangibility(Category:None)
+		FilterCategoriesModifier(Category:All ^ Category:Aoe)
 		Vanished(true)
 		Invisibility(true)
 		SeverTethers
@@ -3116,8 +3137,8 @@ pub fn ability.PhaseShiftAbility(unit, owner, btn) {
 			Hear(PhaseShift:Sound)
 		}
 
-		hook Tick {
-			Cooldown += 7
+		on<coolup> Tick {
+			Cooldown += 5
 		}
 
 		once Sleep(maxDuration) {
@@ -3170,14 +3191,14 @@ pub fn ability.ReflectAbility(unit, owner, btn) {
 		ability.Subspawn shield {
 			.. dissipation=10, radius=2.1, density=0.0, restitution=0.0
 			.. luminous=1.0, depth=Depth:Shield
-			.. categories=Category:Shield, durability=Durability:Shield, collideWith=Category:Projectile
+			.. categories=Category:Shield, durability=Durability:Shield, collideWith=Category:Projectile, ccd=true
 
 			PrepareForCollision
 			TurnRateModifier(-0.9)
 			Sing(Reflect:Sound)
 			ExpireAfterLifetime
 
-			Collider {
+			Collider(unit) { // Attach this Collider to the unit
 				Shape:Sector(angleOffset=-0.25rev, arc=0.5rev)
 			}
 
@@ -3229,7 +3250,7 @@ sound Reflect:HitSound(duration=0.5s) {
 }
 [[abilities/refract.easel]]
 .. glyph=ArcingBolt:Glyph, color=#00ff7f
-.. damage=12.5, lifesteal=0.3, cooldown=1.5s, bonusProportion=1.0, bonusDuration=1s
+.. damage=15, lifesteal=0.3, cooldown=1.5s, bonusProportion=1.0, slowProportion=0.5, bonusDuration=1s
 
 pub symbol WantRefract
 
@@ -3273,10 +3294,10 @@ pub fn ability.RefractAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. radius=0.35, speed=30.0, alignHeadingToVelocity=true
-			.. lifetime=120, dissipation=15
+			.. radius=0.28, speed=32, acceleration=32, alignHeadingToVelocity=true
+			.. lifetime=2s, dissipation=15
 			.. ownerColor=Alliance:Self, luminous=1.0, depth=Depth:Projectile
-			.. density=54.0, ccd=true
+			.. density=83, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			const birth = Tick
@@ -3290,10 +3311,11 @@ pub fn ability.RefractAbility(unit, owner, btn) {
 				}
 			}
 
-			LaunchBody
+			LaunchBody(speed=24)
 			PrepareForCollision
 			PropulsiveMotion
 			Sing(Refract:Sound)
+			SpeedModifier(-slowProportion)
 			ExpireAfterLifetime
 
 			once Expire {
@@ -3306,20 +3328,27 @@ pub fn ability.RefractAbility(unit, owner, btn) {
 				Shape:Circle
 			}
 
+			on<accelerate> PhysicsStart {
+				if speed < Speed {
+					Speed = Min(speed, Speed + acceleration / TicksPerSecond)
+				}
+			}
+
 			RayEmitter<ray1>(radius)
 			RayEmitter<ray2>(radius * 0.5, bloom=0, glare=0, fade=1, flutter=Flutter:Helix(radius=0.6, period=9))
 
 			let releasedTick = false
 			once ability.ReleaseCommand {
-				Velocity:RedirectTowards(Pointer)
+				Velocity:RedirectTowards(Pointer, speed=16)
 				releasedTick = Tick
+				delete SpeedModifier
 			}
 
 			let canHurtSelf = false
 			on BeforeCollide that {
 				if canHurtSelf || that.Team != owner.Team {
-					const bonusFactor = releasedTick ? (bonusProportion * ((Tick - releasedTick) / bonusDuration).Min(1)) : 0
-					Attack(that, damage * (1 + bonusFactor))
+					const bonusMultiplier = 1 + (releasedTick ? (bonusProportion * ((Tick - releasedTick) / bonusDuration).Min(1)) : 0)
+					Attack(that, damage * bonusMultiplier)
 
 					that.Tombstone victim {
 						NameBlock(owner)
@@ -3374,9 +3403,9 @@ sound Refract:HitSound(duration=0.5s) {
 }
 [[abilities/repeater.easel]]
 .. glyph=SonicLightning:Glyph, color=#00ff00
-.. damage=11, lifesteal=0.3, cooldown=9s
-.. rangedProportion=1, rangedDuration=0.4s
-.. bonusProportion=0.33, buffDuration=5s
+.. damage=12, lifesteal=0.3, cooldown=9s
+.. rangedBonus=1, rangedDuration=0.4s
+.. secondHitBonus=0.33, buffDuration=5s
 
 pub symbol WantRepeater
 
@@ -3393,10 +3422,10 @@ pub fn RepeaterOption(.. ui) {
 		P {
 			SlotEffect("Harmonic Resonance", icon="fas fa-undo") {
 				%("Each time Repeater hits, its cooldown resets, allowing you to fire it again immediately. ")
-				%("Hitting the same enemy a second time grants " + (bonusProportion * 100.0) + "% bonus damage. ")
+				%("Hitting the same enemy a second time grants " + (secondHitBonus * 100.0) + "% bonus damage. ")
 			}
 			SlotEffect("Soaring Crescendo", icon="fas fa-star-exclamation") {
-				%("Damage increases with range, building up to " + (rangedProportion+1) + "x bonus damage after " + (rangedDuration / TicksPerSecond) + " seconds.")
+				%("Damage increases with range, building up to " + (rangedBonus+1) + "x bonus damage after " + (rangedDuration / TicksPerSecond) + " seconds.")
 			}
 		}
 
@@ -3425,11 +3454,11 @@ pub fn ability.RepeaterAbility(unit, owner, btn) {
 
 		Spawn projectile {
 			.. parent=unit
-			.. lifetime=60, dissipation=18
+			.. lifetime=1s, dissipation=18
 			.. maxStacks=2
-			.. radius=0.16, speed=64.0
+			.. radius=0.16, speed=64
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=28, ccd=true
+			.. density=14, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 			.. collideWith = Category:Solid ^ Category:Projectile
 
@@ -3466,8 +3495,9 @@ pub fn ability.RepeaterAbility(unit, owner, btn) {
 							ExpireAfterLifetime(buffDuration)
 							BloomIndicator(that, audience=owner)
 
-							const growthFactor = rangedProportion * ((Tick - birth) / rangedDuration).Min(1.0)
-							Attack(that, growthFactor * (damage + stacks * bonusProportion))
+							const secondHitMultiplier = 1 + stacks * secondHitBonus
+							const rangedMultiplier = 1 + rangedBonus * ((Tick - birth) / rangedDuration).Min(1.0)
+							Attack(that, damage * rangedMultiplier * secondHitMultiplier)
 
 							once RepeaterMiss { // miss once and the buff expires too
 								Expire
@@ -3527,7 +3557,7 @@ sound Repeater:SuccessSound(duration=0.25s) {
 	Gain(volume=0.1)
 }
 [[abilities/repulsor.easel]]
-.. glyph=LightningHelix:Glyph, color=#ffaa00, damage=0, cooldown=9s
+.. glyph=LightningHelix:Glyph, color=#ffaa00, damage=0, cooldown=9s, recoilSpeed=40
 
 pub symbol WantRepulsor
 
@@ -3558,14 +3588,14 @@ pub fn ability.RepulsorAbility(unit, owner, btn) {
 		await ChargeForDuration(6) {
 			ChargingIndicator
 		}
-		unit.Velocity:ImpulseAway(Pointer, impulse=140.0)
+		unit.Velocity += -recoilSpeed * Direction(Heading)
 
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=0.5s, dissipation=30 
 			.. radius=0.2, speed=240.0
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=8, ccd=true
+			.. density=12, ccd=true
 			.. categories=Category:Projectile, durability=Durability:High
 			.. collideWith = Category:Solid ^ Category:Projectile
 
@@ -3624,18 +3654,18 @@ pub fn ReverberateOption(.. ui) {
 }
 
 pub fn ability.ReverberateAbility(unit, owner, btn) {
-	NoIncantation
+	NoIncantation {
+		on unit.AfterCollide that {
+			if (that.Category & Category:Hero) && that.Team != owner.Team {
+				Aoe:Impulse(that, 100)
+				Hear(Reverberate:Sound)
 
-	on unit.AfterCollide that {
-		if (that.Category & Category:Hero) && that.Team != owner.Team {
-			Aoe:Impulse(that, 100)
-			Hear(Reverberate:Sound)
-
-			that.Tombstone victim {
-				NameBlock(owner)
-				%(" reverberated ")
-				NameBlock(victim)
-				%(" into unending silence ")
+				that.Tombstone victim {
+					NameBlock(owner)
+					%(" reverberated ")
+					NameBlock(victim)
+					%(" into unending silence ")
+				}
 			}
 		}
 	}
@@ -3705,7 +3735,7 @@ pub fn ability.SaberAbility(unit, owner, btn) {
 			TurnRateModifier(-0.95)
 
 			// Main saber collider is actually attached to the unit's body, which means it will transmit forces back onto the unit (e.g. recoil)
-			Collider(unit, collideWith=Category:Hero, density=2.0) {
+			Collider(unit, collideWith=Category:Hero, density=2.5) {
 				// Deflector is attached to the saber's independent body so projectiles cannot knock the unit back through the saber
 				Collider<deflector>(collideWith=Category:Projectile, density=5.0) {
 					// Sprite is attached to the unit (not the independent deflector body) so it does not visually lag behind
@@ -3748,6 +3778,7 @@ pub fn ability.SaberAbility(unit, owner, btn) {
 
 			on BeforeCollide<deflector> that { // Secondary collider hits projectiles only
 				Hear(Saber:HitSound)
+				if that.Category & Category:Destructible { that.Expire }
 			}
 		}
 
@@ -3798,11 +3829,12 @@ pub fn SpiritArmorOption(.. ui) {
 }
 
 pub fn ability.SpiritArmorAbility(unit, owner, btn) {
-	NoIncantation
-	Vulnerability(-armorProportion)
+	NoIncantation {
+		Vulnerability(-armorProportion)
+	}
 }
 [[abilities/spiritBomb.easel]]
-.. glyph=MightyForce:Glyph, color=#ff0099, damage=0, cooldown=5s
+.. glyph=MightyForce:Glyph, color=#ff0099, damage=0, cooldown=5s, slowDuration=1.5s, slowProportion=0.9
 
 pub symbol WantSpiritBomb
 
@@ -3844,14 +3876,13 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 	Incantation {
 		.. lifetime=2.25s
 
-		CooldownRate(-1)
-		SpeedModifier(-1)
+		SpeedModifier(-0.95)
 
 		Spawn projectile {
 			.. parent=unit
-			.. dissipation=20, impulse=300.0, radius=0.4, aoe=2.25, speed=17, turnProportion=0.012
+			.. dissipation=20, impulse=570, radius=0.4, aoe=2.25, speed=17.5, turnProportion=0.012
 			.. ownerColor=true, luminous=1.0, depth=Depth:Projectile
-			.. density=1, ccd=true
+			.. density=1.5, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			let leash = LeashRange
@@ -3872,7 +3903,7 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 			ExpireAfterLifetime
 
 			hook Pointer {
-				Homing(Pointer)
+				Homing(Pointer, turnRate=0.006rev)
 			}
 
 			Collider {
@@ -3903,7 +3934,19 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 					Aoe:ForEach that {
 						if that.Team != owner.Team {
 							Attack(that)
-							Aoe:Impulse(that, impulse=)
+							Aoe:ImpulseAttenuated(that, impulse=, attenuate=0.75)
+							Aoe:Destroy(that)
+
+							if that.Category & Category:Hero {
+								that.ReplaceBuff<stun>(cleansable=true) {
+									ExpireAfterLifetime(slowDuration)
+									SpeedModifier(-slowProportion, that)
+									Smoke(that,
+										color=#4ff4, fade=1, feather=0.5,
+										radius=1.0, dissipation=20, depth=Depth:Particle,
+										flutter=$perimeter)
+								}
+							}
 
 							that.Tombstone victim {
 								NameBlock(owner)
@@ -3963,7 +4006,7 @@ sound SpiritBomb:ExplodeSound(duration=0.75s) {
 	Envelope(attack=0.01s, sustain=0s)
 }
 [[abilities/supernova.easel]]
-.. glyph=CrownedExplosion:Glyph, color=#ff9a00, damage=0, cooldown=7.5s, explodeDelay=0.25s
+.. glyph=CrownedExplosion:Glyph, color=#ff9a00, damage=0, cooldown=7.5s, explodeDelay=0.3s
 
 pub symbol WantSupernova
 
@@ -3992,8 +4035,8 @@ pub fn ability.SupernovaAbility(unit, owner, btn) {
 	Incantation {
 		Spawn projectile {
 			.. parent=unit
-			.. impulse=600.0, aoe=4.0
-			.. radius=0.1, speed=26.0
+			.. impulse=710.0, aoe=4.0
+			.. radius=0.1, speed=24.0
 			.. lifetime=65, dissipation=30
 			.. luminous=1.0, depth=Depth:Projectile
 			.. density=5.0, ccd=true
@@ -4022,7 +4065,8 @@ pub fn ability.SupernovaAbility(unit, owner, btn) {
 				Aoe:ForEach that {
 					if that.Team != owner.Team {
 						Attack(that)
-						Aoe:ImpulseAttenuated(that, attentuate=0.4)
+						Aoe:ImpulseAttenuated(that, attenuate=0.4)
+						Aoe:Destroy(that)
 
 						that.Tombstone victim {
 							NameBlock(owner)
@@ -4098,7 +4142,7 @@ pub fn ability.SwapAbility(unit, owner, btn, btnIndex?, btnSize) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=45, dissipation=12
-			.. radius=0.5, aoe=3.0, speed=64.0
+			.. radius=0.5, aoe=3.2, speed=64.0
 			.. feather=0.5, shine=0.2, glare=0.7, luminous=1.0, depth=Depth:Projectile
 			.. density=100, durability=Durability:High, ccd=true
 			.. categories=Category:Projectile
@@ -4318,16 +4362,16 @@ pub fn ability.TrifireAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		await Spray(duration=0, count=numBolts, spray=0.09revs) headingOffset index {
+		await Spray(duration=0, count=numBolts, spray=0.03revs) headingOffset index {
 			.. damage = damage / count
 
 			Spawn projectile {
 				.. parent=unit
-				.. lifetime=1s, dissipation=10
-				.. radius = index <= 0 ? 0.22 : 0.15
-				.. speed = index <= 0 ? 48 : 32
-				.. density=40, ccd=true
-				.. durability = index <= 0 ? Durability:Medium : Durability:Low
+				.. lifetime=2.25s, dissipation=20
+				.. radius = index <= 0 ? 0.20 : 0.12
+				.. speed = index <= 0 ? 24 : 20
+				.. density=13.9, ccd=true
+				.. durability = Durability:Medium
 				.. luminous=1.0, depth=Depth:Projectile
 				.. categories=Category:Projectile, collideWith=Category:Solid
 
@@ -4577,7 +4621,7 @@ pub fn ability.WhirlwindAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=2s, dissipation=20 
-			.. radius=2.4, density=1, speed=16.0, impulse=100
+			.. radius=2.4, density=1, speed=12.0
 			.. luminous=0, glare=0.7, glareAlpha=0.4, bloom=0, feather=0.5, depth=Depth:Projectile
 			.. categories=Category:Projectile, collideWith=Category:None, sense=Category:Hero
 
@@ -4586,9 +4630,9 @@ pub fn ability.WhirlwindAbility(unit, owner, btn) {
 			PrepareForCollision
 			PropulsiveMotion
 			Sing(Whirlwind:Sound)
-			Bloom(bloom=7, luminous=0.5)
+			Bloom(bloom=4, luminous=0.5)
 			Smoke(
-				count=2, radius=1.6, splatter=1.3,
+				count=2, radius=1.2, splatter=1.3,
 				color=#4ff4, fade=1,
 				flutter=Flutter:Swirl(radius=0.8, period=13))
 
@@ -4605,7 +4649,7 @@ pub fn ability.WhirlwindAbility(unit, owner, btn) {
 						Smoke(that,
 							color=#4ff4, fade=1, feather=0.5,
 							radius=1.0, dissipation=20, depth=Depth:Particle,
-							flutter=$perimeter, splatter=Splatter:Outwards(12))
+							flutter=$perimeter)
 
 						that.Tombstone victim {
 							NameBlock(owner)
@@ -4619,7 +4663,7 @@ pub fn ability.WhirlwindAbility(unit, owner, btn) {
 				}
 			}
 
-			Wind(0.2, radius=, filter=(Category:Projectile | Category:Obstacle), against=(Alliance:Enemy | Alliance:Neutral))
+			Wind(0.3, radius=)
 		}
 	}
 }
@@ -4828,7 +4872,7 @@ pub fn owner.Rating:AnnounceChange(rating, delta) {
 }
 
 fn Rating:FormatDelta(delta) {
-	let formatted = Abs(delta) < 1 ? FormatToPrecision(delta, 0) : FormatToFixed(delta, 0)
+	let formatted = Abs(delta) < 1 ? FormatToPrecision(delta, 1) : FormatToFixed(delta, 0)
 	if delta >= 0.0 {
 		formatted = "+" + formatted
 	}
@@ -4866,6 +4910,21 @@ pub fn this.UnrankedTool(owner, placement?) {
 [[aliases.easel]]
 pub alias body = unit | projectile | shield | saber | obstacle | zone | turf
 pub alias life = unit | obstacle
+[[buffs/categories.easel]]
+pub meld this.FilterCategoriesModifier(filter, @unit) = (modifiers) => {
+	let categories = Category:All
+	for modifier in modifiers {
+		categories &= modifier
+	}
+	return categories
+}
+pub meld this.AlsoCategoriesModifier(also, @unit) = (modifiers) => {
+	let categories = Category:None
+	for modifier in modifiers {
+		categories |= modifier
+	}
+	return categories
+}
 [[buffs/cooldownRate.easel]]
 pub meld this.CooldownRate(modifier, @ability) = (modifiers) => BuffMultiplier(modifiers)
 pub meld this.UnitCooldownRate(modifier, @unit) = (modifiers) => BuffMultiplier(modifiers)
@@ -4910,13 +4969,15 @@ pub meld this.Unkillable(unkillable, @life) = (unkillable) => unkillable.Any
 [[buffs/vulnerability.easel]]
 pub meld this.Vulnerability(modifier, @unit) = (modifiers) => BuffMultiplier(modifiers)
 [[constants.easel]]
-pub const Alliance:None=0b0000
-pub const Alliance:All=0b1111
+pub const Alliance:None             = 0b0000
+pub const Alliance:All              = 0b1111
+pub const Alliance:Friendly         = 0b0011
+pub const Alliance:NotFriendly      = 0b1100
 
-pub const Alliance:Self=0b0001
-pub const Alliance:Ally=0b0010
-pub const Alliance:Enemy=0b0100
-pub const Alliance:Neutral=0b1000
+pub const Alliance:Self             = 0b0001
+pub const Alliance:Ally             = 0b0010
+pub const Alliance:Enemy            = 0b0100
+pub const Alliance:Neutral          = 0b1000
 
 pub const Utility:None=-1
 pub const Utility:Minimum=0
@@ -4942,7 +5003,10 @@ pub const Category:Massive          = 0b00000000000000000000000001000000 // Mete
 pub const Category:Grabber          = 0b00000000000000010000000000000000 // This is a grapple
 pub const Category:CanGrab          = 0b00000000000000100000000000000000 // Grapple can hold onto this
 pub const Category:HurtByLava       = 0b00000000000001000000000000000000 // Can be hurt by lava
-pub const Category:Aoe              = 0b00000000000010000000000000000000 // By default affected by area-of-effect
+pub const Category:Aoe              = 0b00000000000010000000000000000000 // Affected by area-of-effect
+pub const Category:AlwaysBlow       = 0b00000000000100000000000000000000 // Always affected by whirlwind, even when on the same team
+pub const Category:Destructible     = 0b00000000001000000000000000000000 // Destroyed by explosions
+pub const Category:Ghost            = 0b10000000000000000000000000000000 // A unit for a dead player
 
 pub const CloseEnough=0.0001
 
@@ -4985,9 +5049,9 @@ pub fn Attack(that, damage, .. lifesteal?, minHealth?, noHurt?, noRelay?, noInte
 
 	let loss = damage > 0 ? that.TakeDamage(that.MitigateDamage(damage, attacker=unit)) : 0
 
-    if unit && lifesteal > 0.0 && loss > 0.0 && that.Owner && (that.Category & Category:Hero) {
+    if unit && lifesteal > 0.0 && loss > 0.0 && (that.Category & Category:Hero) && that.Owner && that.Owner != unit.Owner {
         // Lifesteal back to owner, but only if the target is owned by another enemy player
-        unit.Heal(damage * lifesteal)
+        unit.Heal(loss * lifesteal)
     }
 
     if !noHurt && (loss > 0 || damage == 0) {
@@ -5301,50 +5365,63 @@ pub delete fn this.Healthbar {
 	delete Sprite<HintSprite>
 }
 [[core/incantation.easel]]
-pub fn ability.NoIncantation(.. owner, glyph) {
+pub fn ability.NoIncantation(.. unit, owner, glyph, btn) .. {
+	CommandBinding(btn, owner=) // Binding still needed so users can Shift+KeyBinding to edit their ability
 	CommandIcon(opacity=0.5, color=#333, glyphColor=#aaa .. glyph)
+	CommandText("") // Display no text on the button because the player cannot invoke this command
+
+    if !(unit.Category & Category:Ghost) {
+		// Ghosts can only edit their abilities, not use them
+		delve()
+	}
 }
 
 pub fn ability.Incantation(.. unit, owner, glyph, color, cooldown, btn) .. *incantation {
 	CommandBinding(btn, owner=)
 
-    CooldownTicker
-    Silenceable
+    if unit.Category & Category:Ghost {
+		// Ghosts can only edit their abilities, not use them
+		CommandIcon(.. glyph color)
 
-	hook Cooldown {
-		let cooldown = Cooldown
-		let color = color
-		let glyphColor = #fff
-		if cooldown >= 1s {
-			color = #222
-			glyphColor = #999
-		} else if cooldown > 0.1s {
-			color = #777
-			glyphColor = #eee
-		} else if cooldown > 0s {
-			color = #111
-			glyphColor = #777
+	} else {
+		CooldownTicker
+		Silenceable
+
+		hook Cooldown {
+			let cooldown = Cooldown
+			let color = color
+			let glyphColor = #fff
+			if cooldown >= 1s {
+				color = #222
+				glyphColor = #999
+			} else if cooldown > 0.1s {
+				color = #777
+				glyphColor = #eee
+			} else if cooldown > 0s {
+				color = #111
+				glyphColor = #777
+			}
+
+			let text = null
+			if cooldown > 1s {
+				text = FormatToFixed(cooldown / TicksPerSecond, 0)
+			} else if cooldown > 0s {
+				text = FormatToFixed(cooldown / TicksPerSecond, 1)
+			}
+
+			CommandIcon(.. glyph color glyphColor)
+			CommandText(text)
 		}
-
-		let text = null
-		if cooldown > 1s {
-			text = FormatToFixed(cooldown / TicksPerSecond, 0)
-		} else if cooldown > 0s {
-			text = FormatToFixed(cooldown / TicksPerSecond, 1)
-		}
-
-		CommandIcon(.. glyph color glyphColor)
-		CommandText(text)
-	}
-	
-	on ability.InvokeCommand {
-		RecheckCommenceCountdown
-	
-		ability.Subscope incantation {
-			Incantation:Queue
-			if Cooldown == 0 {
-				Cooldown = cooldown
-				delve()
+		
+		on ability.InvokeCommand {
+			RecheckCommenceCountdown
+		
+			ability.Subscope incantation {
+				Incantation:Queue
+				if Cooldown == 0 {
+					Cooldown = cooldown
+					delve()
+				}
 			}
 		}
 	}
@@ -5387,6 +5464,7 @@ pub prop owner.SlotsUneditable(uneditable)
 
 field unit.PreviousAbility<Slot>(ability)
 
+/// Spawns an ability on the unit, and replaces the spawn whenever the slot changes
 pub fn unit.SlotAbility<Slot>(.. owner, slotDefault?, btnIndex?, btnSize?) choice .. *ability {
 	hook owner.Preference<Slot> {
         // Destroy previous ability
@@ -5403,12 +5481,13 @@ pub fn unit.SlotAbility<Slot>(.. owner, slotDefault?, btnIndex?, btnSize?) choic
 	}
 }
 
-// If the slot has no ability, this displays a blank icon for the slot which allows a new ability to be selected instead
+/// If the slot has no ability, this displays a blank icon for the slot which allows a new ability to be selected instead
 pub fn ability.SlotWithoutAbility(.. owner) {
 	CommandIcon(opacity=0.5, color=#333, glyphColor=#aaa, glyph=BlankGlyph)
 }
 
-pub fn this.SlotPopup<Slot>(.. ability, owner) .. ui {
+/// Attachs a popup to an ability which allows the ability to be changed
+pub fn ability.SlotPopup<Slot>(.. owner) .. ui {
 	hook SlotsUneditable {
 		if SlotsUneditable {
 			delete Modal<Slot+slotPopup>
@@ -5423,6 +5502,7 @@ pub fn this.SlotPopup<Slot>(.. ability, owner) .. ui {
 	}
 }
 
+/// Adds a SlotEditor pip tab panel to the UI
 pub fn this.SlotEditor<Slot>(ui .. btn?, owner, slotDefault?) .. ui {
 	PipTabs<Slot> {
 		delve()
@@ -5440,6 +5520,7 @@ pub fn this.SlotEditor<Slot>(ui .. btn?, owner, slotDefault?) .. ui {
         owner.Preference<Slot> = choice
     }
 }
+/// Adds a SlotEditor dropdown to the UI
 pub fn this.SlotDropdown<Slot>(ui .. owner, slotDefault?) .. ui {
 	Dropdown<Slot> {
 		delve()
@@ -5452,6 +5533,7 @@ pub fn this.SlotDropdown<Slot>(ui .. owner, slotDefault?) .. ui {
     }
 }
 
+/// Adds an option tab for one particular ability to a SlotEditor - must be called within SlotEditor
 pub fn SlotOption<Id>(.. ui, glyph, color) .. ui {
 	PipTab<Id> { delve() }
 }
@@ -5509,24 +5591,19 @@ pub fn this.SlotLoadoutTool(tooltip .. owner, placement=null, icon="fas fa-ballo
 	}
 }
 
-pub fn this.SlotRandomizeTool(tooltip .. owner, hidden=false, placement=null, icon="fas fa-dice") .. {
+pub fn this.SlotRandomizeTool(tooltip .. owner, placement=null, icon="fas fa-dice") .. {
 	hook SlotsUneditable {
 		if SlotsUneditable {
 			delete Toolbar<randomizeTool>
 
 		} else {
 			Toolbar<randomizeTool>(placement=) {
-				if !hidden {
-					Button(onPress=$randomize, icon=, collapsable=true, repeatable=true) {
-						%(tooltip)
-					}
+				Button(onPress=$randomize, icon=, collapsable=true, repeatable=true) {
+					%(tooltip)
 				}
 			}
-
-			if !hidden {
-				on ButtonPress($randomize) {
-					delve()
-				}
+			on ButtonPress($randomize) {
+				delve()
 			}
 		}
 	}
@@ -6678,10 +6755,6 @@ pub mode fn World.Main {
 				%(" died")
 			}
 
-			once Expire {
-				Eliminate(owner)
-			}
-
 			once BeforePlayerLeave {
 				if IsReadyToBegin && !HasConcluded {
 					// During the game, no one leaves, instead wait until the game is complete
@@ -6697,6 +6770,17 @@ pub mode fn World.Main {
 					delete Bot
 				} else {
 					Bot
+				}
+			}
+
+			once Expire {
+				Eliminate(owner)
+
+				// Spawn a ghost unit and attach abilities to it so the player can still edit their spells after they are dead
+				.. parent = unit
+				Spawn unit {
+					Ghost
+					SlotAbilities
 				}
 			}
 		}
@@ -6910,7 +6994,7 @@ pub fn obstacle.Bumper(pos, heading?=0, maxHp=100.0, impulse=200, radius=1.0, de
 
 	on BeforeCollide that {
 		if that.Category & (Category:Hero | Category:Obstacle) {
-			that.Velocity:ImpulseAway(this.Pos)
+			that.ApplyImpulse(impulse * Direction(that.Pos - this.Pos))
 			Strobe(dissipation=10, shine=0.5, growth=0.5)
 			Hear(Obstacle:Bumper)
 		}
@@ -6989,7 +7073,7 @@ pub fn obstacle.Conveyor(pos, heading?=0, convey, maxHp=50, radius=0.25) .. shap
 [[obstacles/explosive.easel]]
 .. owner = null
 
-pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=400, radius=0.4, aoe=4.0, density=10.0) {
+pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=350, radius=0.4, aoe=4.0, density=10.0) {
 
 	.. dissipation=30,
 	.. color=#fc0,
@@ -7028,7 +7112,8 @@ pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=400, radius=0.4, 
 			Hear(Obstacle:Explosive)
 
 			Aoe:ForEach that {
-				Aoe:ImpulseAttenuated(that, attentuate=0.4)
+				Aoe:ImpulseAttenuated(that, attenuate=0.4)
+				Aoe:Destroy(that)
 				that.Interrupt
 			}
 
@@ -7180,8 +7265,10 @@ pub fn obstacle.Mirror(pos, heading?=0, maxHp=100.0, radius=1.0, density=100.0) 
 
 	Body(pos, heading=)
 	PrepareForCollision
-	Anchored(pos, heading)
 	DecayingMotion(turningDecay=0.05)
+
+	Anchored(pos, heading)
+	once AfterCommence { delete Anchored }
 
 	Health
 
@@ -7308,12 +7395,12 @@ pub fn body.DriftingMotion(.. turnRate?, turningDecay=0.5, alignHeadingToVelocit
 }
 
 // If an entity with PropulsiveMotion gets hit, it will slowly revert (speed up or slow down) to its original speed.
-pub fn body.PropulsiveMotion(propulsion=0.1, .. speed, maxSpeed?, turnRate?, turningDecay=0.5, alignHeadingToVelocity?) {
+pub fn body.PropulsiveMotion(propulsion=0.05, .. speed, maxSpeed?, turnRate?, turningDecay=0.5, alignHeadingToVelocity?) {
 	Motion(speedDecay=propulsion)
 }
 
 // If an entity with DecayingMotion gets hit, it will slowly revert to zero speed
-pub fn body.DecayingMotion(speedDecay=0.07, .. maxSpeed?=100.0, turnRate?, turningDecay=0.5, alignHeadingToVelocity?) {
+pub fn body.DecayingMotion(speedDecay=0.0488, .. maxSpeed?=100.0, turnRate?, turningDecay=0.5, alignHeadingToVelocity?) {
 	Motion
 }
 [[physics/movement.easel]]
@@ -7408,11 +7495,6 @@ pub fn body.Movement:TurnWith(parent) {
 	}
 }
 [[physics/velocity.easel]]
-pub fn body.Velocity:ImpulseAway(target, impulse) {
-	let outward = body.Pos - target
-	body.ApplyImpulse(impulse * Direction(outward))
-}
-
 pub fn body.Velocity:TicksTo(target, speed) {
 	return TicksPerSecond * Distance(target, body.Pos) / speed
 }
@@ -7420,7 +7502,7 @@ pub fn body.Velocity:TicksTo(target, speed) {
 pub fn body.Velocity:RedirectTowards(prey, speed=null, .. speedFactor=1) {
 	if !Exists(body) { return }
 
-	let prey = Prey:Find(prey)
+	let prey = FindPrey(prey)
 	if !prey { return }
 
 	body.Velocity = Direction(prey - body.Pos) * (speedFactor * (speed ?? Length(body.Velocity)))
@@ -7778,6 +7860,17 @@ pub fn owner.EliminatedDialog() .. ui {
 		}
 	}
 }
+[[players/ghost.easel]]
+pub field unit.IsGhost
+
+/// The purpose of the Ghost is to allow a player to continue to edit their abilities after they are dead.
+pub fn unit.Ghost(owner, parent) {
+	this.Category = Category:Ghost
+	this.Owner = owner
+
+    // Add a body just to avoid any potential crashes if someone looks for it
+	Body(parent.Pos, heading=parent.Heading, immovable=true)
+}
 [[players/hero.easel]]
 pub signal unit.HeroExit
 
@@ -7856,6 +7949,10 @@ pub fn unit.Hero(owner, pos=@(0,0), radius=1.0, density=1) {
 	once AfterCommence {
 		CleanseBuffs
 		SeverTethers
+	}
+
+	hook<categories> FilterCategoriesModifier, AlsoCategoriesModifier {
+		unit.Category = categories & FilterCategoriesModifier | AlsoCategoriesModifier
 	}
 
 	hook<render> SizeModifier, Vanished {
@@ -8569,11 +8666,67 @@ pub page fn owner.SettingsPage {
                 WalkSlotEditor
                 Caption { %("Choose whether to continuously move towards your cursor, or only when you click/tap") }
             }
+            FormBlock("Left-click/Tap") {
+                LeftClickEditor
+            }
+            FormBlock("Right-click/Double Tap") {
+                RightClickEditor
+            }
         }
 	}
 }
+[[slots/clicks.easel]]
+pub preference owner.LeftClickSlot
+pub preference owner.RightClickSlot
+
+pub symbol WantClickMove
+pub symbol WantClickQ
+pub symbol WantClickA
+
+const LeftClickDefault=WantClickQ
+const RightClickDefault=WantClickA
+
+pub fn unit.LeftClickBinding(owner) {
+	SlotAbility<LeftClickSlot>(slotDefault=LeftClickDefault) choice {
+        const binding = ChoiceToBinding(choice)
+        AlternateBinding("Click", binding)
+        AlternateBinding("Tap", binding)
+	}
+}
+pub fn unit.RightClickBinding(owner) {
+    SlotAbility<RightClickSlot>(slotDefault=RightClickDefault) choice {
+        const binding = ChoiceToBinding(choice)
+        AlternateBinding("SecondaryClick", binding)
+        AlternateBinding("DoubleTap", binding)
+	}
+}
+
+fn ChoiceToBinding(choice) {
+    if choice == WantClickMove { return "Click" }
+    else if choice == WantClickQ { return "KeyQ" }
+    else if choice == WantClickA { return "KeyA" }
+    else { return null }
+}
+
+pub fn this.LeftClickEditor(.. owner, ui) {
+	SlotDropdown<LeftClickSlot>(slotDefault=LeftClickDefault) {
+        ClickEditor
+	}
+}
+
+pub fn this.RightClickEditor(.. owner, ui) {
+	SlotDropdown<RightClickSlot>(slotDefault=RightClickDefault) {
+        ClickEditor
+	}
+}
+
+fn ClickEditor(.. ui) {
+    DropdownOption<WantClickMove>("Move")
+    DropdownOption<WantClickQ>("Primary Attack")
+    DropdownOption<WantClickA>("Dash")
+}
 [[slots/dash.easel]]
-.. btn=["KeyA", "SecondaryClick", "DoubleTap"], slotDefault=WantCharge
+.. btn="KeyA", slotDefault=WantCharge
 
 pub preference owner.DashSlot
 
@@ -8623,7 +8776,6 @@ pub fn unit.DefenseSlotAbility(.. owner, btnIndex, btnSize=1) {
 		else if choice == WantDualSaber { DualSaberAbility }
 		else if choice == WantMeteor { MeteorAbility }
 		else if choice == WantMeteorite { MeteoriteAbility }
-		else if choice == WantDrain { DrainAbility }
 		else if choice == WantHorcrux { HorcruxAbility }
 		else if choice == WantPhaseShift { PhaseShiftAbility }
 		else if choice == WantBlaze { BlazeAbility }
@@ -8641,7 +8793,6 @@ pub fn this.DefenseSlotEditor(.. owner, ui) {
 		DualSaberOption
 		MeteorOption
 		MeteoriteOption
-		DrainOption
 		HorcruxOption
 		PhaseShiftOption
 		BlazeOption
@@ -8657,7 +8808,6 @@ pub fn owner.RandomizeDefenseSlot {
 		WantDualSaber,
 		WantMeteor,
 		WantMeteorite,
-		WantDrain,
 		WantHorcrux,
 		WantPhaseShift,
 		WantBlaze,
@@ -8755,6 +8905,7 @@ pub preference owner.SpecialSlot
 pub fn unit.SpecialSlotAbility(.. owner, btnIndex?, btnSize=1) {
 	SlotAbility<SpecialSlot> choice {
 		if choice == WantHoming { HomingAbility }
+		else if choice == WantDrain { DrainAbility }
 		else if choice == WantArcaneAgility { ArcaneAgilityAbility }
 		else if choice == WantOrbiter { OrbiterAbility }
 		else if choice == WantRepulsor { RepulsorAbility }
@@ -8772,6 +8923,7 @@ pub fn this.SpecialSlotEditor(.. owner, ui) {
 	SlotEditor<SpecialSlot> {
 		HomingOption
 		OrbiterOption
+		DrainOption
 		RepulsorOption
 		EnsnareOption
 		LinkOption
@@ -8785,6 +8937,7 @@ pub fn owner.RandomizeSpecialSlot {
 	SpecialSlot = PickRandom([
 		WantHoming,
 		WantOrbiter,
+		WantDrain,
 		WantRepulsor,
 		WantEnsnare,
 		WantLink1,
@@ -8863,6 +9016,9 @@ pub fn unit.SlotAbilities(owner) {
     SpecialSlotAbility(btnIndex=2, btnSize=0.9)
     UltimateSlotAbility(btnIndex=4, btnSize=0.9)
     MeleeSlotAbility(btnIndex=5, btnSize=0.75)
+
+    LeftClickBinding
+    RightClickBinding
 }
 
 pub fn owner.RandomizeAllSlots {
@@ -8977,7 +9133,7 @@ pub behavior fn this.Lava(damageInterval=20, damagePerSecond=12.5, lifesteal=0.3
 // Smaller than this and we will quickly shrink to the proportional area (not radius) for that number of players
 const ShrinkMaxPlayers = 8
 const ShrinkRatePerTick = 0.003 // This is the rate at which the turf will shrink to its target size
-const ShrinkPower = 0.75 // Reshape the shrink curve according to this power - less than 1 means the shrinking is slower at start and faster at end, the opposite for greater than 1
+const ShrinkPower = 0.5 // Reshape the shrink curve according to this power - less than 1 means the shrinking is slower at start and faster at end, the opposite for greater than 1
 
 field scene.ShrinkStartTick
 pub prop scene.ShrinkScale
@@ -9066,11 +9222,17 @@ pub fn body.Aoe:Impulse(that, impulse) {
 	}
 }
 
-pub fn body.Aoe:ImpulseAttenuated(that, impulse, aoe, attentuate=1.0) {
+pub fn body.Aoe:ImpulseAttenuated(that, impulse, aoe, attenuate=1.0) {
 	if that.Category & Category:Aoe {
 		let outward = that.Pos - body.Pos
-		let impulse = impulse * (Length(outward) / aoe).Mix(1.0, attentuate)
+		let impulse = impulse * (Length(outward) / aoe).Mix(1.0, attenuate)
 		that.ApplyImpulse(impulse * Direction(outward))
+	}
+}
+
+pub fn body.Aoe:Destroy(that, .. owner) {
+	if that.Category & Category:Destructible && (Alliance(that, owner) & Alliance:NotFriendly) {
+		that.Expire
 	}
 }
 [[tricks/barrage.easel]]
@@ -9171,12 +9333,12 @@ pub fn this.TakeHitIfWithinLimit(that, maxHits) {
 	}
 }
 [[tricks/homing.easel]]
-pub behavior fn this.Homing(prey, .. turnProportion?=1, body) {
+pub behavior fn this.Homing(prey, .. turnProportion=1, turnRate=1, body) {
 	let previousTarget = null
 	loop {
 		if !Exists(body) { break }
 
-		let target = Prey:Find(prey)
+		let target = FindPrey(prey)
 		if previousTarget && IsId(prey) && prey.Vanished {
 			target = previousTarget
 		}
@@ -9186,7 +9348,7 @@ pub behavior fn this.Homing(prey, .. turnProportion?=1, body) {
 		let currentAngle = Angle(body.Velocity)
 		let targetAngle = Angle(target - body.Pos)
 
-		body.Velocity = Length(body.Velocity) * Direction(currentAngle + AngleDelta(currentAngle, targetAngle) * turnProportion)
+		body.Velocity = Length(body.Velocity) * Direction(currentAngle + (AngleDelta(currentAngle, targetAngle) * turnProportion).Clamp(-turnRate, turnRate))
 
 		await PhysicsStart
 	}
@@ -9201,7 +9363,7 @@ pub behavior fn this.Poison<Id?>(that, damage, poisonDuration, .. interval=20, l
 	}
 }
 [[tricks/prey.easel]]
-pub fn Prey:Find(prey) {
+pub fn FindPrey(prey) {
 	let prey = prey
 	if IsFunc(prey) { prey = prey() }
 	if IsId(prey) { prey = prey?.Pos }
@@ -9212,7 +9374,7 @@ pub behavior fn this.Proximity:OnArrival(prey, range=CloseEnough, body) .. {
 	loop {
 		await Tick
 
-		let prey = Prey:Find(prey)
+		let prey = FindPrey(prey)
 		if !prey { break }
 
 		let thisPos = body?.Pos
@@ -9230,7 +9392,7 @@ pub behavior fn this.Proximity:OnRetreat(prey, range, body) .. {
 	loop {
 		await Tick
 
-		let prey = Prey:Find(prey)
+		let prey = FindPrey(prey)
 		if !prey { break }
 
 		let thisPos = body?.Pos
@@ -9337,7 +9499,7 @@ pub fn projectile.TetherBuffOnHit(
 }
 
 // Forces
-pub behavior fn this.Tether:Pull(that, attractor, impulse, minDistance=0, maxDistance) {
+pub behavior fn this.PullTether(that, attractor, impulse, minDistance=0, maxDistance) {
 	loop {
 		await Tick
 
@@ -9353,7 +9515,7 @@ pub behavior fn this.Tether:Pull(that, attractor, impulse, minDistance=0, maxDis
 	}
 }
 
-pub behavior fn this.Tether:Tow(that, attractor) {
+pub behavior fn this.TowTether(that, attractor) {
 	let thatPos = that?.Pos
 	if !thatPos { break }
 
@@ -9380,7 +9542,7 @@ pub behavior fn this.Tether:Tow(that, attractor) {
 	}
 }
 
-pub behavior fn this.Tether:Swing(that, unit, turnProportion, momentumFactor=1) {
+pub behavior fn this.SwingTether(that, unit, turnProportion, momentumFactor=1) {
 	loop {
 		await Tick
 
@@ -9405,6 +9567,7 @@ pub behavior fn this.Tether:Swing(that, unit, turnProportion, momentumFactor=1) 
 		let orthogonal = RotateRight(Direction(step))
 		velocity = (step * TicksPerSecond) + (Dot(velocity, orthogonal) * orthogonal * momentumFactor)
 		
+		that.ApplyTurningStep(turn)
 		that.Velocity = velocity
 	}
 }
@@ -9413,7 +9576,7 @@ pub behavior fn this.Thrust(prey, speed, body) {
 	loop {
 		await PhysicsStart
 
-		let prey = Prey:Find(prey)
+		let prey = FindPrey(prey)
 		if !prey { break }
 
 		let pos = body?.Pos
@@ -9454,7 +9617,7 @@ pub delete fn this.Tween<Id?> {
 	delete this.TweenStart<Id>
 }
 [[tricks/wind.easel]]
-pub behavior fn this.Wind(wind, radius, body, .. filter=Category:Hero, against?=Alliance:Enemy, owner?) {
+pub behavior fn this.Wind(wind, radius, body, .. filter = (Category:Projectile | Category:Obstacle), owner) {
 	loop {
 		await Tick
 		let windVelocity = body.Velocity
@@ -9462,12 +9625,18 @@ pub behavior fn this.Wind(wind, radius, body, .. filter=Category:Hero, against?=
 		let windSpeed = Length(windVelocity)
 		let mass = body.Mass
 
-		let items =
-			QueryColliders
-			.WhereCategory(filter)
-			.WhereAlliance(owner, against)
-			.FindAllWithinRadius(body.Pos, radius)
+		let items = QueryColliders.WhereCategory(filter).FindAllWithinRadius(body.Pos, radius)
 		for that in items {
+			const alliance = Alliance(owner, that)
+			if alliance == Alliance:Self | Alliance:Ally {
+				if !(that.Category & Category:AlwaysBlow) {
+					// Generally do not affect our own team's entities unless has the AlwaysBlow flag
+					continue
+				}
+			} else {
+				// Always affect enemy entities
+			}
+
 			let speed = Dot(windDirection, that.Velocity)
 			if speed < windSpeed {
 				let delta = windSpeed - speed

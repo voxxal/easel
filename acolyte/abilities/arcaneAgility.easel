@@ -20,6 +20,7 @@ pub fn ArcaneAgilityOption(.. ui) {
 }
 
 pub fn ability.ArcaneAgilityAbility(unit, owner, btn) {
-	NoIncantation
-	SpeedModifier(fastProportion)
+	NoIncantation {
+		SpeedModifier(fastProportion)
+	}
 }

@@ -38,7 +38,7 @@ pub fn ability.BlazeAbility(unit, owner, btn) {
 		.. shine=1.0, glare=0.7, bloom=3.0, luminous=1.0
 
 		SpeedModifier(-1) // Don't allow other movement to interfere with the charge
-		Tangibility(Category:Solid ^ Category:Hero ^ Category:Obstacle) // Pass through units and obstacles
+		Tangibility(Category:Shield) // Pass through everything except shields
 		SenseAlso(Category:Hero) // Sense units while charging so we can apply damage but don't collide with them
 		Sing(Blaze:Sound)
 

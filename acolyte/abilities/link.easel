@@ -47,6 +47,7 @@ pub fn ability.LinkAbility(unit, owner, btn) {
 			ExpireAfterLifetime
 			Sing(Link:Sound)
 			CooldownRate(-1)
+			Movement:WalkWith(unit)
 
 			Sprite(bloom=2) {
 				Shape:Equilateral(radius=, numPoints=3)
@@ -78,8 +79,8 @@ pub fn ability.LinkAbility(unit, owner, btn) {
 			TetherBuffOnHit(radius=0.2, bloomAlpha=0.5, shadow=0.5) that {
 				ExpireAfterLifetime(1.75s)
 				CooldownRate(-1)
-				Tether:Pull(that, attractor=unit, impulse=5, minDistance=2, maxDistance=10)
-				Tether:Tow(that, attractor=unit)
+				PullTether(that, attractor=unit, impulse=5, minDistance=2, maxDistance=10)
+				TowTether(that, attractor=unit)
 
 				if (that.Category & (Category:Hero | Category:Obstacle)) && that.Team != owner.Team {
 					Relay(that)

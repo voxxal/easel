@@ -1,0 +1,14 @@
+pub meld this.FilterCategoriesModifier(filter, @unit) = (modifiers) => {
+	let categories = Category:All
+	for modifier in modifiers {
+		categories &= modifier
+	}
+	return categories
+}
+pub meld this.AlsoCategoriesModifier(also, @unit) = (modifiers) => {
+	let categories = Category:None
+	for modifier in modifiers {
+		categories |= modifier
+	}
+	return categories
+}

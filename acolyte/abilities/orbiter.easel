@@ -1,4 +1,4 @@
-.. glyph=BoomerangSun:Glyph, color=#ff00ff, damage=25.0, lifesteal=0.3, cooldown=11.0s
+.. glyph=BoomerangSun:Glyph, color=#ff00ff, damage=25.0, lifesteal=0.3, cooldown=9.0s
 
 pub symbol WantOrbiter
 
@@ -31,9 +31,9 @@ pub fn ability.OrbiterAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=4s, dissipation=30, ownerColor=Alliance:Self
-			.. radius=0.24, speed=48, bounceSpeed=10
+			.. radius=0.24, speed=48, bounceSpeed=5
 			.. luminous=1.0, depth=Depth:Projectile
-			.. density=1.0, ccd=true
+			.. density=1.5, ccd=true
 			.. categories=Category:Projectile, durability=Durability:Medium
 
 			LaunchBody
@@ -48,7 +48,7 @@ pub fn ability.OrbiterAbility(unit, owner, btn) {
 			}
 
 			RayEmitter(glare=0.5, luminous=0.5, dissipation=60)
-			Homing(unit, turnProportion=0.05)
+			Homing(unit, turnProportion=0.04875)
 			on BeforeCollide that {
 				if that.Team != owner.Team {
 					Attack(that)

@@ -1,0 +1,49 @@
+pub preference owner.LeftClickSlot
+pub preference owner.RightClickSlot
+
+pub symbol WantClickMove
+pub symbol WantClickQ
+pub symbol WantClickA
+
+const LeftClickDefault=WantClickQ
+const RightClickDefault=WantClickA
+
+pub fn unit.LeftClickBinding(owner) {
+	SlotAbility<LeftClickSlot>(slotDefault=LeftClickDefault) choice {
+        const binding = ChoiceToBinding(choice)
+        AlternateBinding("Click", binding)
+        AlternateBinding("Tap", binding)
+	}
+}
+pub fn unit.RightClickBinding(owner) {
+    SlotAbility<RightClickSlot>(slotDefault=RightClickDefault) choice {
+        const binding = ChoiceToBinding(choice)
+        AlternateBinding("SecondaryClick", binding)
+        AlternateBinding("DoubleTap", binding)
+	}
+}
+
+fn ChoiceToBinding(choice) {
+    if choice == WantClickMove { return "Click" }
+    else if choice == WantClickQ { return "KeyQ" }
+    else if choice == WantClickA { return "KeyA" }
+    else { return null }
+}
+
+pub fn this.LeftClickEditor(.. owner, ui) {
+	SlotDropdown<LeftClickSlot>(slotDefault=LeftClickDefault) {
+        ClickEditor
+	}
+}
+
+pub fn this.RightClickEditor(.. owner, ui) {
+	SlotDropdown<RightClickSlot>(slotDefault=RightClickDefault) {
+        ClickEditor
+	}
+}
+
+fn ClickEditor(.. ui) {
+    DropdownOption<WantClickMove>("Move")
+    DropdownOption<WantClickQ>("Primary Attack")
+    DropdownOption<WantClickA>("Dash")
+}

@@ -14,18 +14,18 @@ pub fn ReverberateOption(.. ui) {
 }
 
 pub fn ability.ReverberateAbility(unit, owner, btn) {
-	NoIncantation
+	NoIncantation {
+		on unit.AfterCollide that {
+			if (that.Category & Category:Hero) && that.Team != owner.Team {
+				Aoe:Impulse(that, 100)
+				Hear(Reverberate:Sound)
 
-	on unit.AfterCollide that {
-		if (that.Category & Category:Hero) && that.Team != owner.Team {
-			Aoe:Impulse(that, 100)
-			Hear(Reverberate:Sound)
-
-			that.Tombstone victim {
-				NameBlock(owner)
-				%(" reverberated ")
-				NameBlock(victim)
-				%(" into unending silence ")
+				that.Tombstone victim {
+					NameBlock(owner)
+					%(" reverberated ")
+					NameBlock(victim)
+					%(" into unending silence ")
+				}
 			}
 		}
 	}

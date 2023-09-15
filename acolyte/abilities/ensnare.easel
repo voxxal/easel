@@ -1,4 +1,4 @@
-.. glyph=AtomicSlashes:Glyph, color=#0ace00, damage=0.0, cooldown=5s, silenceDuration=0.5s, ensnareDuration=1.5s
+.. glyph=AtomicSlashes:Glyph, color=#0ace00, damage=0.0, cooldown=6s, silenceDuration=0.5s, ensnareDuration=2s
 
 pub symbol WantEnsnare
 
@@ -36,7 +36,7 @@ pub fn ability.EnsnareAbility(unit, owner, btn) {
 		Spawn projectile {
 			.. parent=unit
 			.. lifetime=1.5s, dissipation=15
-			.. radius=0.5, aoe=3.6, speed=28.0
+			.. radius=0.5, aoe=3.6, speed=28
 			.. luminous=1.0, depth=Depth:Buff
 			.. categories=Category:Projectile
 			.. isSensor=true, collideWith=Category:Hero
@@ -85,7 +85,7 @@ pub fn ability.EnsnareAbility(unit, owner, btn) {
 
 				hook<attractor> Tick {
 					Aoe:ForEach(filter=Category:Hero) that {
-						Aoe:ImpulseAttenuated(that, impulse=-5.0, attentuate=0.4)
+						Aoe:ImpulseAttenuated(that, impulse=-5.0, attenuate=0.4)
 					}
 				}
 
