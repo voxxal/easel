@@ -1,4 +1,4 @@
-.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=8, retreatDelay=1s
+.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=7, retreatDelay=1s
 
 pub symbol WantEnergyMines
 
@@ -38,16 +38,17 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 		.. damage = damage * unit.DamageModifier
 	
 		TurnRateModifier(-1)
+		SpeedModifier(-1)
 
 		Hear(Mines:LaunchSound)
-		await Spray(duration=5, count=5, spray=0.35revs) {
+		await Spray(duration=5, count=5, spray=0.28revs) {
 			Spawn projectile {
 				.. parent=unit
 				.. lifetime=4.5s, dissipation=15
 				.. radius=0.32, speed=40.0, impulse=75, aoe=1.2
 				.. density=1.5, ccd=true
 				.. ownerColor=Alliance:Self, bloom=1.5, bloomAlpha=0.3, luminous=1.0, depth=Depth:Projectile
-				.. categories = Category:Projectile | Category:Destructible | Category:AlwaysBlow, durability=Durability:None
+				.. categories = Category:Projectile | Category:Aoe | Category:Destructible | Category:AlwaysBlow, durability=Durability:None
 				.. sense=Category:Projectile
 
 				LaunchBody

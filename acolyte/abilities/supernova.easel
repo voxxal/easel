@@ -29,7 +29,7 @@ pub fn ability.SupernovaAbility(unit, owner, btn) {
 			.. parent=unit
 			.. impulse=710.0, aoe=4.0
 			.. radius=0.1, speed=24.0
-			.. lifetime=65, dissipation=30
+			.. lifetime=0.75s, dissipation=30
 			.. luminous=1.0, depth=Depth:Projectile
 			.. density=5.0, ccd=true
 			.. categories=Category:Projectile, collideWith=Category:None

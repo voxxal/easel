@@ -4,7 +4,7 @@ pub fn this.PlayVsAiDialog() .. {
 			Section {
 				if NumPlayers < 2 {
 					Panel {
-						H1 {%("Waiting for players...")}
+						H2 {%("Waiting for players...")}
 						Button(tier=$primary, onPress=$playVsAi) { %("Play vs AI") }
 					}
 				}

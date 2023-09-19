@@ -33,12 +33,12 @@ pub fn ability.FrostsplatterAbility(unit, owner, btn) {
 		TurnRateModifier(-1)
 
 		Hear(Frostsplatter:Sound)
-		await Spray(duration=3, count=6, spray=0.3revs) {
+		await Spray(duration=3, count=6, spray=0.25revs) {
 			Spawn projectile {
 				.. parent=unit
 				.. lifetime=25, dissipation=10
 				.. radius=0.8, speed=16
-				.. density=12.0, restitution=0, durability=Durability:Low, ccd=true
+				.. density=12.0, restitution=0, durability=Durability:High, ccd=true
 				.. feather=0.7, glare=0.7, glareAlpha=0.4, bloom=0, luminous=0, depth=Depth:Projectile
 				.. categories=Category:Projectile, sense = Category:Projectile | Category:Hero
 

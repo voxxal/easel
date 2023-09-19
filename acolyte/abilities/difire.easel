@@ -37,7 +37,7 @@ pub fn ability.DifireAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		await Spray(duration=1, count=numBolts, spray=0.125revs) headingOffset {
+		await Spray(duration=1, count=numBolts, spray=0.25revs) headingOffset {
 			.. damage = damage / count
 
 			Spawn projectile {

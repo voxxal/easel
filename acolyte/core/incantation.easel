@@ -1,3 +1,5 @@
+pub signal unit.IncantationCast
+
 pub fn ability.NoIncantation(.. unit, owner, glyph, btn) .. {
 	CommandBinding(btn, owner=) // Binding still needed so users can Shift+KeyBinding to edit their ability
 	CommandIcon(opacity=0.5, color=#333, glyphColor=#aaa .. glyph)
@@ -47,7 +49,7 @@ pub fn ability.Incantation(.. unit, owner, glyph, color, cooldown, btn) .. *inca
 		}
 		
 		on ability.InvokeCommand {
-			RecheckCommenceCountdown
+			IncantationCast
 		
 			ability.Subscope incantation {
 				Incantation:Queue

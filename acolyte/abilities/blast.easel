@@ -66,7 +66,7 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 			.. damage = damage * ChargeProportion
 			.. radius = ChargeProportion.Mix(0.3, 1.2), speed=40.0
 			.. aoe=2, impulse = 70 * ChargeProportion
-			.. lifetime=2s, dissipation=7
+			.. lifetime=2s, dissipation=10
 			.. luminous=1.0, depth=Depth:Projectile
 			.. feather=1, glare=0.5
 			.. density = 140 * ChargeProportion, ccd=true
@@ -83,7 +83,7 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 			}
 
 			Bloom(bloom=10*ChargeProportion)
-			Smoke(splatter=0.5, shadow=0.5)
+			Smoke(radius=2*radius, splatter=0.5, shadow=0.5) // larger radius needed to compensate for feather=1 making it look smaller
 
 			let canHurtSelf = false
 			on BeforeCollide that {
@@ -109,7 +109,7 @@ pub fn ability.BlastAbility(unit, owner, btn) {
 				}
 			}
 			once Expire {
-				Puff(count=5, splatter=1)
+				Puff(radius=radius*2, count=3, splatter=1)
 				Aoe:ForEach that {
 					if that.Team != owner.Team {
 						Aoe:Impulse(that)

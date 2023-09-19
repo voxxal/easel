@@ -1,4 +1,4 @@
-.. glyph=Teleport:Glyph, color=#2200ff, cooldown=12.0s, teleportDelay=0.25s, interruptCooldown=0.75s, maxDistance=24
+.. glyph=Teleport:Glyph, color=#2200ff, cooldown=10.0s, teleportDelay=0.25s, interruptCooldown=0.75s, maxDistance=24
 
 pub symbol WantTeleport
 

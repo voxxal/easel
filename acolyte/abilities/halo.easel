@@ -1,4 +1,4 @@
-.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=6, lifesteal=1.0, lifetime=3.0s, cooldown=7.5s, numHalos=3, fastProportion=0.2
+.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=6, lifesteal=1.0, lifetime=4.5s, cooldown=7.5s, numHalos=3, fastProportion=0.2
 
 pub symbol WantHalo
 
@@ -12,7 +12,7 @@ pub fn HaloOption(.. ui) {
 
 		P {
 			SlotEffect("Interruptible", icon="fas fa-hand-paper") {
-				%("Any disruption, be it an attempt to cast another spell or a strike from your enemies, compromises your steadfast devotion and will shatter the celestial radiance of your halos.")
+				%("Any disruption, be it an attempt to cast another spell or a strike from your enemies, compromises your steadfast devotion and halt the advent of further halos.")
 			}
 			SlotEffect("Rapid Gracefulness", icon="fas fa-running") {
 				%("Move " + (fastProportion * 100) + "% faster as your every step shimmers with the favor of the gods.")
@@ -38,11 +38,9 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		SpeedModifier(fastProportion)
+		const beginning = Tick
 
-		on Interrupt interruptor {
-			StopIncantation
-		}
+		SpeedModifier(fastProportion)
 
 		on BotChannelling target {
 			const chaseDistance=10
@@ -51,14 +49,21 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 			}
 		}
 
-		await Barrage(interval=1.5s, count=numHalos) index {
-			Subspawn projectile { // Subspawn so all halos expire at the same time when incantation ends
+		// Enemy hits to the arrival of further halos, but we are free to cast something else without losing halos
+		on Interrupt interruptor {
+			if interruptor & Interruptor:NotSelf {
+				StopIncantation
+			}
+		}
+
+		await Barrage(interval=0.8s, count=numHalos) index {
+			Spawn projectile {
 				.. parent=unit
 				.. dissipation=15 
 				.. radius=0.1, speed=40.0
 				.. luminous=1.0, depth=Depth:Projectile
 				.. density=1, ccd=true
-				.. categories=Category:Projectile | Category:Destructible, durability=Durability:Minimum
+				.. categories=Category:Projectile | Category:Aoe | Category:Destructible, durability=Durability:Minimum
 				.. collideWith = Category:Solid ^ Category:Projectile
 				.. noLavasteal=true // Not enough knockback to push others into lava
 
@@ -69,6 +74,14 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 				Homing(unit, turnProportion=0.2)
 				RayEmitter(bloom=2, fade=1, taper=0)
 				Sing(Halo:Sound)
+				ExpireAfterLifetime(lifetime - (Tick - beginning)) // Make all halos expire at the same time
+
+				// Enemy hits will destroy our halos
+				on Interrupt interruptor {
+					if interruptor & Interruptor:NotSelf {
+						Expire
+					}
+				}
 
 				Collider {
 					Shape:Circle
@@ -90,9 +103,6 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 				}
 			}
 		}
-
-		// All halos expire live for the same lifetime duration and expire at the same time
-		await Sleep(lifetime)
 	}
 }
 

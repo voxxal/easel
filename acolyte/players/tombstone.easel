@@ -4,7 +4,7 @@ pub behavior fn unit.Tombstone() [victim .. ui] {
 
 	.. victim = unit.Owner
 	Transmission<tombstone> {
-		P { delve() }
+		P(scale=0.9) { delve() }
 	}
 }
 pub delete fn unit.Tombstone() { }

@@ -1,7 +1,64 @@
-pub fn Teams:Individual {
-	for player in (QueryPlayers.FindAll) {
-		// Reuse the same entity as both the player and the team
-		MakeTeam(player)
-		player.Team = player
+pub field team.TeamSize
+
+pub fn this.AssignTeams {
+	const players = QueryPlayers.FindAll
+
+	// Create teams
+	const numPlayers = players.Length
+	let numTeams = null
+	for candidateNumTeams in RangeInclusive(2, 4) {
+		if numPlayers < candidateNumTeams * 2 { break } // Not enough players for this many teams
+		if numPlayers % candidateNumTeams == 0 && Random < 0.5 {
+			numTeams = candidateNumTeams
+			break
+		}
+	}
+	if !numTeams { return }
+
+	const teams = []
+	for _ in Range(0, numTeams) {
+		teams.ArrayPush(Spawn)
+	}
+		
+	// Assign players to teams
+	for i in Range(0, numPlayers) {
+		const team = teams[i % teams.Length]
+		players[i].Team = team
+		team.TeamSize += 1
+	}
+
+	// Announce teams
+	OverlayTransmission<announceTeams>(duration=3s) {
+		Standout {
+			let isFirst = true
+			for teamIndex in Range(0, teams.Length) {
+				if isFirst { isFirst = false }
+				else {
+					Span(animation=$flyFromTop) { %("v") }
+				}
+
+				const team = teams[teamIndex]
+				const animation =
+					teamIndex == 0 ? $flyFromLeft :
+					teamIndex == teams.Length - 1 ? $flyFromRight :
+					$flyFromBottom
+
+				Span(animation=) { %(team.TeamSize) }
+			}
+		}
+	}
+
+	Transmission<teamMsg>(duration=90s) {
+		P(scale=1.1) {
+			Span(bold=true, color=#ffcc00) {
+				let isFirst = true
+				for team in teams {
+					if isFirst { isFirst = false }
+					else { %("v") }
+					%(team.TeamSize)
+				}
+			}
+			%(": protect your allies!")
+		}
 	}
 }

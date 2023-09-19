@@ -1,7 +1,6 @@
 .. owner = null
 
-pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=350, radius=0.4, aoe=4.0, density=10.0) {
-
+pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=350, radius=0.4, aoe=4.0) {
 	.. dissipation=30,
 	.. color=#fc0,
 	.. bloom=0, luminous=0,
@@ -9,7 +8,7 @@ pub fn obstacle.Explosive(pos, heading?=0, maxHp=50.0, impulse=350, radius=0.4, 
 	.. categories=(Category:Obstacle | Category:CanGrab | Category:HurtByLava | Category:Aoe),
 	.. collideWith=Category:Solid, sense=Category:Zone,
 	.. durability=Durability:Maximum,
-	.. ccd=true
+	.. density=10, ccd=true
 
 	Body(pos, heading=)
 	PrepareForCollision

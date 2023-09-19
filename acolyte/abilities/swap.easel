@@ -39,10 +39,10 @@ pub fn ability.SwapAbility(unit, owner, btn, btnIndex?, btnSize) {
 			.. lifetime=45, dissipation=12
 			.. radius=0.5, aoe=3.2, speed=64.0
 			.. feather=0.5, shine=0.2, glare=0.7, luminous=1.0, depth=Depth:Projectile
-			.. density=100, durability=Durability:High, ccd=true
+			.. density=100, durability=Durability:None, ccd=true
 			.. categories=Category:Projectile
-			.. collideWith = Category:Shield | Category:Projectile
-			.. sense = Category:Hero | Category:Obstacle
+			.. collideWith = Category:None
+			.. sense = Category:Hero | Category:Shield | Category:Obstacle | Category:Massive
 
 			LaunchBody
 			PrepareForCollision

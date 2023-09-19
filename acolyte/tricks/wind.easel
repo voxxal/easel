@@ -1,4 +1,4 @@
-pub behavior fn this.Wind(wind, radius, body, .. filter = (Category:Projectile | Category:Obstacle), owner) {
+pub behavior fn this.Wind(wind, radius, body, .. filter = (Category:Projectile | Category:Obstacle), against=Alliance:NotFriendly, owner) {
 	loop {
 		await Tick
 		let windVelocity = body.Velocity
@@ -8,21 +8,13 @@ pub behavior fn this.Wind(wind, radius, body, .. filter = (Category:Projectile |
 
 		let items = QueryColliders.WhereCategory(filter).FindAllWithinRadius(body.Pos, radius)
 		for that in items {
-			const alliance = Alliance(owner, that)
-			if alliance == Alliance:Self | Alliance:Ally {
-				if !(that.Category & Category:AlwaysBlow) {
-					// Generally do not affect our own team's entities unless has the AlwaysBlow flag
-					continue
+			if (that.Category & Category:AlwaysBlow) || (Alliance(owner, that) & against) {
+				let speed = Dot(windDirection, that.Velocity)
+				if speed < windSpeed {
+					let delta = windSpeed - speed
+					let acceleration = delta * wind * mass / (mass + that.Mass)
+					that.Velocity += acceleration * windDirection
 				}
-			} else {
-				// Always affect enemy entities
-			}
-
-			let speed = Dot(windDirection, that.Velocity)
-			if speed < windSpeed {
-				let delta = windSpeed - speed
-				let acceleration = delta * wind * mass / (mass + that.Mass)
-				that.Velocity += acceleration * windDirection
 			}
 		}
 	}

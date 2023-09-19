@@ -1,5 +1,4 @@
 pub fn unit.SlotAbilities(owner) {
-    WalkSlotAbility
     DashSlotAbility(btnIndex=0, btnSize=0.75)
     PrimarySlotAbility(btnIndex=1, btnSize=1)
     DefenseSlotAbility(btnIndex=3, btnSize=0.9)
@@ -7,8 +6,7 @@ pub fn unit.SlotAbilities(owner) {
     UltimateSlotAbility(btnIndex=4, btnSize=0.9)
     MeleeSlotAbility(btnIndex=5, btnSize=0.75)
 
-    LeftClickBinding
-    RightClickBinding
+    ClickBinding
 }
 
 pub fn owner.RandomizeAllSlots {

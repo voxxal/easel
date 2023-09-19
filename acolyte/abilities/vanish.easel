@@ -40,6 +40,12 @@ pub fn ability.VanishAbility(unit, owner, btn) {
 		.. radius=1.0
 		.. dissipation=60, shine=0, bloom=0, luminous=0, depth=Depth:Buff
 
+		on BotChannelling {
+			if unit.IsInLava {
+				BotKeepChannelling
+			}
+		}
+
 		CooldownRate(-1)
 		CleanseBuffs
 		SeverTethers

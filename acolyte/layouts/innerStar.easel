@@ -16,7 +16,7 @@ pub fn scene.InnerStarLayout {
 	ArrangeRing(orbit=25.6, numObstacles=5) {
 		Spawn obstacle {
 			Volcano {
-				Shape:Arc(radius=0.16, arc=0.15rev, cap=true)
+				Shape:Arc(radius=0.16, arc=0.12rev, cap=true)
 			}
 		}
 	}

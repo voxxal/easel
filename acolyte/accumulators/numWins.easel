@@ -1,19 +1,20 @@
 pub accumulator owner.NumWins
-pub accumulator owner.NumWins:Session
+pub accumulator owner.NumSessionWins
 
-pub fn NumWins:Accumulate(ranking) {
+pub fn AccumulateNumWins(ranking) {
 	let winningTeam = ranking[0]?.Team
 	if !winningTeam { return }
 
 	for human in (QueryPlayers.WhereIsHuman(true).FindAll()) {
 		if human.Team == winningTeam {
+			.. owner = human
+
 			// Lifetime
-			human.Accumulate<NumWins>(1, showOnLeaderboard=true)
+			Accumulate<NumWins>(1, showOnLeaderboard=true)
 
 			// Session
-			human.Accumulate<NumWins:Session>(1)
-			let numWins:session = human.NumWins:Session
-			human.AccumulateLater<NumWins:Session>(-numWins:session, after=1h, key=$session)
+			Accumulate<NumSessionWins>(1)
+			AccumulateLater<NumSessionWins>(-NumSessionWins, after=1h, key=$session)
 		}
 	}
 }

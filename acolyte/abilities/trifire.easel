@@ -38,7 +38,7 @@ pub fn ability.TrifireAbility(unit, owner, btn) {
 	Incantation {
 		.. damage = damage * unit.DamageModifier
 
-		await Spray(duration=0, count=numBolts, spray=0.03revs) headingOffset index {
+		await Spray(duration=0, count=numBolts, spray=0.03333revs) headingOffset index {
 			.. damage = damage / count
 
 			Spawn projectile {

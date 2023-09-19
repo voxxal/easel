@@ -59,7 +59,7 @@ pub fn that.TakeDamage(damage, .. minHealth?=0, noRelay?) {
 }
 
 pub fn that.Heal(heal) {
-	if that?.MaxHp {
+	if heal > 0 && that?.MaxHp {
 		let newHp = Min(that.MaxHp, that.Hp + heal)
 		if newHp > that.Hp {
 			that.Hp = newHp

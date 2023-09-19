@@ -7,9 +7,9 @@ pub accumulator owner.Rating(rating=1000)
 pub accumulator owner.UnrankedRating(unranked=1000)
 pub accumulator owner.ActivityBonus
 
-pub signal owner.Rating:OnChange(rating, delta)
+pub signal owner.OnRatingChange(rating, delta)
 
-pub fn Rating:Accumulate(ranking) {
+pub fn AccumulateRating(ranking) {
 	let numPlayers = Length(ranking)
 	for i in Range(0,numPlayers) {
 		let me = ranking[i]
@@ -56,13 +56,13 @@ pub fn Rating:Accumulate(ranking) {
 					me.AccumulateLater<Rating>(-1, after=30d)
 				}
 
-				me.Rating:OnChange(rating = selfRating + delta, delta=)
+				me.AnnounceRatingChange(rating = selfRating + delta, delta=)
 			}
 		}
 	}
 }
 
-pub fn owner.Rating:AnnounceChange(rating, delta) {
+fn owner.AnnounceRatingChange(rating, delta) {
 	Transmission<ratingAdjustment> {
 		P {
 			%("Your rating is now ")
@@ -74,14 +74,14 @@ pub fn owner.Rating:AnnounceChange(rating, delta) {
 			let color = delta > 0 ? #4f0 : #f04
 			%(" (")
 			Span(bold=true, color=) {
-				%(Rating:FormatDelta(delta))
+				%(FormatRatingDelta(delta))
 			}
 			%(")")
 		}
 	}
 }
 
-fn Rating:FormatDelta(delta) {
+fn FormatRatingDelta(delta) {
 	let formatted = Abs(delta) < 1 ? FormatToPrecision(delta, 1) : FormatToFixed(delta, 0)
 	if delta >= 0.0 {
 		formatted = "+" + formatted

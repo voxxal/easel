@@ -34,7 +34,7 @@ pub fn ability.FiresplatterAbility(unit, owner, btn) {
 		SpeedModifier(-0.5)
 
 		Sing(Firesplatter:Sound)
-		await Spray(duration=20, count=10, spray=0.2revs) {
+		await Spray(duration=20, count=10, spray=0.135revs) {
 			.. damage = damage / count
 
 			Spawn projectile {

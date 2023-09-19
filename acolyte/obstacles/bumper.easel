@@ -1,6 +1,6 @@
 .. owner=null
 
-pub fn obstacle.Bumper(pos, heading?=0, maxHp=100.0, impulse=200, radius=1.0, density=1.0) .. shape {
+pub fn obstacle.Bumper(pos, heading?=0, maxHp=50, impulse=200, radius=1, density=50) .. shape {
 	.. color=#c94, fade=#753,
 	.. bloom=0, luminous=0,
 	.. shading=0.25, depth=Depth:Obstacle,

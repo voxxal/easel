@@ -1,6 +1,6 @@
 .. owner=null
 
-pub fn obstacle.Boulder(pos, heading?=0, maxHp=100.0, radius=1.0, density=50.0, turningDecay=0.05) .. shape {
+pub fn obstacle.Boulder(pos, heading?=0, maxHp=50.0, radius=1.0, density=50, turningDecay=0.05) .. shape {
 	.. color=#bbb, fade=#822,
 	.. bloom=0, luminous=0,
 	.. shading=0.25, depth=Depth:Obstacle,

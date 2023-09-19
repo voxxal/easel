@@ -3,15 +3,15 @@ meta Project(name="Acolyte Fight!", author="raysplaceinspace")
 meta PlayerNames(defaultPrefix="Acolyte")
 meta PlayerColors(
 	selfColor=#00ccff,
-	colors=[#f58c81, #54c794, #b69cf6, #e09f47, #e08747, #e58cc5, #a9b852, #6eb2fd],
+	colors=[#f58c81, #b69cf6, #54c794, #e09f47, #e08747, #e58cc5, #a9b852, #6eb2fd],
 	teamHueRange=10.0, teamHueStep=7.0,
 )
 
 pub mode fn World.Main {
 	Introducer
-	Scoreboard<NumOutlasts:Session>("Most Outlasts", icon="fas fa-skull")
-	Scoreboard<NumWins:Session>("Most Wins", icon="fas fa-crown")
-	Scoreboard<NumGames:Session>("Most Games", icon="fas fa-hourglass-start")
+	Scoreboard<NumSessionOutlasts>("Most Outlasts", icon="fas fa-skull")
+	Scoreboard<NumSessionWins>("Most Wins", icon="fas fa-crown")
+	Scoreboard<NumSessionGames>("Most Games", icon="fas fa-hourglass-start")
 
 	Spawn scene {
 		RandomLayout
@@ -42,6 +42,11 @@ pub mode fn World.Main {
 			Tombstone { // add a backup Tombstone in case the user does not get hit by anything
 				NameBlock
 				%(" died")
+			}
+
+			on IncantationCast {
+				if IsReadyToBegin { break }
+				else { BeginCommenceCountdown }
 			}
 
 			once BeforePlayerLeave {
@@ -91,10 +96,6 @@ pub mode fn World.Main {
 			}
 		}
 
-		on Rating:OnChange {
-			Rating:AnnounceChange
-		}
-
 		once Conclude {
 			SlotsUneditable = false
 		}
@@ -112,18 +113,15 @@ pub mode fn World.Main {
 		}
 	}
 
-	CommenceCountdown(waitForMoreDelay=12s, commenceDelay=3s) {
-		let numPlayers = QueryPlayers.Count
-		if numPlayers < 2 { return false }
-
-		let numBots = QueryPlayers.WhereIsHuman(false).Count
-		if numPlayers < 4 && numBots == 0 { return WaitForMorePlayers }
-
-		return true
+	CommenceCountdownWhenEnoughPlayers numPlayers {
+		if numPlayers < 2 { return null }
+		else if numPlayers < 4 { return 12s }
+		else if numPlayers < 6 { return 3s }
+		else { return 0s }
 	}
 
 	once BeforeCommence {
-		Teams:Individual
+		AssignTeams
 	}
 
 	once AfterCommence {
@@ -141,10 +139,10 @@ pub mode fn World.Main {
 		DiscordAd
 
 		if ranking.Where(p => p.IsHuman).Length >= 2 { // Single player games do not count towards stats
-			NumGames:Accumulate
-			NumOutlasts:Accumulate
-			NumWins:Accumulate
-			Rating:Accumulate
+			AccumulateNumGames
+			AccumulateNumOutlasts
+			AccumulateNumWins
+			AccumulateRating
 		}
 	}
 }

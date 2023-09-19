@@ -25,8 +25,8 @@ pub fn body.Aoe:ImpulseAttenuated(that, impulse, aoe, attenuate=1.0) {
 	}
 }
 
-pub fn body.Aoe:Destroy(that, .. owner) {
-	if that.Category & Category:Destructible && (Alliance(that, owner) & Alliance:NotFriendly) {
+pub fn Aoe:Destroy(that, .. owner) {
+	if that.Category & Category:Destructible {
 		that.Expire
 	}
 }

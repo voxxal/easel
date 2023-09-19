@@ -1,10 +1,10 @@
 .. owner=null
 
-pub fn obstacle.Mirror(pos, heading?=0, maxHp=100.0, radius=1.0, density=100.0) .. shape {
+pub fn obstacle.Mirror(pos, heading?=0, maxHp=50, radius=1.0, density=100) .. shape {
 	.. color=#0cf, fade=#48f,
 	.. bloom=0.5, luminous=1,
 	.. shading=0.25, depth=Depth:Obstacle,
-	.. categories=(Category:Shield | Category:CanGrab | Category:HurtByLava | Category:Aoe),
+	.. categories=(Category:Obstacle | Category:Shield | Category:CanGrab | Category:HurtByLava | Category:Aoe),
 	.. collideWith=Category:Solid,
 	.. durability=Durability:Shield,
 	.. ccd=false

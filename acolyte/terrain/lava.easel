@@ -11,10 +11,14 @@ pub behavior fn this.Lava(damageInterval=20, damagePerSecond=12.5, lifesteal=0.3
 			if isInLava {
 				let damage = damage * that.LavaDamageModifier
 				if damage > 0.0 {
-					that.TakeDamage(damage)
-					that.LavaLifestealer.Heal(damage * lifesteal)
+					const loss = that.TakeDamage(damage)
 					if that.Category & Category:Hero {
 						that.Hurt
+					}
+					
+					const lifestealer = that.LavaLifestealer
+					if lifestealer && lifestealer != that {
+						lifestealer.Heal(loss * lifesteal)
 					}
 				}
 			}

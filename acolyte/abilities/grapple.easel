@@ -96,10 +96,12 @@ pub fn ability.GrappleAbility(unit, owner, btn) {
 			once SeverTethers { Expire }
 
 			TetherBuffOnHit(radius=2.0 * radius, crater=0.4, bloomAlpha=0.5, shadow=0.5, glare=0, shine=0.5) that {
-				// Throw the enemy into the void
-				on BotChannelling enemy {
-					if !enemy.IsInLava {
-						BotKeepChannelling(spin=true, utility=Utility:Maximum)
+				// Throw the enemy into the void. Let go if we grabbed an ally by mistake.
+				if that.Team != owner.Team {
+					on BotChannelling {
+						if !that.IsInLava {
+							BotKeepChannelling(spin=true, utility=Utility:Maximum)
+						}
 					}
 				}
 

@@ -35,16 +35,16 @@ pub fn ability.EnsnareAbility(unit, owner, btn) {
 	Incantation {
 		Spawn projectile {
 			.. parent=unit
-			.. lifetime=1.5s, dissipation=15
+			.. lifetime=5s, dissipation=15
 			.. radius=0.5, aoe=3.6, speed=28
 			.. luminous=1.0, depth=Depth:Buff
-			.. categories=Category:Projectile
-			.. isSensor=true, collideWith=Category:Hero
+			.. categories=Category:Projectile, durability=Durability:High
+			.. isSensor=true, collideWith = Category:Hero | Category:Massive
 
 			ExpireAfterLifetime
 			LaunchBody
 			PrepareForCollision
-			DriftingMotion
+			PropulsiveMotion
 			CooldownRate(-1)
 			Sing(Ensnare:Sound)
 			Smoke(
@@ -56,9 +56,13 @@ pub fn ability.EnsnareAbility(unit, owner, btn) {
 			Collider {
 				Shape:Circle
 			}
+
+			once<deploy> Sleep(Velocity:TicksTo(Pointer)) {
+				OnEnsnare(null)
+			}
 			
 			on BeforeCollide that {
-				if that.Owner != owner {
+				if that.Owner != owner && (that.Category & Category:Hero) {
 					ExpireAfterLifetime(ensnareDuration) // Re-extend lifetime if we catch something
 
 					that.Silence(silenceDuration)
@@ -73,19 +77,21 @@ pub fn ability.EnsnareAbility(unit, owner, btn) {
 					break // Only catch the first unit that enters the vortex, otherwise could extend lifetime forever
 				}
 			}
-
-			once<deploy> Sleep(Velocity:TicksTo(Pointer)) {
-				OnEnsnare(null)
+			on AfterCollide that {
+				if that.Durability >= this.Durability && !(that.Category & Category:Hero) {
+					Expire
+				}
 			}
 
 			// Plant the vortex either when the projectile reaches the cursor or when it catches a unit
 			once OnEnsnare that {
 				Speed = 0
+				DecayingMotion
 				Sing(Ensnare:TrappingSound)
 
 				hook<attractor> Tick {
 					Aoe:ForEach(filter=Category:Hero) that {
-						Aoe:ImpulseAttenuated(that, impulse=-5.0, attenuate=0.4)
+						Aoe:ImpulseAttenuated(that, impulse=-5, attenuate=0.4)
 					}
 				}
 

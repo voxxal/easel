@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 
 
-FOLDER_ORDER = ["abilities"]
 MOD_NAME = sys.argv[1]
 
 sections = []
@@ -21,8 +20,8 @@ for root, dirs, files in os.walk('acolyte/'):
 
 sections.sort()
 
-open(f'{MOD_NAME}.esc', 'w').close()
-mod_file =  open(f'{MOD_NAME}.esc', 'a')
+open(f'build/{MOD_NAME}.esc', 'w').close()
+mod_file =  open(f'build/{MOD_NAME}.esc', 'a')
 for file, section in sections:
     mod_file.write(f"[[{file}]]\n")
     mod_file.write(section)

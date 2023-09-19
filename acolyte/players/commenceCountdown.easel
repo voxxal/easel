@@ -1,50 +1,44 @@
-pub signal World.RecheckCommenceCountdown()
-pub symbol WaitForMorePlayers
+prop World.CountdownRemaining
 
-pub behavior fn this.CommenceCountdown(waitForMoreDelay, commenceDelay=3s) .. {
-	if IsReadyToBegin { return }
+pub signal World.BeginCommenceCountdown
 
+pub behavior fn World.CommenceCountdownWhenEnoughPlayers(lockedDuration=3s) numPlayers {
 	loop {
-		await RecheckCommenceCountdown
+		if IsReadyToBegin { break }
 
-		let readyToBegin = delve()
-		if !readyToBegin { continue }
+		await BeginCommenceCountdown
+		const countdown = delve(NumPlayers)
+		if !(countdown >= 0) { continue } // check countdown is a number before continuing
 
-		if readyToBegin == WaitForMorePlayers {
-			let cancelled = false
-			let end = Tick + waitForMoreDelay
-			loop {
-				let remaining = Max(0, end - Tick)
-				CountdownDialog(remaining) // Update the countdown
-				if remaining <= 0 { break }
-
-				// Update the status every 1 second, or immediately after a player leaves
-				await Sleep(1s), AfterPlayerLeave
-				let readyToBegin = delve()
-				if !readyToBegin {
-					cancelled = true
-					break
-				} else if readyToBegin == WaitForMorePlayers {
-					// Already waiting for more players, do nothing
-				} else {
-					// Ready to begin immediately
-					break
-				}
+		let remaining = countdown
+		let countdownComplete = false
+		loop {
+			if remaining <= 0 {
+				countdownComplete = true
+				break
 			}
 
-			// Remove the countdown dialog
-			delete CountdownDialog
+			CountdownDialog(remaining + lockedDuration)
+			await Sleep(1s)
+			remaining -= 1s
 
-			if cancelled { continue }
+			const countdown = delve(NumPlayers)
+			if countdown >= 0 {
+				remaining = Min(countdown, remaining)
+			} else {
+				break // Stop the countdown
+			}
 		}
+		delete CountdownDialog
 
-		break
+		if countdownComplete {
+			ReadyToBegin(lockedDuration)
+			break
+		}
 	}
-
-	ReadyToBegin(commenceDelay)
 }
 
-fn this.CountdownDialog(remaining) {
+fn World.CountdownDialog(remaining) {
 	if remaining > 0 {
 		Transmission<countdown>(duration=remaining) {
 			P(scale=0.9) {
@@ -60,6 +54,6 @@ fn this.CountdownDialog(remaining) {
 		delete Transmission<countdown>
 	}
 }
-delete fn this.CountdownDialog() {
+delete fn World.CountdownDialog() {
 	delete Transmission<countdown>
 }

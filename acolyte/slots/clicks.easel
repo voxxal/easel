@@ -1,41 +1,55 @@
 pub preference owner.LeftClickSlot
 pub preference owner.RightClickSlot
 
-pub symbol WantClickMove
-pub symbol WantClickQ
-pub symbol WantClickA
+pub symbol WantNoBinding
+pub symbol WantMoveBinding
+pub symbol WantQBinding
+pub symbol WantABinding
 
-const LeftClickDefault=WantClickQ
-const RightClickDefault=WantClickA
+const LeftClickDefault=WantQBinding
+const RightClickDefault=WantABinding
 
-pub fn unit.LeftClickBinding(owner) {
-	SlotAbility<LeftClickSlot>(slotDefault=LeftClickDefault) choice {
-        const binding = ChoiceToBinding(choice)
-        AlternateBinding("Click", binding)
-        AlternateBinding("Tap", binding)
-	}
-}
-pub fn unit.RightClickBinding(owner) {
-    SlotAbility<RightClickSlot>(slotDefault=RightClickDefault) choice {
-        const binding = ChoiceToBinding(choice)
-        AlternateBinding("SecondaryClick", binding)
-        AlternateBinding("DoubleTap", binding)
-	}
+field unit.PreviousBinding(ability)
+
+pub fn unit.ClickBinding(owner) {
+    // Need to hook to both click slots because click-to-move could be on either
+    hook LeftClickSlot, RightClickSlot {
+        // Destroy previous ability
+		unit.PreviousBinding?.Despawn
+
+        // Create new ability
+		unit.PreviousBinding = Subspawn ability {
+            const left = LeftClickSlot ?? LeftClickDefault
+            const right = RightClickSlot ?? RightClickDefault
+            if left == WantMoveBinding || right == WantMoveBinding {
+                ClickToMoveAbility
+            } else {
+                FollowCursorAbility
+            }
+
+            const leftBinding = ChoiceToBinding(left)
+            AlternateBinding("Click", leftBinding)
+            AlternateBinding("Tap", leftBinding)
+
+            const rightBinding = ChoiceToBinding(right)
+            AlternateBinding("SecondaryClick", rightBinding)
+            AlternateBinding("DoubleTap", rightBinding)
+		}
+    }
 }
 
 fn ChoiceToBinding(choice) {
-    if choice == WantClickMove { return "Click" }
-    else if choice == WantClickQ { return "KeyQ" }
-    else if choice == WantClickA { return "KeyA" }
+    if choice == WantMoveBinding { return "ClickToMove" }
+    else if choice == WantQBinding { return "KeyQ" }
+    else if choice == WantABinding { return "KeyA" }
     else { return null }
 }
 
 pub fn this.LeftClickEditor(.. owner, ui) {
-	SlotDropdown<LeftClickSlot>(slotDefault=LeftClickDefault) {
+    SlotDropdown<LeftClickSlot>(slotDefault=LeftClickDefault) {
         ClickEditor
 	}
 }
-
 pub fn this.RightClickEditor(.. owner, ui) {
 	SlotDropdown<RightClickSlot>(slotDefault=RightClickDefault) {
         ClickEditor
@@ -43,7 +57,36 @@ pub fn this.RightClickEditor(.. owner, ui) {
 }
 
 fn ClickEditor(.. ui) {
-    DropdownOption<WantClickMove>("Move")
-    DropdownOption<WantClickQ>("Primary Attack")
-    DropdownOption<WantClickA>("Dash")
+    DropdownOption<WantNoBinding>("Do Nothing")
+    DropdownOption<WantMoveBinding>("Move")
+    DropdownOption<WantQBinding>("Primary Attack")
+    DropdownOption<WantABinding>("Dash")
+}
+
+fn ability.FollowCursorAbility(unit, owner) {
+	TouchscreenPointer // make the touchscreen act like a mouse when using FollowCursorAbility
+
+	hook Pointer, IsPointerActive {
+		if IsPointerActive {
+			Movement:WalkTo(Pointer)
+		} else {
+			Movement:Stop
+		}
+	}
+}
+
+fn ability.ClickToMoveAbility(unit, owner) {
+	CommandBinding("ClickToMove") // Bind to a virtual key which can never be pressed except through AlternateBindings
+
+	on ability.InvokeCommand {
+		await Subscope {
+			// While holding down the button, follow cursor
+			hook Pointer {
+				Movement:WalkTo(Pointer)
+			}
+
+			// Delay the button is released, stop
+			await ability.ReleaseCommand
+		}
+	}
 }

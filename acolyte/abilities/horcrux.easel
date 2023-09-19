@@ -41,7 +41,7 @@ pub fn ability.HorcruxAbility(unit, owner, btn) {
 			.. radius=0.28, aoe=3.2, speed=28
 			.. luminous=1, depth=Depth:Projectile
 			.. density=1, ccd=true
-			.. categories=Category:Projectile | Category:Destructible, durability=Durability:Low
+			.. categories=Category:Projectile | Category:Destructible | Category:Aoe, durability=Durability:Low
 			.. noLavasteal=true // Not enough knockback to push others into lava
 
 			const birth = Tick
