@@ -1,0 +1,11 @@
+pub collect unit.DamageModifier ~ MultiplyExtremes
+pub collect unit.GravityModifier ~ MultiplyExtremes
+pub collect unit.SpeedModifier ~ MultiplyExtremes
+// Note that this is *Dealt* KB and not taken KB (probably not the best name)
+pub collect unit.KnockbackModifier ~ MultiplyExtremes
+
+fn MultiplyExtremes(values) -> number {
+	const increase = values.FindMax.Max(1)
+	const decrease = values.FindMin.Min(1).Max(0)
+	return increase * decrease
+}

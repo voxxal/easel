@@ -1,0 +1,29 @@
+PushScript(ScriptId(285))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 22 }
+Cosmos
+AwaitProp(PropId(9))
+BeginClosure { num_params: 1, return_at: 15 }
+ClosureRead(0)
+PushNum(0.05)
+PushAfter(2)
+PushNum(0.2)
+PushNum(10.0)
+WriteBack(3)
+PushScript(ScriptId(285))
+PushIndex(2)
+DiscriminatorConcatN(2)
+WriteBack(4)
+BeginIntrinsic(5)
+Strobe
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+EndClosure
+Read(0)
+ClosureAdd
+Hook(0)

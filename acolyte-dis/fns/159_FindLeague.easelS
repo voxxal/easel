@@ -1,0 +1,33 @@
+ReadStatic(StaticVariableId(0))
+Declare(1)
+PushIndex(0)
+Declare(2)
+Loop { continue_at: 16, break_at: 21 }
+Read(1)
+Read(2)
+Index
+With
+IsUndefined
+JumpIf(14)
+Declare(3)
+Read(0)
+Read(3)
+FieldGet($LeagueMinRating)
+AtLeast
+JumpIfNot(3)
+Read(3)
+ReturnValue
+Undeclare(3, 1)
+Read(2)
+Increment
+Write(2)
+JumpBack(18)
+EndLoop
+Undeclare(1, 2)
+ReadStatic(StaticVariableId(0))
+ReadStatic(StaticVariableId(0))
+Length
+PushNum(1.0)
+Sub
+Load
+ReturnValue

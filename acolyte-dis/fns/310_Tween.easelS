@@ -1,0 +1,72 @@
+JumpIfVarDefined { var: 3, jump: 3 }
+PushNum(0.0)
+Write(3)
+JumpIfVarDefined { var: 4, jump: 3 }
+PushNum(1.0)
+Write(4)
+JumpIfVarDefined { var: 5, jump: 3 }
+PushNum(1.0)
+Write(5)
+PushScript(ScriptId(310))
+Read(1)
+PushIndex(1)
+DiscriminatorConcatN(3)
+Read(0)
+BeginClosure { num_params: 0, return_at: 45 }
+BeginClosure { num_params: 0, return_at: 30 }
+ClosureRead(0)
+ClosureRead(1)
+FieldGetK($library/tricks/tween.easel/TweenStart)
+With
+IsNullish
+JumpIfNot(7)
+Pop
+Tick
+With
+ClosureRead(0)
+ClosureRead(1)
+FieldSetK($library/tricks/tween.easel/TweenStart)
+Declare(0)
+ClosureRead(2)
+ClosureRead(3)
+ClosureRead(4)
+Read(0)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 6 }
+Read(0)
+ClosureRead(0)
+CallLambda(1)
+Pop
+EndClosure
+ClosureRead(5)
+ClosureAdd
+PushScript(ScriptId(309))
+Call(6)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+ClosureRead(3)
+ClosureAdd
+ClosureRead(4)
+ClosureAdd
+ClosureRead(5)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(0)
+ClosureAdd
+Read(1)
+ClosureAdd
+Read(2)
+ClosureAdd
+Read(3)
+ClosureAdd
+Read(4)
+ClosureAdd
+Read(6)
+ClosureAdd
+Hook(0)

@@ -1,0 +1,106 @@
+JumpIfVarDefined { var: 2, jump: 3 }
+PushString("fas fa-dice")
+Write(2)
+PushScript(ScriptId(243))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 86 }
+Loop { continue_at: 2, break_at: 84 }
+Jump(3)
+ClosureRead(0)
+AwaitBuff(BuffId(18))
+BeginClosure { num_params: 0, return_at: 63 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 4 }
+ClosureRead(0)
+Buff(BuffId(18))
+EndBuff(BuffId(18))
+JumpIfNot(5)
+PushSymbol($library/incantations/slot.easel/randomizeHook)
+ClosureRead(1)
+DeleteHook
+Jump(53)
+PushSymbol($library/incantations/slot.easel/randomizeSlots)
+PushUndefined
+PressIntent
+ClosureRead(2)
+PushAfter(20)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+Read(0)
+NoSubfragmentSlot
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+ClosureRead(3)
+ClosureAdd
+PushAfter(4)
+ClosureRead(4)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+PushSymbol($library/incantations/slot.easel/randomizeHook)
+ClosureRead(1)
+BeginClosure { num_params: 0, return_at: 20 }
+Loop { continue_at: 1, break_at: 18 }
+ClosureRead(0)
+PushSymbol($library/incantations/slot.easel/randomizeSlots)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 5 }
+ClosureRead(0)
+CallLambda(0)
+Pop
+EndClosure
+ClosureRead(1)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(15)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(5)
+ClosureAdd
+Hook(0)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+ClosureRead(3)
+ClosureAdd
+ClosureRead(4)
+ClosureAdd
+ClosureRead(5)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(80)
+EndLoop
+EndClosure
+Read(3)
+ClosureAdd
+Read(0)
+ClosureAdd
+Read(1)
+ClosureAdd
+Read(2)
+ClosureAdd
+Read(4)
+ClosureAdd
+Read(5)
+ClosureAdd
+Hook(0)

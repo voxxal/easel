@@ -1,0 +1,20 @@
+field body.PreviousPos // the previous body position helps us know what angle to offset the helix so it shows crossways to the direction the body is actually moving
+
+pub fn this.HelixOffset(radius, period=15, angleOffset=0rev, phase=0, [body]) -> screenOffset {
+    let angle = (1rev * (Tick % period) / period) + angleOffset + (1rev * phase)
+    let shift = radius * Sin(angle)
+    let offset = @(0,shift)
+
+    // If the body is moving, we want to rotate the offset so it's crossways to the direction the body is moving.
+    // To do this we must keep track of the body's previous position.
+    once BeforePhysics {
+        body.PreviousPos = body.Pos
+    }
+
+    return offset.Rotate(body.PreviousPos ? Angle(body.Pos - body.PreviousPos) : body.Heading)
+}
+
+pub fn SwirlOffset(radius, period=15, angleOffset=0rev, phase=0, [body]) -> screenOffset {
+    let angle = (1rev * (Tick % period) / period) + angleOffset + (1rev * phase)
+    return radius * Direction(angle)
+}

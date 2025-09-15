@@ -1,0 +1,385 @@
+Read(1)
+LoadAccumulator(AccumulatorId(4))
+PushNum(3.0)
+AtLeast
+JumpIfNot(5)
+PushBool(true)
+Read(1)
+SavePreference(PreferenceId(2))
+Return0
+Read(0)
+BeginClosure { num_params: 1, return_at: 371 }
+Read(0)
+BeginClosure { num_params: 1, return_at: 299 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushScript(ScriptId(191))
+PushIndex(1)
+DiscriminatorConcatN(2)
+ClosureRead(0)
+BeginClosure { num_params: 0, return_at: 287 }
+Loop { continue_at: 2, break_at: 285 }
+Jump(4)
+ClosureRead(0)
+AwaitTouchscreenMode
+Pop
+BeginClosure { num_params: 0, return_at: 271 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 1 }
+ClosureRead(0)
+TouchscreenMode
+BooleanNot
+JumpIfNot(265)
+BeginClosure { num_params: 1, return_at: 256 }
+ClearSubfragmentRangeLocal { from: 0, length: 7, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("How to Play")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H3)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("This is a game of magic dodgeball!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 33 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushString("fa-solid fa-computer-mouse")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Mouse")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(" to move/aim")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 37 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushString("fa-solid fa-keyboard")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 12 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Press ")
+StringConcatN(1)
+Text
+PushKeycode(KeyQ)
+Read(0)
+SubfragmentSlot(1)
+KeyBindingDisplay
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(" for your primary attack")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 37 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushString("fa-solid fa-keyboard")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 12 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Press ")
+StringConcatN(1)
+Text
+PushKeycode(KeyA)
+Read(0)
+SubfragmentSlot(1)
+KeyBindingDisplay
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(" to dash")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 48 }
+ClearSubfragmentRangeLocal { from: 0, length: 7, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("If you are new, focus on using your primary attack ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushKeycode(KeyQ)
+Read(0)
+NoSubfragmentSlot
+KeyBindingDisplay
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(", ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+LineBreak
+Text
+Read(0)
+SubfragmentSlot(4)
+PushString(" and don't worry about other abilities. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(5)
+LineBreak
+Text
+Read(0)
+SubfragmentSlot(6)
+PushString("Most importantly, don't forget to dodge!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushSymbol($howToPlayDialog.easel/dismissIntro)
+PushUndefined
+PressIntent
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+PushBool(true)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("OK")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(6)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+ClosureRead(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(281)
+EndLoop
+EndClosure
+ClosureRead(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+EndClosure
+Read(0)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+PushAfter(8)
+PushScript(ScriptId(191))
+PushIndex(2)
+DiscriminatorConcatN(2)
+WriteBack(9)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0
+PushScript(ScriptId(191))
+PushIndex(3)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 15 }
+ClosureRead(0)
+PushSymbol($howToPlayDialog.easel/dismissIntro)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 5 }
+PushBool(true)
+ClosureRead(0)
+SavePreference(PreferenceId(2))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(191))
+PushIndex(4)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 23 }
+Loop { continue_at: 2, break_at: 21 }
+Jump(4)
+ClosureRead(0)
+AwaitPreference(PreferenceId(2))
+Pop
+BeginClosure { num_params: 0, return_at: 7 }
+ClosureRead(0)
+LoadPreference(PreferenceId(2))
+JumpIfNot(3)
+ClosureRead(1)
+Expire
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(17)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+EndClosure
+Read(1)
+ClosureAdd
+Subspawn
+Pop

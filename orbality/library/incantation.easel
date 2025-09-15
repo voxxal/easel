@@ -1,0 +1,91 @@
+// mostly ripped from acolyte fight with some modifications
+pub const AbilityType:Cooldown = 0
+pub const AbilityType:Charge = 1
+pub field ability.Type = AbilityType:Cooldown
+pub prop ability.Cooldown = 0
+pub prop ability.Charge = 0
+pub prop ability.RequiredCharge = 0
+
+pub fn ability.CooldownTicker([unit]) {
+	on Tick {
+		let cooldown = Cooldown
+		if cooldown > 0 {
+			cooldown -= 1
+			Cooldown = Max(0, cooldown)
+		} else {
+			// Nothing to do, wait until the cooldown changes
+			await Cooldown
+		}
+	}
+}
+
+pub fn ability.ChargeTicker() {
+    on Tick(1) {
+        Charge += 1
+    }
+}
+
+pub const Interruptor:None      = 0b00
+pub const Interruptor:Self      = 0b01
+pub const Interruptor:NotSelf   = 0b10
+pub const Interruptor:Any       = 0b11
+
+pub signal unit.Interrupt(interruptor=Interruptor:NotSelf)
+
+field unit.CurrentIncantation
+await fn QueueIncantation(incantation, [unit]) {
+	Interrupt(Interruptor:Self) // This may cancel an existing incantation if it is cancellable, freeing up the queue
+	loop {
+		let current = unit.CurrentIncantation
+		if !Exists(current) { break } // No current incantation, time for us to take over!
+		await current.BeforeDespawn
+		await Tick // Wait until the next tick to ensure the incumbent has expired
+	}
+
+    unit.CurrentIncantation = incantation
+}
+
+
+pub signal unit.IncantationCasted
+pub fn ability.SpawnEachIncantation([cooldown?, charge?, unit, owner, keycode, leadIn, followThrough]) |use this = incantation| {
+    Assert(cooldown || charge, "Either cooldown or charge should be passed in")
+    Assert(!(cooldown && charge), "Cannot pass both cooldown and charge to SpawnEachincantation (for now)")
+    if !unit.Category.Overlaps(C:Ghost) {
+        if cooldown {
+            CooldownTicker
+            Type = AbilityType:Cooldown
+        } else if charge {
+            Type = AbilityType:Charge
+            RequiredCharge = charge
+            ChargeTicker
+        }
+        Silenceable
+
+		on ButtonDown {
+			IncantationCasted
+            let requestStart = Tick
+		
+			ability.Subspawn incantation {
+				await QueueIncantation(incantation)
+                if Tick - requestStart > 0.5s { Despawn; return } // if we wait for too long cancel the attack
+				if (cooldown && Cooldown == 0) || (charge && Charge >= charge) {
+					if cooldown { Cooldown = cooldown }
+                    if charge { Charge = 0 }
+                    await Tick(leadIn)
+					delve(incantation)
+                    await Tick(followThrough)
+				}
+				Despawn
+			}
+		}
+	}
+}
+
+pub signal unit.Silence(silence)
+pub fn ability.Silenceable([unit]) {
+	on unit.Silence silence {
+		if Cooldown < silence {
+			Cooldown = silence
+		}
+	}
+}

@@ -1,0 +1,44 @@
+JumpIfVarDefined { var: 1, jump: 3 }
+PushNum(0.0)
+Write(1)
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNum(1.0)
+Write(2)
+JumpIfVarDefined { var: 3, jump: 3 }
+PushNum(1.0)
+Write(3)
+JumpIfVarDefined { var: 4, jump: 3 }
+Tick
+Write(4)
+Loop { continue_at: 1, break_at: 32 }
+Read(0)
+PushNum(0.0)
+Greater
+JumpIfNot(7)
+Tick
+Read(4)
+Sub
+Read(0)
+Div
+Jump(2)
+PushNum(1.0)
+Declare(6)
+Read(6)
+Read(1)
+Read(2)
+Mix
+Declare(7)
+Read(7)
+Read(5)
+CallLambda(1)
+Pop
+Read(6)
+PushNum(1.0)
+AtLeast
+JumpIfNot(2)
+Break
+Read(3)
+Sleep(Tick)
+Undeclare(6, 2)
+JumpBack(29)
+EndLoop

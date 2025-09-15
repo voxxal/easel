@@ -1,0 +1,67 @@
+pub preference owner.KnowsHowToPlay
+
+pub fn this.HowToPlayDialog([owner]) {
+    if NumLifetimeWins >= 3 {
+        KnowsHowToPlay = true
+        return
+    }
+
+    Subspawn {
+        Content {
+            with TouchscreenMode {
+                if !TouchscreenMode {
+                    Panel {
+                        H3 { "How to Play" }
+                        P {
+                            "This is a game of magic dodgeball!"
+                        }
+                        P {
+                            Icon("fa-solid fa-computer-mouse", width=2)
+                            Span(bold=true) { "Mouse" }
+                            " to move/aim"
+                        }
+                        P {
+                            Icon("fa-solid fa-keyboard", width=2)
+                            Span(bold=true) {
+                                "Press "
+                                KeyBindingDisplay(KeyQ)
+                            }
+                            " for your primary attack"
+                        }
+                        P {
+                            Icon("fa-solid fa-keyboard", width=2)
+                            Span(bold=true) {
+                                "Press "
+                                KeyBindingDisplay(KeyA)
+                            }
+                            " to dash"
+                        }
+                        P {
+                            "If you are new, focus on using your primary attack "
+                            Span(bold=true) {
+                                KeyBindingDisplay(KeyQ)
+                            }
+                            ", "
+                            %(LineBreak)
+                            " and don't worry about other abilities. "
+                            %(LineBreak)
+                            "Most importantly, don't forget to dodge!"
+                        }
+                        HStack {
+                            RaisedButton(PressIntent<dismissIntro>, backgroundColor=Color:Primary, dismiss=true) { "OK" }
+                        }
+                    }
+                }
+            }
+        }
+
+        once Pressed<dismissIntro> {
+            KnowsHowToPlay = true
+        }
+
+        with KnowsHowToPlay {
+            if KnowsHowToPlay { Expire }
+        }
+    }
+}
+

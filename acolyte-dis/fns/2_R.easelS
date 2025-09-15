@@ -1,0 +1,6 @@
+PushNum(2.0)
+PushNum(400.0)
+Mul
+With
+WriteStatic(StaticVariableId(2))
+ReturnValue

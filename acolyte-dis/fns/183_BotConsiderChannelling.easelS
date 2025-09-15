@@ -1,0 +1,14 @@
+Read(0)
+FieldGet($bot.easel/HasAction)
+JumpIfNot(2)
+Return0
+Read(0)
+FieldGet($bot.easel/CurrentlyChannelling)
+BooleanNot
+JumpIfNot(2)
+Return0
+Read(0)
+Read(1)
+Read(2)
+PushScript(ScriptId(7))
+Call(3)

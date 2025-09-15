@@ -1,0 +1,57 @@
+BeginClosure { num_params: 1, return_at: 41 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+ManageAccountIntent
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Manage Account")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+LogoutIntent
+PushIntrinsic(ColorSecondary)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Logout")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+PushNum(3.0)
+PushAfter(1)
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0

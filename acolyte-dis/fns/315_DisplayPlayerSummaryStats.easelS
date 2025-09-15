@@ -1,0 +1,118 @@
+PushNum(1.1)
+BeginClosure { num_params: 1, return_at: 107 }
+ClearSubfragmentRangeLocal { from: 0, length: 6, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("You outlasted ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+PushColor(Color { r: F8(255), g: F8(204), b: F8(0), a: F8(255) })
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 19 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+ClosureRead(0)
+FieldGetOrInit($OutlastScore, InitialValueId(2))
+Text
+Read(0)
+SubfragmentSlot(1)
+ClosureRead(0)
+FieldGetOrInit($OutlastScore, InitialValueId(2))
+PushNum(1.0)
+Equal
+JumpIfNot(3)
+PushString(" other")
+Jump(2)
+PushString(" others")
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(2)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(", ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+PushColor(Color { r: F8(255), g: F8(204), b: F8(0), a: F8(255) })
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 13 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("killed ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+ClosureRead(0)
+FieldGetOrInit($KillScore, InitialValueId(1))
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(2)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(4)
+PushString(" and dealt ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+PushColor(Color { r: F8(255), g: F8(204), b: F8(0), a: F8(255) })
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+ClosureRead(0)
+FieldGetOrInit($DamageScore, InitialValueId(3))
+PushNum(0.0)
+FormatWithDecimals
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString(" damage!")
+StringConcatN(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(2)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(14)
+Read(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0

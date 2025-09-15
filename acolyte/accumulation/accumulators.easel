@@ -1,0 +1,42 @@
+pub accumulator owner.NumLifetimeGames = 0
+pub accumulator owner.NumSessionGames = 0
+
+pub accumulator owner.NumLifetimeOutlasts = 0
+pub accumulator owner.NumSessionOutlasts = 0
+
+pub accumulator owner.NumLifetimeWins = 0
+pub accumulator owner.NumSessionWins = 0
+pub accumulator owner.NumRecentWins = 0 // Number of wins in the past 20 minutes, used for matchmaking
+
+pub fn AccumulateStats(ranking, [winner, showOnLeaderboard=30d, sessionDuration=1h]) {
+    let pastPlayers = CollectPastPlayers(ranking)
+	let winningTeam = winner.Team
+	for use owner in ranking {
+	    if !owner.IsHuman { continue }
+
+	    let pastEpisode = {
+	        PastEpisodeTimestamp = GameStartTimestamp,
+	        PastReplayId = CurrentReplayId,
+            PastPlayers = pastPlayers,
+	    }
+
+		NumLifetimeGames(delta=1, showOnLeaderboard=)
+		NumSessionGames(delta=1, resetAfter=sessionDuration)
+
+		NumLifetimeOutlasts(delta=owner.OutlastScore, showOnLeaderboard=)
+		NumSessionOutlasts(delta=owner.OutlastScore, resetAfter=sessionDuration)
+
+		if owner.Team == winningTeam {
+            NumLifetimeWins(delta=1, showOnLeaderboard=)
+            NumSessionWins(delta=1, resetAfter=sessionDuration)
+            NumRecentWins(delta=1, revertAfter=20m)
+        }
+
+        let ratingDelta = AccumulateRating(ranking=, pastEpisode=)
+        if ratingDelta.IsNum && ratingDelta != 0 {
+            AnnounceRatingChange(ratingDelta)
+        }
+
+        PublishUserEpisode(pastEpisode)
+	}
+}

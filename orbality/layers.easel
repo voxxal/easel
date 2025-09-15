@@ -1,0 +1,9 @@
+pub const Layer:UI=127
+pub const Layer:Indicator=10
+pub const Layer:Spark=3
+pub const Layer:Projectile=2
+pub const Layer:Shield=1
+pub const Layer:Default=0
+pub const Layer:Unit=-1
+pub const Layer:Aura=-3
+pub const Layer:Map=-14

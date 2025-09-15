@@ -1,0 +1,101 @@
+Read(0)
+Team
+Declare(2)
+ArrayNew
+Declare(3)
+PushUndefinedN(4)
+BeginIntrinsic(4)
+QueryPlayers
+EndIntrinsic1
+Declare(4)
+PushIndex(0)
+Declare(5)
+Loop { continue_at: 19, break_at: 24 }
+Read(4)
+Read(5)
+Index
+With
+IsUndefined
+JumpIf(17)
+Declare(6)
+NoClearSubfragmentRange
+Read(6)
+Team
+ReadShared(2)
+Equal
+JumpIfNot(5)
+ReadShared(3)
+Read(6)
+CollectionPush
+Pop
+Undeclare(6, 1)
+Read(5)
+Increment
+Write(5)
+JumpBack(21)
+EndLoop
+Undeclare(4, 2)
+Read(3)
+Length
+Declare(4)
+Read(4)
+PushNum(1.0)
+Sub
+Declare(5)
+PushNum(0.0)
+Read(4)
+Range
+Declare(6)
+PushIndex(0)
+Declare(7)
+Loop { continue_at: 35, break_at: 40 }
+Read(6)
+Read(7)
+Index
+With
+IsUndefined
+JumpIf(33)
+Declare(8)
+Read(1)
+SubfragmentAppendSlot(0)
+Declare(9)
+Read(8)
+PushNum(0.0)
+Greater
+JumpIfNot(11)
+Read(9)
+SubfragmentSlot(0)
+Read(8)
+ReadShared(5)
+Equal
+JumpIfNot(3)
+PushString(" & ")
+Jump(2)
+PushString(", ")
+Text
+ReadShared(3)
+Read(8)
+Load
+Read(9)
+SubfragmentSlot(1)
+PushAfter(3)
+BeginIntrinsic(5)
+PlayerNameDisplay
+EndIntrinsic0
+Undeclare(8, 2)
+Read(7)
+Increment
+Write(7)
+JumpBack(37)
+EndLoop
+Undeclare(6, 2)
+Read(1)
+SubfragmentSlot(1)
+Read(4)
+PushNum(1.0)
+Equal
+JumpIfNot(3)
+PushString(" wins!")
+Jump(2)
+PushString(" win!")
+Text

@@ -1,0 +1,27 @@
+PushCategory(NONE)
+Declare(1)
+Read(0)
+Declare(2)
+PushIndex(0)
+Declare(3)
+Loop { continue_at: 13, break_at: 18 }
+Read(2)
+Read(3)
+Index
+With
+IsUndefined
+JumpIf(11)
+Declare(4)
+ReadShared(1)
+Read(4)
+BitwiseOr
+WriteShared(1)
+Undeclare(4, 1)
+Read(3)
+Increment
+Write(3)
+JumpBack(15)
+EndLoop
+Undeclare(2, 2)
+Read(1)
+ReturnValue

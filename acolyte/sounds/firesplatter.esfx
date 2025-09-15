@@ -1,0 +1,11 @@
+Play(duration=0.5s) {
+	Vibrato(freqModulation=[3600,10800]) {
+		Oscillator(freq=30)
+	}
+	Oscillator(wave=$triangle, freq=[4800,7200], harmonics=[1, 1.33, 1.5])
+	Tremolo(volumeModulation=0.1) {
+		Oscillator(freq=30)
+	}
+	Envelope(attack=0.1s, release=0.25s)
+	Gain(volume=0.1)
+}

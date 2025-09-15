@@ -1,0 +1,83 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Dualsaber")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Wield formidable twin sabers forged from pure light. The incandescent blades can expertly parry incoming projectiles and forcefully knock back your enemies with each swift and decisive strike. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushString("Dual Wield")
+PushString("fas fa-shuffle")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Though each saber may be shorter than a solitary counterpart, their combined presence doubles the odds of delivering a decisive strike against your adversaries.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(239))
+Call(4)
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(3)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 22 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("Cooldown")
+PushString("fas fa-clock")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(450.0)
+PushNum(60.0)
+Div
+PushString("s")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+PushScript(ScriptId(240))
+Call(2)

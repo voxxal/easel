@@ -1,0 +1,40 @@
+pub page fn owner.SettingsPage {
+	Content {
+        H1 { "Account" }
+        Panel {
+            Span(bold=true, fontSize=0.9) { "Name" }
+            PlayerNameEditor
+        }
+
+        H1 { "Settings" }
+        Panel {
+            Span(bold=true, fontSize=0.9) { "Graphics" }
+            ResolutionDropdown
+        }
+
+        Panel {
+            Span(bold=true, fontSize=0.9) { "Sound" }
+            VolumeDropdown
+        }
+
+        Panel {
+            Span(bold=true, fontSize=0.9) { "Chat" }
+            ChatEnabledDropdown
+        }
+
+        Panel {
+            Span(bold=true, fontSize=0.9) { "Auto-join next match" }
+            AutoJoinEnabledDropdown
+        }
+
+        H1 { "Controls" }
+        Panel {
+            Span(bold=true, fontSize=0.9) { "Left-click" }
+            LeftClickEditor
+        }
+        Panel {
+            Span(bold=true, fontSize=0.9) { "Right-click/Double Tap" }
+            RightClickEditor
+        }
+	}
+}

@@ -1,0 +1,176 @@
+Read(1)
+BeginClosure { num_params: 1, return_at: 5 }
+Read(0)
+FieldGetOrInit($DamageScore, InitialValueId(3))
+ReturnValue
+EndClosure
+PushUndefinedN(4)
+BeginIntrinsic(6)
+MaxBy
+EndMaxBy
+EndIntrinsic1
+Declare(3)
+Read(1)
+BeginClosure { num_params: 1, return_at: 5 }
+Read(0)
+FieldGetOrInit($KillScore, InitialValueId(1))
+ReturnValue
+EndClosure
+PushUndefinedN(4)
+BeginIntrinsic(6)
+MaxBy
+EndMaxBy
+EndIntrinsic1
+Declare(4)
+Read(0)
+BeginClosure { num_params: 1, return_at: 136 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 119 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+Read(0)
+NoSubfragmentSlot
+PushScript(ScriptId(314))
+Call(2)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+PushNum(0.9)
+BeginClosure { num_params: 1, return_at: 51 }
+ClearSubfragmentRangeLocal { from: 0, length: 7, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Most damage: ")
+StringConcatN(1)
+Text
+ClosureReadShared(0)
+Read(0)
+SubfragmentSlot(1)
+PushAfter(3)
+BeginIntrinsic(5)
+PlayerNameDisplay
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(" (")
+ClosureReadShared(0)
+FieldGetOrInit($DamageScore, InitialValueId(3))
+PushNum(0.0)
+FormatWithDecimals
+PushString(")")
+StringConcatN(3)
+Text
+Read(0)
+SubfragmentSlot(3)
+LineBreak
+Text
+Read(0)
+SubfragmentSlot(4)
+PushString("Most kills: ")
+StringConcatN(1)
+Text
+ClosureReadShared(1)
+Read(0)
+SubfragmentSlot(5)
+PushAfter(3)
+BeginIntrinsic(5)
+PlayerNameDisplay
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(6)
+PushString(" (")
+ClosureReadShared(1)
+FieldGetOrInit($KillScore, InitialValueId(1))
+PushNum(0.0)
+FormatWithDecimals
+PushString(")")
+StringConcatN(3)
+Text
+EndClosure
+ClosureRead(1)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+PushAfter(14)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushUndefined
+PushScript(ScriptId(313))
+Call(1)
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+PushNum(9.0)
+PushAfter(8)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Play Again")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(11)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+PushAfter(14)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+EndClosure
+Read(2)
+ClosureAdd
+NoShare(3)
+ClosureAdd
+NoShare(4)
+ClosureAdd
+PushAfter(8)
+PushScript(ScriptId(316))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0

@@ -1,0 +1,46 @@
+pub collect unit.CooldownRate ~ MultiplyExtremes
+pub collect unit.UnitCooldownRate ~ MultiplyExtremes
+
+pub collect unit.DamageModifier ~ MultiplyExtremes
+
+pub collect unit.Relay = null
+pub collect unit.RelayProportion ~ |proportions| proportions.FindMin ?? 1
+
+pub collect life.Unkillable = false
+
+pub collect unit.Vulnerability ~ MultiplyExtremes
+
+// While vanished, some things are still visible (e.g. buffs), whereas invisible really means invisible.
+pub collect unit.Vanished = false
+pub collect unit.Invisibility = false
+
+pub collect unit.LavaDamageModifier ~ MultiplyExtremes
+
+pub collect unit.KnockbackResistance ~ MultiplyExtremes
+pub collect unit.DensityModifier ~ MultiplyExtremes
+pub collect unit.SizeModifier ~ MultiplyExtremes
+pub collect unit.SpeedModifier ~ MultiplyExtremes
+pub collect unit.TurnRateModifier ~ MultiplyExtremes
+pub collect unit.Untrackable = false
+
+pub collect unit.Tangibility ~ |values| {
+	let tangibility = Category:All
+	for value in values {
+		tangibility &= value
+	}
+	return tangibility
+}
+pub collect unit.SenseAlso ~ |values| {
+	let senseAlso = Category:None
+	for value in values {
+		senseAlso |= value
+	}
+	return senseAlso
+}
+
+fn MultiplyExtremes(values) -> number {
+	// Take the biggest and smallest values and multiply them together
+	const increase = values.FindMax.Max(1)
+	const decrease = values.FindMin.Min(1).Max(0)
+	return increase * decrease
+}

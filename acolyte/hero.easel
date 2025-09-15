@@ -1,0 +1,152 @@
+pub signal unit.HeroExit
+
+pub fn unit.Hero(pos=@(0,0), radius=1.0, density=1, [owner]) {
+    use body=unit, life=unit
+	use color=#aaa, ownerColor=true
+	use layer=Layer:Unit
+	use category=(Category:Unit | Category:Grabbable | Category:Aoe)
+	use collideWith=Category:Tangible, sense=Category:Zone, restitution=0
+
+    let entranceOffset = 60 * Direction(pos) // Enter from away from the center
+
+	// Body
+	Body(pos = pos + entranceOffset, heading = Angle(-pos), bullet=true)
+	Durability = Durability:Maximum
+	LimitSpeed(100)
+	DecayTurnRate(turningDecay=0.5)
+	LavaBehavior
+
+	// Health
+	Health(100)
+	on Hurt {
+		Strobe(dissipate=10, shine=0.5, growth=0.5)
+	}
+	once BeforeOutOfHealth {
+		repeat 10 { Spark(luminous=1, shine=1, bloom=2, feather=1, dissipate=30, speed=10, splatter=1) }
+		Hear(@heroDeath.esfx)
+	}
+
+	// Movement
+	Movement:Walk(speed=9.6)
+	Movement:Turn
+	with Pointer {
+		Movement:LookAt(Pointer)
+	}
+	on Movement:Turned step {
+		if Abs(step) > 0.125rev {
+			Strobe(dissipate=15, growth=0.15)
+		}
+	}
+
+    // Add a backup Tombstone in case the user does not get hit by anything
+    Tombstone {
+        PlayerNameDisplay
+        " died"
+    }
+
+	// Entrance animation
+	Subspawn {
+		use dissipate=30, luminous=1, shine=0
+
+		Tangibility(Category:None)
+		Vulnerability(0)
+		SpeedModifier(0)
+
+		on Paint {
+			Streak(radius=1.5*radius, glare=0.1, bloom=3, bloomAlpha=1, shadow=0.5, layer=Layer:Bloom)
+		}
+
+		await Tween(duration=dissipate, initial=0.0, final=1.0) blend {
+			unit.Pos = (blend ** 2.0).Mix(unit.Pos, pos)
+		}
+
+		Despawn
+	}
+	
+	// Exit animation
+	once HeroExit {
+	    const ExitSpeed = 5
+
+		delete Health // Stop the unit dying during their exit animation
+        delete unit.Tombstone // Voluntary leaving should not count as a kill
+
+		Subspawn {
+			use dissipate=30, luminous=1, shine=0
+
+			on Paint {
+				Streak(radius=1.5*radius, glare=0.5, bloom=3, bloomAlpha=1, shadow=0.5)
+			}
+
+			await Tween(duration=dissipate, initial=1.0, final=0.0) blend {
+				unit.Pos += blend * ExitSpeed * Direction(unit.Pos) // Just move away from center each tick
+			}
+
+			unit.Expire
+			Despawn
+		}
+	}
+
+	// Cleanse on game start
+	once AfterGameCommenced {
+		CleanseEffects
+		ClearHalos
+		UngrabMe
+		UngrabThem
+		ReturnToTurf
+	}
+
+	with KnockbackResistance {
+        DecaySpeed(speedDecay = 0.0488 * KnockbackResistance)
+	}
+
+	with SizeModifier, Vanished {
+		await Paint // Don't change anything until the tick is finished and we are about to render so we can collate multiple changes together
+
+		if Vanished {
+			delete ImageSprite<glyph>
+			delete PolygonSprite<hero>
+			delete PolygonPerimeter
+			delete TextSprite<name>
+			delete Healthbar
+
+		} else {
+			use radius = radius * SizeModifier, shape = Circle(radius)
+
+            TextSprite<name>(
+                owner.PlayerName,
+                noRotation=true, screenOffset=@(0, 1.5), layer=Layer:Label,
+                color=#fff4, ownerColor=false, strobe=false,
+                heightPx=22, anchorTop=true, luminous=1)
+
+			PolygonSprite<hero>(shadow=0.5, shading=0.4)
+			PolygonSprite<glyph>(image=@acolyteArrowhead.svg, ownerColor=false, color=#fff8, luminous=1)
+
+			Healthbar(height=0.2*radius, width=2*radius, verticalOffset = -1.5 * radius)
+
+			PolygonPerimeter
+		}
+	}
+
+	with SizeModifier, Tangibility, SenseAlso, DensityModifier {
+		await BeforePhysics // Don't change anything until the physics is about to happen so we can collate multiple changes together
+
+		if Tangibility || SenseAlso {
+            // We have a physical form!
+            // This is determined by the Tangibility and SenseAlso buffs directly
+            // rather than checking of `collideWith` and `sense` have values
+            // because `sense` always contains `Category:Zone` and so would always be true.
+
+			PolygonCollider(
+                Circle(radius = radius * SizeModifier),
+                density = density * DensityModifier,
+                collideWith = collideWith & Tangibility,
+                sense = sense | SenseAlso,
+            )
+
+		} else {
+			// If we have no physical form, completely remove our collider.
+			// This ensures we also won't be found even by area-of-effect queries, for example.
+			delete PolygonCollider
+		}
+	}
+}

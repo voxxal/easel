@@ -1,0 +1,18 @@
+Play(duration=2s) {
+	BrownNoise
+	BandPass(freq=1800, q=1)
+	Envelope(attack=0.25s)
+	Gain(volume=0.25)
+}
+
+Play(duration=2s) {
+	Vibrato(freqModulation=100) {
+		Oscillator(freq=2100)
+	}
+	Oscillator(freq=900, harmonics=[1,1.5])
+	LowPass(freq=225)
+	Tremolo(volumeModulation=0.3) {
+		Oscillator(freq=11)
+	}
+	Envelope(attack=0.5s)
+}

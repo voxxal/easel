@@ -1,0 +1,6 @@
+Play(duration=0.25s) {
+	Oscillator(wave=$square, freq=[70,140])
+	LowPass(freq=120)
+	HighPass(freq=40)
+	Envelope(attack=0.001s)
+}

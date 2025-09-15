@@ -1,0 +1,107 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Vanish")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("With a whisper to the shadows, you vanish from sight, your movements becoming as swift as the night. Seize the element of surprise and confront your foe from an unanticipated direction. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushString("Shrouded Surge")
+PushString("fas fa-running")
+BeginClosure { num_params: 1, return_at: 16 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Move ")
+PushNum(0.8)
+PushNum(100.0)
+Mul
+PushString("% faster for ")
+PushNum(240.0)
+PushNum(60.0)
+Div
+PushString(" seconds. ")
+StringConcatN(5)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(239))
+Call(4)
+PushString("Invisibility")
+PushString("fas fa-eye")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("For the duration of this spell, you are invisible.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+PushScript(ScriptId(239))
+Call(4)
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(4)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 22 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("Cooldown")
+PushString("fas fa-clock")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(600.0)
+PushNum(60.0)
+Div
+PushString("s")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+PushScript(ScriptId(240))
+Call(2)

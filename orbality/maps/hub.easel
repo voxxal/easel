@@ -1,0 +1,46 @@
+pub fn map.Hub() {
+    Spawn {
+        use body=this
+        use shape = Rectangle(height=50, width=500)
+        Body(pos=@(0, 40), noRotation=true, immovable=true)
+
+        PolygonSprite(color=#aaa)
+        PolygonCollider(category=C:Collision|C:Map)
+    }
+
+    Spawn {
+        use body=this
+        use shape = Rectangle(height=1, width=20)
+        Body(pos=@(-20, 10), noRotation=true, immovable=true)
+
+        PolygonSprite(color=#aaa)
+        PolygonCollider(category=C:Collision|C:Map)
+    }
+
+    Spawn {
+        use body=this
+        use shape = Rectangle(height=1, width=20)
+        Body(pos=@(20, 10), noRotation=true, immovable=true)
+
+        PolygonSprite(color=#aaa)
+        PolygonCollider(category=C:Collision|C:Map)
+    }
+
+    Spawn {
+        use body=this
+        use shape = Rectangle(height=1, width=20)
+        Body(pos=@(0, 0), noRotation=true, immovable=true)
+
+        PolygonSprite(color=#aaa)
+        PolygonCollider(category=C:Collision|C:Map)
+    }
+    
+    SpawnBot owner {
+        Subspawn unit {
+            unit.Owner = owner
+            Dummy(pos=@(20, 8))
+        }
+    }
+        
+    
+}

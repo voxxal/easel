@@ -1,0 +1,26 @@
+PushScript(ScriptId(256))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 17 }
+Loop { continue_at: 1, break_at: 15 }
+ClosureRead(0)
+AwaitSignal(SignalId(15))
+BeginClosure { num_params: 1, return_at: 5 }
+ClosureRead(0)
+Read(0)
+ForcefulStep
+EndClosure
+ClosureRead(1)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(12)
+EndLoop
+EndClosure
+Read(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)

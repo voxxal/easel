@@ -1,0 +1,248 @@
+const K = 10 // Learning rate - how quickly does the rating get updated
+const R = 2 * 400 // This is the 2 * the difference in points required for a player to be expected to win 76% of the time against another player
+const SustainPower = 1 // When a Grandmaster fights a Newbie, suppress impact on the Grandmaster's rating by this power
+pub const MaxActivityBonus = 100
+pub const ActivityBonusDuration = 30d
+
+pub accumulator owner.Rating = 1000
+pub accumulator owner.UnrankedRating = 1000
+pub accumulator owner.ActivityBonus
+pub preference owner.Unranked = true // New players start in Unranked mode
+pub preference owner.NeverSuggestRankedModeAgain
+
+pub signal owner.OnRatingChange(rating, delta)
+
+pub fn owner.AccumulateRating(ranking, pastEpisode=, [showOnLeaderboard]) -> delta {
+    if !owner.IsHuman || !owner.VictoryRank { return }
+
+    let selfUnranked = owner.Unranked
+    let selfRating = selfUnranked ? owner.UnrankedRating : owner.Rating
+
+    let gainDelta = 0
+    let gainDeltaMirror = 0
+    let gainOpponentName = null
+    let gainWinProbability = null
+    let lossDelta = 0
+    let lossDeltaMirror = 0
+    let lossOpponentName = null
+    let lossWinProbability = null
+
+    for opponent in ranking {
+        if !opponent.IsHuman || !opponent.VictoryRank ||
+            opponent == owner || owner.UserId == opponent.UserId || owner.Team == opponent.Team {
+
+            continue
+        }
+
+        let opponentUnranked = opponent.Unranked
+        let opponentRating = opponentUnranked ? opponent.UnrankedRating : opponent.Rating
+
+        let diff = opponentRating - selfRating
+        let winProbability = 1 / (1 + 10 ** (diff / R))
+        let sustainFactor = (1 - winProbability) ** SustainPower
+        let learningRate = K * sustainFactor
+        let winDelta = learningRate * (1 - winProbability)
+        let loseDelta = learningRate * (0 - winProbability)
+
+        if owner.VictoryRank < opponent.VictoryRank {
+            // Won against this opponent
+            if winDelta > gainDelta {
+                gainDelta = winDelta
+                gainDeltaMirror = loseDelta
+                gainOpponentName = opponent.PlayerName
+                gainWinProbability = winProbability
+            }
+        } else {
+            // Lost against this opponent
+            if loseDelta < lossDelta {
+                lossDelta = loseDelta
+                lossDeltaMirror = winDelta
+                lossOpponentName = opponent.PlayerName
+                lossWinProbability = winProbability
+            }
+        }
+    }
+
+    if selfUnranked {
+        owner.UnrankedRating(delta=gainDelta + lossDelta)
+        return null
+
+    } else {
+        owner.Rating(delta = gainDelta + lossDelta, showOnLeaderboard=)
+
+        let activityDelta = 0
+        if owner.ActivityBonus < MaxActivityBonus {
+            activityDelta = 1
+
+            // Spread the activity bonus expiration over the whole duration
+            // so that the player doesn't lose them all at once
+            let revertAfter = ActivityBonusDuration * ActivityBonus / MaxActivityBonus
+
+            owner.ActivityBonus(delta=activityDelta, revertAfter=)
+            owner.Rating(delta=activityDelta, revertAfter=, showOnLeaderboard=)
+        }
+
+        let delta = gainDelta + lossDelta + activityDelta
+        pastEpisode.PastRatingDelta = delta
+        pastEpisode.PastLossDelta = lossDelta
+        pastEpisode.PastLossDeltaMirror = lossDeltaMirror
+        pastEpisode.PastLossOpponentName = lossOpponentName
+        pastEpisode.PastLossWinProbability = lossWinProbability
+        pastEpisode.PastGainDelta = gainDelta
+        pastEpisode.PastGainDeltaMirror = gainDeltaMirror
+        pastEpisode.PastGainOpponentName = gainOpponentName
+        pastEpisode.PastGainWinProbability = gainWinProbability
+        pastEpisode.PastActivityDelta = activityDelta
+        pastEpisode.PastActivityBonusRemaining = (MaxActivityBonus - ActivityBonus).Max(0)
+
+        return delta
+    }
+}
+
+fn CalculateRatingDelta(selfRating, opponentRating, won) -> delta {
+    let diff = opponentRating - selfRating
+    let winProbability = 1 / (1 + 10 ** (diff / R))
+    let sustainFactor = (1 - winProbability) ** SustainPower
+    let score = won ? 1 : 0
+    return sustainFactor * K * (score - winProbability)
+}
+
+pub fn owner.AnnounceRatingChange(delta) {
+    use league = FindLeague(Rating)
+	Transmission {
+		P {
+			"Your rating is now "
+
+			Span(bold=true) {
+				%(LeagueName + " " + Rating.FormatWithDecimals(0))
+			}
+
+			let color = delta > 0 ? #4f0 : #f04
+			" ("
+			Span(bold=true, color=) { %(FormatRatingDelta(delta)) }
+			")"
+		}
+	}
+}
+
+pub fn FormatRatingDelta(delta) -> formatted {
+    if !delta.IsNum { return null }
+
+	let formatted = Abs(delta) < 1 ? delta.FormatWithPrecision(1) : delta.FormatWithDecimals(0)
+	if delta >= 0.0 {
+		formatted = "+" + formatted
+	}
+	return formatted
+}
+
+pub fn this.UnrankedTool(backgroundColor, [owner, ui]) {
+	let rating = owner.Rating
+	if rating == 0 { return } // Don't show the button to new players
+
+    with Unranked {
+        if Unranked {
+            FlatButton(PressIntent<toggleUnranked>, tooltip="Unranked Mode", backgroundColor=) {
+                Icon("fas fa-gamepad")
+            }
+        } else {
+            FlatButton(PressIntent<toggleUnranked>, tooltip="Ranked Mode", backgroundColor=) {
+                Icon("fas fa-trophy")
+                " "
+                Span(bold=true) { %(FindLeague(rating).LeagueName) }
+                " "
+                Span(bold=false) { %(rating.FormatWithDecimals(0)) }
+            }
+        }
+    }
+
+	on Pressed<toggleUnranked> {
+		Unranked = !Unranked
+	}
+}
+
+pub fn this.SuggestRankedMode([owner]) {
+    if GameCommenced || !Unranked || NeverSuggestRankedModeAgain || NumLifetimeWins < 3 { return }
+
+    Subspawn {
+        Content {
+            Panel {
+                H3 { "Try Ranked Mode?" }
+                P {
+                    "Can you make it to the top of the leaderboard?"
+                    %(LineBreak)
+                    "Ranked mode lets you see how good you really are!"
+                    %(LineBreak)
+                    "You can turn off ranked mode at any time."
+                }
+                HStack {
+                    RaisedButton(PressIntent<turnOnRanked>, backgroundColor=Color:Primary, dismiss=true) {
+                        "Turn on Ranked Mode"
+                    }
+
+                    Button(PressIntent<neverAskAboutRanked>, dismiss=true) {
+                        "No Thanks"
+                    }
+                }
+            }
+        }
+
+        once Pressed<turnOnRanked> {
+            Unranked = false
+        }
+
+        once Pressed<neverAskAboutRanked> {
+            NeverSuggestRankedModeAgain = true
+        }
+
+        once GameCommenced { Expire }
+
+        on Unranked {
+            if !Unranked { Expire }
+        }
+    }
+}
+
+pub fn this.RankedModeSwitcher([owner, ui]) {
+    with Unranked {
+        if Unranked {
+            H2 {
+                Icon("fa-solid fa-gamepad")
+                " Unranked Mode"
+            }
+
+            P {
+                "You are currently playing unranked. Play for fun, not points! You will not lose or gain points on the rating system. "
+            }
+
+            P {
+                RaisedButton(PressIntent<switchUnranked>, backgroundColor=Color:Primary) {
+                    "Switch to "
+                    Icon("fa-solid fa-trophy")
+                    " Ranked Mode"
+                }
+            }
+        } else {
+            H2 {
+                Icon("fa-solid fa-trophy")
+                " Ranked Mode"
+            }
+
+            P {
+                "You are currently playing ranked. You will lose and gain points on the rating system and, "
+                "if you're good enough, appear on the leaderboard. "
+            }
+
+            P {
+                RaisedButton(PressIntent<switchUnranked>, backgroundColor=Color:Primary) {
+                    "Switch to "
+                    Icon("fa-solid fa-gamepad")
+                    " Unranked Mode"
+                }
+            }
+        }
+    }
+
+	on Pressed<switchUnranked> {
+		Unranked = !Unranked
+	}
+}

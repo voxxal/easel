@@ -1,0 +1,37 @@
+Read(0)
+PushIntrinsic(AlignLeft)
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 22 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+ClosureRead(0)
+PushNum(1.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+PushNum(1.0)
+Read(0)
+SubfragmentSlot(1)
+PushAfter(2)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+ClosureRead(1)
+CallLambda(1)
+Pop
+EndClosure
+Read(1)
+ClosureAdd
+Read(3)
+ClosureAdd
+PushAfter(22)
+Read(2)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0

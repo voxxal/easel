@@ -1,0 +1,32 @@
+JumpIfVarDefined { var: 1, jump: 3 }
+PushNum(0.0)
+Write(1)
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNum(0.0)
+Write(2)
+Read(1)
+Read(0)
+FieldGet($bot.easel/ActionUtility)
+Greater
+JumpIfNot(22)
+PushBool(true)
+Read(0)
+FieldSet($bot.easel/HasAction)
+Read(1)
+Read(0)
+FieldSet($bot.easel/ActionUtility)
+PushNull
+Read(0)
+FieldSet($bot.easel/ActionKeycode)
+Read(2)
+Read(0)
+FieldSet($bot.easel/ActionDelay)
+PushNull
+Read(0)
+FieldSet($bot.easel/ActionTarget)
+PushBool(true)
+Read(0)
+FieldSet($bot.easel/ActionSpin)
+PushBool(false)
+Read(0)
+FieldSet($bot.easel/ActionKeepChannelling)

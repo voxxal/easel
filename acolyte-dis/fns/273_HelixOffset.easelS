@@ -1,0 +1,67 @@
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNum(15.0)
+Write(2)
+JumpIfVarDefined { var: 3, jump: 3 }
+PushNum(0.0)
+Write(3)
+JumpIfVarDefined { var: 4, jump: 3 }
+PushNum(0.0)
+Write(4)
+PushNum(6.2831855)
+Tick
+Read(2)
+Mod
+Mul
+Read(2)
+Div
+Read(3)
+Add
+PushNum(6.2831855)
+Read(4)
+Mul
+Add
+Declare(6)
+Read(1)
+Read(6)
+Sin
+Mul
+Declare(7)
+PushNum(0.0)
+Read(7)
+V2
+Declare(8)
+PushScript(ScriptId(273))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 13 }
+PushUndefined
+Sleep(BeforePhysics)
+BeginClosure { num_params: 0, return_at: 6 }
+ClosureRead(0)
+Pos
+ClosureRead(0)
+FieldSet($library/rendering/offset.easel/PreviousPos)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(5)
+ClosureAdd
+Hook(0)
+Read(8)
+Read(5)
+FieldGet($library/rendering/offset.easel/PreviousPos)
+JumpIfNot(8)
+Read(5)
+Pos
+Read(5)
+FieldGet($library/rendering/offset.easel/PreviousPos)
+Sub
+Angle
+Jump(3)
+Read(5)
+Heading
+Rotate
+ReturnValue

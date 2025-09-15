@@ -1,0 +1,251 @@
+GameCommenced
+With
+JumpIf(17)
+Pop
+Read(1)
+LoadPreferenceOrInit(PreferenceId(0), InitialValueId(0))
+BooleanNot
+With
+JumpIf(11)
+Pop
+Read(1)
+LoadPreference(PreferenceId(1))
+With
+JumpIf(6)
+Pop
+Read(1)
+LoadAccumulator(AccumulatorId(4))
+PushNum(3.0)
+Less
+JumpIfNot(2)
+Return0
+Read(0)
+BeginClosure { num_params: 1, return_at: 225 }
+Read(0)
+BeginClosure { num_params: 1, return_at: 119 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 108 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Try Ranked Mode?")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H3)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 5, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Can you make it to the top of the leaderboard?")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+LineBreak
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("Ranked mode lets you see how good you really are!")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+LineBreak
+Text
+Read(0)
+SubfragmentSlot(4)
+PushString("You can turn off ranked mode at any time.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 47 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushSymbol($accumulation/rating.easel/turnOnRanked)
+PushUndefined
+PressIntent
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+PushBool(true)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Turn on Ranked Mode")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+PushSymbol($accumulation/rating.easel/neverAskAboutRanked)
+PushUndefined
+PressIntent
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("No Thanks")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(23)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Button)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(172))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0
+PushScript(ScriptId(172))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 15 }
+ClosureRead(0)
+PushSymbol($accumulation/rating.easel/turnOnRanked)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 5 }
+PushBool(false)
+ClosureRead(0)
+SavePreference(PreferenceId(0))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(172))
+PushIndex(3)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 15 }
+ClosureRead(0)
+PushSymbol($accumulation/rating.easel/neverAskAboutRanked)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 5 }
+PushBool(true)
+ClosureRead(0)
+SavePreference(PreferenceId(1))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(172))
+PushIndex(4)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 10 }
+AwaitGameCommenced
+BeginClosure { num_params: 1, return_at: 4 }
+ClosureRead(0)
+Expire
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+EndClosure
+Read(0)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(172))
+PushIndex(5)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 22 }
+Loop { continue_at: 1, break_at: 20 }
+ClosureRead(0)
+AwaitPreference(PreferenceId(0))
+BeginClosure { num_params: 1, return_at: 8 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(0), InitialValueId(0))
+BooleanNot
+JumpIfNot(3)
+ClosureRead(1)
+Expire
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(17)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+EndClosure
+Read(1)
+ClosureAdd
+Subspawn
+Pop

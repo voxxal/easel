@@ -1,0 +1,236 @@
+use thinkInterval=0.25s, timeJitter=3, wakeInterval=1s, spinPerTick=-0.05rev
+
+pub const Utility:None=-1
+pub const Utility:Minimum=0
+pub const Utility:Low=25
+pub const Utility:Medium=50
+pub const Utility:High=75
+pub const Utility:Maximum=100
+
+symbol SpinWhileSleeping
+
+field unit.PreviousTarget
+field unit.CurrentlyChannelling
+
+field unit.HasAction
+field unit.ActionUtility
+field unit.ActionKeycode
+field unit.ActionDelay
+field unit.ActionTarget
+field unit.ActionSpin
+field unit.ActionKeepChannelling
+
+pub signal unit.BotChannelling(target, enemy)
+pub signal unit.BotDeflecting(target, enemy)
+pub signal unit.BotAttacking(target, enemy)
+pub signal unit.BotRecovering(target, enemy)
+
+pub fn unit.Bot([owner]) {
+    behavior<bot> {
+        loop {
+            const start = Tick
+            const sleepAction = await BotThink
+
+            const end = start + thinkInterval + Random() * timeJitter
+            if sleepAction == SpinWhileSleeping {
+                while Tick < end {
+                    unit.Movement:Look(unit.Heading + spinPerTick)
+                    await BeforeTick
+                }
+            } else {
+                await BeforeTick(end - Tick)
+            }
+        }
+    }
+}
+pub delete fn unit.Bot([owner]) {
+    delete behavior<bot>
+}
+
+fn unit.BotResetAction {
+	unit.HasAction = false
+	unit.ActionUtility = Utility:None
+	unit.ActionKeycode = null
+	unit.ActionDelay = 0
+	unit.ActionTarget = null
+	unit.ActionSpin = false
+	unit.ActionKeepChannelling = false
+}
+
+pub fn unit.BotUseAbility([target, keycode, utility=Utility:Medium, delay=0.25s, spin=false]) {
+	if utility > unit.ActionUtility {
+		unit.HasAction = true
+		unit.ActionUtility = utility
+		unit.ActionKeycode = keycode
+		unit.ActionDelay = delay
+		unit.ActionTarget = target
+		unit.ActionSpin = spin
+		unit.ActionKeepChannelling = false
+	}
+}
+pub fn unit.BotKeepChannelling([target, keycode, utility=Utility:High, delay=0.15s, spin=false]) {
+	if keycode == unit.CurrentlyChannelling && utility > unit.ActionUtility {
+		unit.HasAction = true
+		unit.ActionUtility = utility
+		unit.ActionKeycode = null
+		unit.ActionDelay = delay
+		unit.ActionTarget = target
+		unit.ActionSpin = spin
+		unit.ActionKeepChannelling = true
+	}
+}
+pub fn unit.BotMoveTo([target, utility=Utility:Low, delay=0.2s]) {
+	if utility > unit.ActionUtility {
+		unit.HasAction = true
+		unit.ActionUtility = utility
+		unit.ActionKeycode = null
+		unit.ActionDelay = delay
+		unit.ActionTarget = target
+		unit.ActionSpin = false
+		unit.ActionKeepChannelling = false
+	}
+}
+pub fn unit.BotSpin([utility=Utility:Minimum, delay=0s]) {
+	if utility > unit.ActionUtility {
+		unit.HasAction = true
+		unit.ActionUtility = utility
+		unit.ActionKeycode = null
+		unit.ActionDelay = delay
+		unit.ActionTarget = null
+		unit.ActionSpin = true
+		unit.ActionKeepChannelling = false
+	}
+}
+
+await fn BotThink([unit, owner]) -> sleepAction {
+	use this = unit
+
+	use enemy = unit.QueryNearest(filter=Category:Unit, against=Alliance:Enemy)
+	if !enemy {
+		if GameConcluded {
+			// Has won the game - spin to celebrate!
+			return SpinWhileSleeping
+		} else {
+			return null
+		}
+	}
+
+	use target = enemy.Vanished ? unit.PreviousTarget : enemy?.Pos
+	if !target { return null }
+	unit.PreviousTarget = target
+
+	BotResetAction
+	BotConsiderRecovery
+	BotConsiderChannelling
+	BotConsiderDodge
+	BotConsiderAttack
+	BotConsiderMove
+
+	if unit.ActionDelay > 0 {
+		await BeforeTick(unit.ActionDelay)
+	}
+
+	// Pointers are processed early in the tick (before physics) - ensure the bot is doing the same so all timings are correct
+	if unit.ActionTarget && !unit.ActionSpin {
+		owner.Pointer = unit.ActionTarget
+		owner.IsPointerActive = true
+	} else {
+		owner.IsPointerActive = false
+	}
+
+	// User-invoked incantations occur during the main part of the tick - ensure the bot is doing the same so all timings are correct
+	await Tick
+	if unit.CurrentlyChannelling && !unit.ActionKeepChannelling {
+		// Release if no command to keep channelling
+		owner.ButtonUp(unit.CurrentlyChannelling)
+		unit.CurrentlyChannelling = null
+	}
+	if unit.ActionKeycode {
+		owner.ButtonDown(unit.ActionKeycode)
+		unit.CurrentlyChannelling = unit.ActionKeycode
+	}
+
+	if unit.ActionSpin {
+		return SpinWhileSleeping
+	}
+}
+
+fn BotConsiderMove([unit, target, enemy]) {
+	if unit.HasAction { return }
+
+	// Walk away, but around the edge, not through the middle
+	let selfAngle = Angle(unit.Pos) // Get angle from center of map
+	let awayAngle = Angle(-target)
+	let newAngle = selfAngle + 0.1 * AngleDelta(selfAngle, awayAngle)
+	let radius = Length(target) // Match our enemy's radius
+
+	BotMoveTo(target=radius * Direction(newAngle), utility=Utility:Minimum)
+}
+
+fn BotConsiderChannelling([unit, target, enemy]) {
+	if unit.HasAction { return }
+	if !unit.CurrentlyChannelling { return }
+	unit.BotChannelling(target=, enemy=)
+}
+
+fn BotFindIncoming(tooFarRadius=2.0, [unit, owner]) -> incoming, collisionPoint {
+	let projectile = unit.QueryNearest(filter=Category:Projectile, against=Alliance:Enemy)
+	if !projectile { return }
+
+	let incoming = projectile.Pos
+
+	let diff = unit.Pos - incoming
+	let incomingSpeed = Dot(projectile.Velocity, Direction(diff))
+	if incomingSpeed <= 0 { return } // Not coming towards us
+
+	let timeToCollision = Length(diff) / incomingSpeed
+	if timeToCollision <= 0 || timeToCollision > 0.5s { return } // Not coming towards us or too far away
+
+	let collisionPoint = projectile.Pos + projectile.Velocity * timeToCollision
+	let distanceToCollision = Distance(unit.Pos, collisionPoint)
+
+	// Need to know the radius of the unit and projectile to do this accurately
+	if distanceToCollision > tooFarRadius { return } // Too far away
+
+	return incoming, collisionPoint
+}
+
+fn BotConsiderDodge(escapeRadius=10, [unit, owner, target, enemy]) {
+	if unit.HasAction { return }
+
+	const incoming, predictedCollisionPoint = BotFindIncoming
+	if !incoming { return }
+
+	if GameCommenced {
+		// Attempt to use a spell to deflect the incoming collision
+		unit.BotDeflecting(target=, enemy=)
+		if unit.HasAction { return }
+	}
+
+	// If no action assigned yet, attempt to dodge the incoming collision
+	let dodge = unit.Pos + escapeRadius * Direction(unit.Pos - predictedCollisionPoint)
+	BotMoveTo(target=dodge, utility=Utility:Maximum)
+}
+
+fn BotConsiderAttack([unit, target, enemy]) {
+	if unit.HasAction || !GameCommenced { return }
+	unit.BotAttacking(target=, enemy=)
+}
+
+fn BotConsiderRecovery([unit, target, enemy]) {
+	if unit.HasAction || !GameCommenced | !unit.IsInLava { return }
+
+	// Find a safe place
+	let turf = unit.QueryNearest(filter=Category:Turf)
+	let safePoint = turf?.Pos ?? @(0,0)
+
+	// Recover to somewhere between our target and the center of the map. This stops everyone going to the absolute center all the time which sometimes has dangerous obstacles
+	use target = (target + safePoint) / 2.0
+
+	// Attempt to use a spell to recover
+	BotRecovering(target=, enemy=)
+	if unit.HasAction { return }
+
+	// If no spell available, run back to the middle as quickly as possible
+	BotMoveTo(target=, utility=Utility:Maximum)
+}

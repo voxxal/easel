@@ -1,0 +1,22 @@
+// Rumbling
+Play(duration=0.3s) {
+	Vibrato(freqModulation=140) {
+		WhiteNoise
+	}
+	Oscillator(wave=$sine, freq=35, harmonics=[1,1.5,2,4,16])
+	LowPass(freq=[560,0], q=1)
+	Tremolo(volumeModulation=1.0) {
+		Oscillator(freq=[17.5,0])
+	}
+	Envelope(attack=0.01s, decay=0.05s, decayTo=0.4)
+}
+
+// Ding
+Play(duration=1.0s) {
+	Vibrato(freqModulation=280) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=35)
+	LowPass(freq=[140,0], q=1)
+	Envelope(attack=0.01s, decay=0.05s, decayTo=0.2)
+}

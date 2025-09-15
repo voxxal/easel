@@ -1,0 +1,10 @@
+pub const Durability:Minimum=-100
+pub const Durability:Reflector=-50 // below the durability of everything else so nothing gets destroyed, allowing for reflection
+pub const Durability:None=0
+pub const Durability:Low=25
+pub const Durability:Medium=50
+pub const Durability:High=75
+pub const Durability:Maximum=100
+
+pub field body.Durability = Durability:None
+

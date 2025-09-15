@@ -1,0 +1,7 @@
+Play(duration=5s, cutoff=0.5s) {
+	Oscillator(wave=$triangle, freq=[4,9], harmonics=[1,2,2.5,4,5,8,10,16])
+	Tremolo(volumeModulation=0.8) {
+		Oscillator(freq=12)
+	}
+	Envelope(attack=0.25s, release=0.5s)
+}

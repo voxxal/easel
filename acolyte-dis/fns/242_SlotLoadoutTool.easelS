@@ -1,0 +1,100 @@
+JumpIfVarDefined { var: 2, jump: 3 }
+PushString("fas fa-list")
+Write(2)
+PushScript(ScriptId(242))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 80 }
+Loop { continue_at: 2, break_at: 78 }
+Jump(3)
+ClosureRead(0)
+AwaitBuff(BuffId(18))
+BeginClosure { num_params: 0, return_at: 57 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 5 }
+ClosureRead(0)
+Buff(BuffId(18))
+EndBuff(BuffId(18))
+JumpIfNot(5)
+ClosureRead(1)
+PushSymbol($library/incantations/slot.easel/loadoutDialog)
+DeleteSection(Modal)
+Jump(47)
+ClosureRead(1)
+PushSymbol($library/incantations/slot.easel/loadoutDialog)
+PushBool(true)
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+CallLambda(1)
+Pop
+EndClosure
+ClosureRead(2)
+ClosureAdd
+PushAfter(4)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Modal)
+EndSection
+EndIntrinsic0
+PushSymbol($library/incantations/slot.easel/loadoutDialog)
+PushUndefined
+ShowIntent
+ClosureRead(3)
+PushAfter(20)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+Read(0)
+NoSubfragmentSlot
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+ClosureRead(4)
+ClosureAdd
+PushAfter(4)
+ClosureRead(5)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+ClosureRead(3)
+ClosureAdd
+ClosureRead(4)
+ClosureAdd
+ClosureRead(5)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(74)
+EndLoop
+EndClosure
+Read(3)
+ClosureAdd
+Read(0)
+ClosureAdd
+Read(5)
+ClosureAdd
+Read(1)
+ClosureAdd
+Read(2)
+ClosureAdd
+Read(4)
+ClosureAdd
+Hook(0)

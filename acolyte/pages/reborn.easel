@@ -1,0 +1,39 @@
+pub page fn owner.RebornPage {
+    Content {
+        H1 { "Acolyte Fight has been reborn!" }
+        P {
+            "Welcome to the new version of Acolyte Fight! "
+            "This version of Acolyte Fight has been 100% re-created from the ground up using a new game engine called "
+            Link("https://easel.games", bold=true) { "Easel" }
+            ". "
+            "This new version of Acolyte Fight should be better, faster, and more fun than ever before. "
+        }
+        P {
+            "With Easel, multiplayer now uses a peer-to-peer relay and a new technique called rollback netcode, "
+            "which should provide the lowest latency experience that you have ever seen in a webgame. "
+            "There is no need for separate servers in North America, Europe and Asia anymore, "
+            "because now the server is wherever you are!"
+        }
+        P {
+            "Also thanks to Easel, modding is now vastly more powerful. "
+            "Easel is not only a game engine, it is a full programming language and deployment platform. "
+            "This means you can create not only new spells and abilities, but entirely new games, "
+            "and publish them for everyone to play. "
+        }
+        P {
+            "Thank you for your continued support since the beginning of Acolyte Fight. "
+            Span(bold=true) { "Welcome to the new era!" }
+        }
+        P {
+            Link("https://discord.gg/sZvgpZk") {
+                Icon("fa-brands fa-discord")
+                " Discuss our rebirth on Discord!"
+            }
+        }
+
+        H2 { "Miss the old Acolyte Fight?" }
+        P {
+            Link("https://us.acolytefight.io", italic=true) { "Play Acolyte Fight classic here" }
+        }
+    }
+}

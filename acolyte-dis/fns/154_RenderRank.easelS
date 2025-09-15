@@ -1,0 +1,24 @@
+PushNum(0.75)
+PushColor(Color { r: F8(238), g: F8(238), b: F8(238), a: F8(255) })
+PushAfter(3)
+PushNum(1.5)
+PushAfter(3)
+PushIntrinsic(AlignCenter)
+WriteBack(3)
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+Text
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(6)
+Read(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0

@@ -1,0 +1,38 @@
+CurrentReplayId
+JumpIfNot(37)
+Read(0)
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+CurrentReplayId
+PushUndefined
+ReplayIntent
+PushString("Watch Replay")
+PushAfter(20)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("fa-solid fa-film")
+Read(0)
+NoSubfragmentSlot
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+PushAfter(4)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(318))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+BeginIntrinsic(10)
+Section(Toolbar)
+EndSection
+EndIntrinsic0

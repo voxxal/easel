@@ -1,0 +1,29 @@
+PushNum(0.5)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 17 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PageIntent(PageId(0), 0)
+PushString("Best")
+Read(0)
+SubfragmentSlot(0)
+ClosureRead(0)
+PushScript(ScriptId(153))
+Call(4)
+PageIntent(PageId(1), 0)
+PushString("Most Games")
+Read(0)
+SubfragmentSlot(1)
+ClosureRead(0)
+PushScript(ScriptId(153))
+Call(4)
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(13)
+Read(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0

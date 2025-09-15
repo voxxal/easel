@@ -1,0 +1,12 @@
+pub fn body.Velocity:TicksTo(target, [speed]) -> ticks {
+	return TicksPerSecond * Distance(target, body.Pos) / speed
+}
+
+pub fn body.Velocity:RedirectTowards(prey, speed=null, [speedFactor=1]) {
+	if !Exists(body) { return }
+
+	const target = prey.Pos
+	if !target { return }
+
+	body.Velocity = Direction(target - body.Pos) * (speedFactor * (speed ?? Length(body.Velocity)))
+}

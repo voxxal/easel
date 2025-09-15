@@ -1,0 +1,3 @@
+PushSymbol($library/health/tombstone.easel/tombstone)
+Read(0)
+DeleteHook

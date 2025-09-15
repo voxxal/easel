@@ -1,0 +1,61 @@
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNum(0.0)
+Write(2)
+JumpIfVarDefined { var: 3, jump: 3 }
+PushNum(0.0)
+Write(3)
+JumpIfVarDefined { var: 4, jump: 3 }
+PushNull
+Write(4)
+PushNum(0.0)
+Read(0)
+Range
+Declare(6)
+PushIndex(0)
+Declare(7)
+Loop { continue_at: 40, break_at: 45 }
+Read(6)
+Read(7)
+Index
+With
+IsUndefined
+JumpIf(38)
+Declare(8)
+Read(4)
+With
+JumpIfNot(9)
+Pop
+Read(4)
+Read(8)
+Read(4)
+Length
+Mod
+Load
+BooleanNot
+JumpIfNot(2)
+Continue
+Read(3)
+Read(8)
+PushNum(6.2831855)
+Mul
+Read(0)
+Div
+Add
+Declare(9)
+Read(1)
+Read(9)
+Direction
+Mul
+Read(2)
+Read(9)
+Add
+Read(5)
+CallLambda(2)
+Pop
+Undeclare(8, 2)
+Read(7)
+Increment
+Write(7)
+JumpBack(42)
+EndLoop
+Undeclare(6, 2)

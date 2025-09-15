@@ -1,0 +1,125 @@
+PushSymbol($library/players/introducer.easel/introducer)
+Read(0)
+BeginClosure { num_params: 0, return_at: 102 }
+Loop { continue_at: 2, break_at: 100 }
+Jump(13)
+BeginClosure { num_params: 0, return_at: 4 }
+AwaitPlayerJoin
+ReturnValue
+EndClosure
+BeginClosure { num_params: 0, return_at: 5 }
+PushUndefined
+AwaitBeforePlayerLeave
+ReturnValue
+EndClosure
+BeginRace { num_forks: 2 }
+WinRace
+Pop
+BeginClosure { num_params: 0, return_at: 79 }
+PushUndefined
+Sleep(Paint)
+ClosureRead(0)
+PushNum(900.0)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 63 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 52 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+Declare(1)
+PushUndefinedN(4)
+BeginIntrinsic(4)
+QueryPlayers
+EndIntrinsic1
+Declare(2)
+PushIndex(0)
+Declare(3)
+Loop { continue_at: 29, break_at: 34 }
+Read(2)
+Read(3)
+Index
+With
+IsUndefined
+JumpIf(27)
+Declare(4)
+Read(0)
+SubfragmentAppendSlot(0)
+Declare(5)
+ReadShared(1)
+JumpIfNot(4)
+PushBool(false)
+WriteShared(1)
+Jump(6)
+Read(5)
+SubfragmentSlot(0)
+PushString(", ")
+StringConcatN(1)
+Text
+Read(4)
+Read(5)
+SubfragmentSlot(1)
+PushAfter(3)
+BeginIntrinsic(5)
+PlayerNameDisplay
+EndIntrinsic0
+Undeclare(4, 2)
+Read(3)
+Increment
+Write(3)
+JumpBack(31)
+EndLoop
+Undeclare(2, 2)
+Read(0)
+SubfragmentSlot(1)
+PushString(" joined")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(3)
+PushScript(ScriptId(268))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(6)
+BeginIntrinsic(7)
+Transmission(Main)
+EndTransmission
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(96)
+EndLoop
+EndClosure
+Read(0)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(268))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 11 }
+AwaitAfterGameCommenced
+BeginClosure { num_params: 0, return_at: 5 }
+PushSymbol($library/players/introducer.easel/introducer)
+ClosureRead(0)
+DeleteHook
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(0)
+ClosureAdd
+Hook(0)

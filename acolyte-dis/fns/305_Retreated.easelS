@@ -1,0 +1,30 @@
+Loop { continue_at: 1, break_at: 30 }
+PushUndefined
+Sleep(Tick)
+Read(1)
+Pos
+Declare(3)
+Read(3)
+BooleanNot
+JumpIfNot(2)
+Break
+Read(0)
+Pos
+Declare(4)
+Read(4)
+BooleanNot
+JumpIfNot(2)
+Break
+Read(3)
+Read(4)
+Sub
+Length
+Declare(5)
+Read(5)
+Read(2)
+Greater
+JumpIfNot(2)
+Break
+Undeclare(3, 3)
+JumpBack(27)
+EndLoop

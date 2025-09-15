@@ -1,0 +1,20 @@
+PushScript(ScriptId(303))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 11 }
+ClosureRead(0)
+Sleep(Tick)
+BeginClosure { num_params: 0, return_at: 4 }
+ClosureRead(0)
+Expire
+EndClosure
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)

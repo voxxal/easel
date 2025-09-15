@@ -1,0 +1,9 @@
+PushNum(60.0)
+Read(1)
+Read(0)
+Pos
+Distance
+Mul
+Read(2)
+Div
+ReturnValue

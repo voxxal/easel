@@ -1,0 +1,11 @@
+Play(duration=2.5s, cutoff=0.25s) {
+	Vibrato(freqModulation=1) {
+		Oscillator(wave=$sine, freq=20)
+	}
+	Oscillator(wave=$sawtooth, freq=18, harmonics=[1,2.16,4.16])
+	Tremolo(volumeModulation=0.15) {
+		Oscillator(wave=$sine, freq=10)
+	}
+	LowPass(freq=200, q=1)
+	Envelope(attack=0.1s, sustain=true)
+}

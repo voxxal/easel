@@ -1,0 +1,5 @@
+Play(duration=2s) {
+	Oscillator(wave=$sine, freq=100)
+	Envelope(attack=0.05s)
+	Gain(volume=0.25)
+}

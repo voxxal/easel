@@ -1,0 +1,15 @@
+pub fn Trapezoid(arc, cap=false, [radius, orbit]) -> shape {
+	let origin = @(-orbit,0)
+	let adjacentAngle = Min(arc / 2.0, 1rev / 3.0)
+	let hypotenuseMultipler = 1.0 / Cos(adjacentAngle)
+
+	let points = [
+		origin + Direction(-adjacentAngle) * (hypotenuseMultipler * orbit),
+		origin + Direction(adjacentAngle) * (hypotenuseMultipler * orbit),
+	]
+
+	return Line(
+		headTilt=-adjacentAngle,
+		tailTilt=adjacentAngle,
+		points=, radius=, cap=)
+}

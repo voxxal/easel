@@ -1,0 +1,3 @@
+PushSymbol($bot.easel/bot)
+Read(0)
+DeleteHook

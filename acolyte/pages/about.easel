@@ -1,0 +1,235 @@
+pub page fn owner.AboutPage {
+	Content {
+		H1 {
+			"About Acolyte Fight"
+		}
+		P {
+			Span(bold=true) { "Acolyte Fight" }
+			" is a multiplayer skillshot arena made by "
+            Link("https://twitter.com/raysplacenspace", bold=true) { "raysplaceinspace" }
+            " using "
+            Link("https://easel.games", bold=true) { "Easel" }
+			". "
+		}
+		P {
+		    "In this arena, you will hone your skills and prepare for the ultimate battle. "
+		    "You might not win every battle, but you will learn from every defeat. "
+		    "Will you be the last one standing?"
+		}
+
+        H2 { "Follow us" }
+		P {
+		    "The best place to keep up-to-date with the latest news on Acolyte Fight is in our Discord community! "
+		    "That is where you will find our announcements channel and the latest changelogs. "
+		}
+
+        VStack {
+            Link("https://discord.gg/sZvgpZk") {
+                Icon("fa-brands fa-discord", width=2)
+                " Join the chat on Discord!"
+            }
+
+            Link("https://youtube.com/c/AcolyteFight") {
+                Icon("fa-brands fa-youtube", width=2)
+                " YouTube: Acolyte Fight"
+            }
+
+            Link("https://facebook.com/acolytefight") {
+                Icon("fa-brands fa-facebook", width=2)
+                " Facebook: fb.com/acolytefight"
+            }
+
+            Link("https://reddit.com/r/acolytefight") {
+                Icon("fa-brands fa-reddit", width=2)
+                " Reddit: r/acolytefight"
+            }
+
+            Link("https://twitter.com/acolytefight") {
+                Icon("fa-brands fa-twitter", width=2)
+                " Twitter: @acolytefight"
+            }
+        }
+
+
+		H2 { "Special Rules" }
+
+		P {
+		    "Beware! The map shrinks over "
+		    Span(bold=true) { %((DefaultShrinkDuration / 1s) + " seconds") }
+		    ". The area outside of the map is called the void. "
+		    "Stay away from it because it will consume your life force at a rate of "
+		    Span(bold=true) { %(DefaultLavaDamagePerSecond + " per second") }
+		    ". "
+		}
+
+		P {
+		    "Most spells have lifesteal - that means a proportion of damage dealt is added back to your health. "
+		    "The last player to knockback an enemy will receive "
+		    Span(bold=true) { %((DefaultLavaLifesteal * 100) + "% lifesteal") }
+		    " from their void damage. "
+		    "If your health is getting low, don't give up! "
+		    "If you keep landing your hits while your enemy cannot, you can still turn the tide of battle. "
+		}
+
+		P {
+		    "If multiple opponents attack you at the same time, "
+		    "you will only take damage from the opponent that did the most damage. "
+		    "You will also gain a "
+		    Span(bold=true) { %((CooldownRateBonusPerTeamer * 100) + "% cooldown reduction") }
+            " and "
+            Span(bold=true) { %((DamageModifierBonusPerTeamer * 100) + "% extra damage") }
+            " per additional attacker. "
+		    "This buff resets once no one has attacked you for "
+		    Span(bold=true) { %((DamageMitigationInterval / 1s) + " seconds. ") }
+		}
+
+		H2 { "Tips" }
+
+		P {
+		    "This is a game of skill. "
+		    "You must dodge your opponent's attacks while landing your own. "
+		    "Sometimes, dodging is more important than attacking! "
+		    "Remember, aim not to where your opponent is, but to where your opponent is going to be! "
+		}
+
+		P {
+		    "Most of the damage is done using your primary spell (e.g. Fireball), "
+		    "so your initial focus should be on learning to hit with that. "
+		    "When you are new, don't even bother with any other spells other than your Fireball and Charge. "
+		}
+
+        P {
+		    "Try your best to stay on the map. "
+		    "Save your movement spell (e.g. your Charge or Teleport) for when you have been knocked off the map "
+		    "and need to get back quickly. "
+        }
+
+		P {
+		    "Don't get discouraged when you lose. "
+		    "This game plays out faster than you can think. "
+		    "Use each game as a lesson on how to improve your intuitions better so you can react better next time. "
+		    "Every game is a learning experience! "
+		}
+
+        H1 { "Ranked mode" }
+
+        P {
+            "This is a game of skill, and so once you have been playing this game for a while, "
+            "you might be interested to know how your skill compares to others. "
+            "For that, it is time to turn on "
+            Span(bold=true) { "ranked mode! " }
+            "Find the button to turn on ranked mode in the top right of the homepage. "
+            "Now your skill will be rated against others, and you will be placed on the leaderboard! "
+        }
+
+        P {
+            "The rating system is designed to measure your skill accurately, and is based on "
+            Link("https://en.wikipedia.org/wiki/Elo_rating_system", bold=true) { "Elo" }
+            ", "
+            "which works on the concept of equilibrium. "
+            "The rating system predicts how likely it thinks you are to win a particular match up. "
+            "The amount you win or lose are exact mathematical inverses of this prediction. "
+            "That means if you are exactly as good as it thinks you are, "
+            "you might gain in some matches, and you might lose others, but overall you will stay in the same place. "
+            "This might feel unfair, gaining some points only to lose the exact same amount later, "
+            "but it means the system is accurately measuring your skill. "
+        }
+
+        P {
+            "There is a factor that suppresses both gains and losses when you play against "
+            "opponents who are far below your skill level. "
+            "This is to stop you from losing a lot of points when you lose against a newbie, "
+            "but also stops farming points by newbie stomping. "
+            "The best way to rank up the leaderboard is to play at active times "
+            "when there are many high-level players online."
+        }
+
+        P {
+            "The rating system also awards you one extra activity bonus point per game, up to a maximum of "
+            Span(bold=true) { %(MaxActivityBonus + " points") }
+            ". Activity bonus points expire after "
+            Span(bold=true) { %((ActivityBonusDuration / 1d).Round + " days") }
+            " so keep playing!"
+        }
+
+        H3 { "What is the minimum rating for each league?" }
+
+        for use league in Leagues %%{
+            ShinyPanel(backgroundColor=LeagueColor) {
+                HStack {
+                    PipMedal(shadow=0.5, backgroundColor=LeagueColor, tooltip=LeagueName, borderRounding=0.5) {
+                        Image(LeagueGlyph, height=1.5, shadow=0.2)
+                    }
+
+                    Span(bold=true) { %(LeagueName) }
+
+                    Blank(expand=true)
+
+                    Span {
+                        %(LeagueMinRating)
+                        " rating"
+                    }
+                }
+            }
+        }
+
+        H3 { "Why do I lose so many more points for losing and gain so few points for winning?" }
+
+        P {
+            "All Elo rating systems work like this. "
+            "If you win 10 times more than you lose against a particular player, than for each loss, you will lose 10x more points, against that particular player. "
+            "This creates equilibrium. "
+            "Any other system would cause for rating inflation, which would mean the game is not measuring skill, instead it would be measuring how many games you have played. "
+        }
+
+
+		H1 { "Credits" }
+
+        P {
+            Span(bold=true) { "Acolyte Fight!" }
+
+            " was made with "
+            Link("https://easel.games", bold=true) { "Easel" }
+            " by "
+            Link("https://twitter.com/raysplacenspace", bold=true) { "raysplaceinspace" }
+            " and was inspired by the "
+            Span(bold=true) { "WarCraft III" }
+            " map "
+            Span(bold=true) { "Warlock" }
+            ", originally created by "
+            Span(bold=true) { "Zymoran" }
+            ", "
+            Span(bold=true) { "Adynathos" }
+            ", "
+            Span(bold=true) { "Toraxxx" }
+            ", and "
+            Span(bold=true) { "sides" }
+            ". "
+        }
+
+        P {
+            "Thanks to all current and past contributors "
+            "who have made the game what it is: "
+            Span(bold=true) {
+                "Alzarath, Storm, Erlik, voxal, Ace2, q, AceMenace, "
+                "cookies, lunarz, Icicle, meso, Mistletoe, .txt, laze"
+            }
+        }
+
+        P {
+            Link("https://rapier.rs", bold=true) { "Rapier2D" }
+            " physics engine created by Dimforge and used under Apache 2.0 license."
+        }
+
+        P {
+            "Icons created by Lorc, sbed and Delapouite used under Creative Commons license from "
+            Link("https://game-icons.net", bold=true) { "game-icons.net" }
+            "."
+        }
+
+        P {
+            Link("https://fontawesome.com", bold=true) { "FontAwesome free" }
+            " used under SIL Open Font license."
+        }
+	}
+}

@@ -1,0 +1,63 @@
+PushSymbol($bot.easel/bot)
+Read(0)
+BeginClosure { num_params: 0, return_at: 56 }
+BeginClosure { num_params: 0, return_at: 49 }
+Loop { continue_at: 1, break_at: 47 }
+Tick
+Declare(0)
+ClosureRead(0)
+ClosureRead(1)
+PushScript(ScriptId(181))
+Call(2)
+Declare(1)
+Read(0)
+PushNum(15.0)
+Add
+ClosureRead(0)
+BeginIntrinsic(1)
+Random
+EndIntrinsic1
+PushNum(3.0)
+Mul
+Add
+Declare(2)
+Read(1)
+PushSymbol($bot.easel/SpinWhileSleeping)
+Equal
+JumpIfNot(18)
+Loop { continue_at: 1, break_at: 16 }
+Tick
+Read(2)
+Less
+JumpIfNot(11)
+ClosureRead(0)
+ClosureRead(0)
+Heading
+PushNum(-0.31415927)
+Add
+PushScript(ScriptId(248))
+Call(2)
+PushUndefined
+Sleep(BeforeTick)
+JumpBack(13)
+EndLoop
+Jump(5)
+Read(2)
+Tick
+Sub
+Sleep(BeforeTick)
+Undeclare(0, 3)
+JumpBack(44)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(0)
+ClosureAdd
+Read(1)
+ClosureAdd
+Hook(0)

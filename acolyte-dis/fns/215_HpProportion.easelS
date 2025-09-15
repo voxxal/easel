@@ -1,0 +1,6 @@
+Read(0)
+PropGet(PropId(2))
+Read(0)
+PropGet(PropId(3))
+Div
+ReturnValue

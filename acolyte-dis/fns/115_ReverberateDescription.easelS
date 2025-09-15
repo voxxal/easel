@@ -1,0 +1,50 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Reverberate")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Passive ability. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(4)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString("Imbue every atom in your body with an invisible, yet powerful, sonic resonance. Even the slightest contact with your vibrating form sends enemies reeling, forcefully repelled by the resounding shockwave that pulsates from your very being.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0

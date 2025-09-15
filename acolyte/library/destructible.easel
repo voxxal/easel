@@ -1,0 +1,5 @@
+pub fn ExpireIfDestructible(that, [owner]) {
+	if that.Category.Overlaps(Category:Destructible) {
+		that.Expire
+	}
+}

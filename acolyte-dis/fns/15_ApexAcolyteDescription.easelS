@@ -1,0 +1,70 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Apex Acolyte")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Passive ability. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(4)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString("Your exceptional talents enable you to discern even the smallest frailties and vulnerabilities in your enemies. With surgical precision, you exploit these weaknesses, striking with unparalleled effectiveness, causing your enemies tremble in fear at your mere presence. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushString("Unparalleled Effectiveness")
+PushString("fas fa-fire")
+BeginClosure { num_params: 1, return_at: 12 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Permanently increase damage dealt by ")
+PushNum(0.15)
+PushNum(100.0)
+Mul
+PushString("%.")
+StringConcatN(3)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(239))
+Call(4)

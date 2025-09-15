@@ -1,0 +1,23 @@
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNum(1.0)
+Write(2)
+Read(1)
+Pos
+Read(0)
+Pos
+Sub
+Declare(5)
+Read(1)
+Read(3)
+Read(5)
+Length
+Read(4)
+Div
+PushNum(1.0)
+Read(2)
+Mix
+Mul
+Read(5)
+Direction
+Mul
+ApplyImpulse

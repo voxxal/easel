@@ -1,0 +1,18 @@
+pub fn this.Thrust(prey, [speed, body]) {
+	on BeforePhysics {
+		let target = prey.Pos
+		if !target { break }
+
+		let pos = body.Pos
+		if !pos { break }
+
+		let diff = target - pos
+		let direction = Direction(diff)
+		let distance = Length(diff)
+		let step = (direction * speed / TicksPerSecond).Truncate(distance)
+		body.ForcefulStep(step)
+
+		await AfterPhysics
+		body.Velocity = @(0,0) // Cancel out any knockback during the charge
+	}
+}

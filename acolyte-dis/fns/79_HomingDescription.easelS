@@ -1,0 +1,117 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Homing")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Summon a tenacious, enchanted sphere that ceaselessly pursues your enemy. While they are preoccupied, seize the opportunity to unleash a barrage of your most potent abilities upon them.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushString("Ceaseless Pursuit")
+PushString("fas fa-crosshairs")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Homing seeks the enemy that was nearest to your cursor when launched.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(239))
+Call(4)
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(3)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 56 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushString("Damage")
+PushString("fas fa-heart-crack")
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(16.0)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+PushString("Lifesteal")
+PushString("fas fa-circle-plus")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(0.3)
+PushNum(100.0)
+Mul
+PushString("%")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+PushString("Cooldown")
+PushString("fas fa-clock")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(540.0)
+PushNum(60.0)
+Div
+PushString("s")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+PushScript(ScriptId(240))
+Call(2)

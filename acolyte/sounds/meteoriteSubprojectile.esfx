@@ -1,0 +1,6 @@
+Play(duration=2s, cutoff=0.25s) {
+	Oscillator(wave=$square, freq=[1,10], harmonics=[1, 1.5, 2, 2.1, 2.16, 3.5, 6.7, 8.2])
+	HighPass(freq=225)
+	LowPass(freq=300)
+	Envelope(attack=0.16s, sustain=0.5s)
+}

@@ -1,0 +1,106 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Bouncer")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 13 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Release a pulsing energy orb that oscillates relentlessly between you and your foe, inflicting damage with each successive impact. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("Stay close to sustain the perilous waltz that balances the risk of exposure with the promise of persistent punishment. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(2)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 56 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushString("Damage")
+PushString("fas fa-heart-crack")
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(12.0)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+PushString("Lifesteal")
+PushString("fas fa-circle-plus")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(0.3)
+PushNum(100.0)
+Mul
+PushString("%")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+PushString("Cooldown")
+PushString("fas fa-clock")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(450.0)
+PushNum(60.0)
+Div
+PushString("s")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+PushScript(ScriptId(240))
+Call(2)

@@ -1,0 +1,123 @@
+prop body.MovementTargetAngle
+prop body.MovementTargetPos
+
+pub signal body.Movement:Walked(step)
+pub signal body.Movement:Turned(step)
+
+pub fn body.Movement:Look(heading) {
+	body.MovementTargetAngle = heading
+}
+
+pub fn body.Movement:LookAt(target) {
+	body.MovementTargetAngle = Angle(target - body.Pos)
+}
+
+pub fn body.Movement:WalkTo(target) {
+	body.MovementTargetPos = target
+}
+
+pub fn Movement:Stop([body]) {
+	body.MovementTargetPos = null
+	body.MovementTargetAngle = null
+}
+
+pub fn this.Movement:Walk([body, speed]) {
+	behavior<walk> on BeforePhysics {
+		// Step towards the target
+		let target = body.MovementTargetPos
+		if !target {
+			// If no target, wait for one
+			await body.MovementTargetPos
+			continue
+		}
+
+		let limit = body.SpeedModifier * speed / TicksPerSecond
+
+		let delta = target - body.Pos
+		let step = delta
+		if Length(step) > limit {
+			step = step.Truncate(limit)
+		} else {
+			// We will have arrived after body step
+			body.MovementTargetPos = null
+		}
+
+		body.ForcefulStep(step)
+		body.Movement:Walked(step)
+	}
+}
+pub delete fn this.Movement:Walk {
+    delete behavior<walk>
+}
+
+pub fn this.Movement:Turn(turnRate=1revs, [body]) {
+	behavior<turn> on BeforePhysics {
+		// Step towards the target
+		let target = body.MovementTargetAngle
+		if !target {
+			// If no target, wait for one
+			await body.MovementTargetAngle
+			continue
+		}
+
+		let limit = body.TurnRateModifier * turnRate
+
+		let delta = body.Heading.AngleDelta(target)
+		let step = delta
+		if Abs(step) > limit {
+			step = step.Truncate(limit)
+		} else {
+			// We will have arrived after body step
+			body.MovementTargetAngle = null
+		}
+
+		body.ForcefulTurn(step)
+		body.Movement:Turned(step)
+	}
+}
+pub delete fn this.Movement:Turn {
+    delete behavior<turn>
+}
+
+pub fn body.Movement:WalkWith(parent) {
+	on parent.Movement:Walked step {
+		body.ForcefulStep(step)
+	}
+}
+
+pub fn body.Movement:TurnWith(parent) {
+	on parent.Movement:Turned step {
+		body.ForcefulTurn(step)
+	}
+}
+
+pub fn body.Movement:SynchronizedBody(parent, [bullet?]) {
+	Body(pos=parent.Pos, heading=parent.Heading, velocity=parent.Velocity, turnRate=parent.TurnRate)
+
+	// Match the internal forces on the with the parent so it swoops between positions and collides with everything during the physics simulation.
+	// If we just copied the position it might tunnel through objects and this would not happen.
+	Movement:WalkWith(parent)
+	Movement:TurnWith(parent)
+
+	// Update the position and heading of the deflector each tick to be the same as the parent
+	// This is needed in addition to the above because the unit have external forces applied
+	on BeforePhysics {
+		body.Pos = parent.Pos
+		body.Heading = parent.Heading
+		body.Velocity = parent.Velocity
+		body.TurnRate = parent.TurnRate
+	}
+}
+
+// Forces body to move with parent and ignores physics
+pub fn body.Movement:MoveWith(parent) {
+    let prev = null
+    
+	on BeforePhysics {
+        prev = parent.Pos
+    }
+
+    on AfterPhysics{
+        body.Pos += parent.Pos - prev
+    }
+}

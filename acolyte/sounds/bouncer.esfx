@@ -1,0 +1,9 @@
+Play(duration=0.75s) {
+	Oscillator(wave=$square, freq=70)
+	LowPass(freq=120)
+	HighPass(freq=40)
+	Tremolo(volumeModulation=0.5) {
+		Oscillator(freq=6)
+	}
+	Envelope(attack=0.1s)
+}

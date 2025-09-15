@@ -1,0 +1,54 @@
+Read(0)
+BeginClosure { num_params: 1, return_at: 44 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushNum(0.8)
+BeginClosure { num_params: 1, return_at: 32 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Like this game? ")
+StringConcatN(1)
+Text
+PushString("https://discord.gg/sZvgpZk")
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Join our community on Discord! ")
+StringConcatN(1)
+Text
+PushString("fab fa-discord")
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(317))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0

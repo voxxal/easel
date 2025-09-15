@@ -1,0 +1,369 @@
+// state struct
+//   regs:
+//     pc a x y p s
+//   flag:
+//     NV-BDIZC
+
+pub field mos6502.Pc = 0
+pub prop mos6502.A = 0
+pub prop mos6502.X = 0
+pub prop mos6502.Y = 0
+pub field mos6502.Sr = 0x00
+pub field mos6502.Sp = 255
+pub field mos6502.Mem
+
+
+// TODO once bitwise is fixed, precompute these
+const Flag:Negative  = 0b1 << 7
+const Flag:Overflow  = 0b1 << 6
+const Flag:Break     = 0b1 << 4
+const Flag:Decimal   = 0b1 << 3
+const Flag:Interrupt = 0b1 << 2
+const Flag:Zero      = 0b1 << 1
+const Flag:Carry     = 0b1 << 0
+
+
+pub fn mos6502.SetFlag(i) {
+    Sr |= i
+}
+
+pub fn mos6502.ClearFlag(i) {
+    Sr &= ~i
+}
+
+pub fn mos6502.GetFlag(i) -> num {
+    return (Sr & i) != 0x0 ? 1 : 0
+}
+
+pub fn mos6502.Mos6502([owner]) {
+    // until issues resolved, this is good enough
+    Mem = Range(0, 65536).Map(|c| { return 0 })
+    Transmission { %(IsArray(Mem))}
+
+    with A {
+        if A & (0b1 << 7) > 0 {
+            SetFlag(Flag:Negative)
+        } else {
+            ClearFlag(Flag:Negative)
+        }
+        if A == 0 {
+            SetFlag(Flag:Zero)
+        } else {
+            ClearFlag(Flag:Zero)
+        }
+    }
+}
+
+pub fn mos6502.SetA(val) {
+    A = val.Clamp(0, 255)
+}
+
+pub fn mos6502.Push(val) {
+    // stack from 0x100 - 0x1ff
+    Mem[256 + Sp] = val
+    // todo implement wrap around
+    Sp -= 1
+}
+
+pub fn mos6502.DebugOutput() {
+    Transmission { 
+        "PC: "
+        %(Pc)
+        ", Instr: "
+        %(Mem[Pc])
+    }
+    
+    Transmission { 
+        "A: "
+        %(A)
+    }
+}
+
+fn mos6502.ADC(m) {
+    // TODO deal with carry bit (but carry bit complicated :>)
+    A = A + m + GetFlag(Flag:Carry)
+}
+
+
+pub fn mos6502.Operand() -> num {
+    Pc += 1
+    return Mem[Pc]
+}
+
+
+////  ADDRESSING MODES  ////
+fn mos6502.AImmediate() -> num {
+    return Operand
+}
+
+fn mos6502.AAbsolute(index = 0) -> num {
+    return Operand + Operand * 256 + index
+}
+
+fn mos6502.AZeropage(index = 0) -> num {
+    return Mem[Operand + index]
+}
+
+fn mos6502.AIndirect() -> num {
+    const lookup = AAbsolute
+    return Mem[Mem[lookup] + Mem[lookup + 1] * 256]
+}
+
+fn mos6502.AIndirectX() -> num {
+    const lookup = AZeropage(X)
+    return Mem[Mem[lookup] + Mem[lookup + 1] * 256]
+}
+
+fn mos6502.AIndirectY() -> num {
+    const lookup = AZeropage
+    return Mem[Mem[lookup] + Mem[lookup + 1] * 256 + Y]
+}
+
+
+// TODO alphabetical instead of by opcode, opcode is usless anyways
+pub fn mos6502.Mos6502_step(elapsedTicks) {
+    const op = Mem[Pc]
+    
+         if op == 105 /* 0x69 */ { ADC(AImmediate) }
+    else if op == 101 /* 0x65 */ { ADC(AZeropage) }
+    else if op == 117 /* 0x75 */ { ADC(AZeropage(X)) }
+    else if op == 109 /* 0x6D */ { ADC(AAbsolute) }
+    else if op == 125 /* 0x7D */ { ADC(AAbsolute(X)) }
+    else if op == 121 /* 0x79 */ { ADC(AAbsolute(Y)) }
+    else if op == 97  /* 0x61 */ { ADC(AIndirectX) }
+    else if op == 113 /* 0x71 */ { ADC(AIndirectY) }
+
+    else if op == 41  /* 0x29 */ { AND(AImmediate) }
+    else if op == 37  /* 0x25 */ { AND(AZeropage) }
+    else if op == 53  /* 0x35 */ { AND(AZeropage(X)) }
+    else if op == 45  /* 0x2D */ { AND(AAbsolute) }
+    else if op == 61  /* 0x3D */ { AND(AAbsolute(X)) }
+    else if op == 57  /* 0x39 */ { AND(AAbsolute(Y)) }
+    else if op == 33  /* 0x21 */ { AND(AIndirectX) }
+    else if op == 49  /* 0x31 */ { AND(AIndirectY) }
+
+    else if op == 10  /* 0x0A */ { ASL(AAccumulator) }
+    else if op == 6   /* 0x06 */ { ASL(AZeropage) }
+    else if op == 22  /* 0x16 */ { ASL(AZeropage(X)) }
+    else if op == 14  /* 0x0E */ { ASL(AAbsolute) }
+    else if op == 30  /* 0x1E */ { ASL(AAbsolute(X)) }
+
+    else if op == 144 /* 0x90 */ { BCC(ARelative) }
+
+    else if op == 176 /* 0xB0 */ { BCS(ARelative) }
+
+    else if op == 240 /* 0xF0 */ { BEQ(ARelative) }
+
+    else if op == 36  /* 0x24 */ { BIT(AZeropage) }
+    else if op == 44  /* 0x2C */ { BIT(AAbsolute) }
+
+    else if op == 48  /* 0x30 */ { BMI(ARelative) }
+
+    else if op == 208 /* 0xD0 */ { BNE(ARelative) }
+
+    else if op == 16  /* 0x10 */ { BPL(ARelative) }
+
+    else if op == 0   /* 0x00 */ { BRK }
+
+    else if op == 80  /* 0x50 */ { BVC(ARelative) }
+
+    else if op == 112 /* 0x70 */ { BVS(ARelative) }
+
+    else if op == 24  /* 0x18 */ { CLC }
+
+    else if op == 216 /* 0xD8 */ { CLD }
+
+    else if op == 88  /* 0x58 */ { CLI }
+
+    else if op == 184 /* 0xB8 */ { CLV }
+
+    else if op == 201 /* 0xC9 */ { CMP(AImmediate) }
+    else if op == 197 /* 0xC5 */ { CMP(AZeropage) }
+    else if op == 213 /* 0xD5 */ { CMP(AZeropage(X)) }
+    else if op == 205 /* 0xCD */ { CMP(AAbsolute) }
+    else if op == 221 /* 0xDD */ { CMP(AAbsolute(X)) }
+    else if op == 217 /* 0xD9 */ { CMP(AAbsolute(Y)) }
+    else if op == 193 /* 0xC1 */ { CMP(AIndirectX) }
+    else if op == 209 /* 0xD1 */ { CMP(AIndirectY) }
+
+    else if op == 224 /* 0xE0 */ { CPX(AImmediate) }
+    else if op == 228 /* 0xE4 */ { CPX(AZeropage) }
+    else if op == 236 /* 0xEC */ { CPX(AAbsolute) }
+
+    else if op == 192 /* 0xC0 */ { CPY(AImmediate) }
+    else if op == 196 /* 0xC4 */ { CPY(AZeropage) }
+    else if op == 204 /* 0xCC */ { CPY(AAbsolute) }
+
+    else if op == 198 /* 0xC6 */ { DEC(AZeropage) }
+    else if op == 214 /* 0xD6 */ { DEC(AZeropage(X)) }
+    else if op == 206 /* 0xCE */ { DEC(AAbsolute) }
+    else if op == 222 /* 0xDE */ { DEC(AAbsolute(X)) }
+
+    else if op == 202 /* 0xCA */ { DEX }
+
+    else if op == 136 /* 0x88 */ { DEY }
+
+    else if op == 73  /* 0x49 */ { EOR(AImmediate) }
+    else if op == 69  /* 0x45 */ { EOR(AZeropage) }
+    else if op == 85  /* 0x55 */ { EOR(AZeropage(X)) }
+    else if op == 77  /* 0x4D */ { EOR(AAbsolute) }
+    else if op == 93  /* 0x5D */ { EOR(AAbsolute(X)) }
+    else if op == 89  /* 0x59 */ { EOR(AAbsolute(Y)) }
+    else if op == 65  /* 0x41 */ { EOR(AIndirectX) }
+    else if op == 81  /* 0x51 */ { EOR(AIndirectY) }
+
+    else if op == 230 /* 0xE6 */ { INC(AZeropage) }
+    else if op == 246 /* 0xF6 */ { INC(AZeropage(X)) }
+    else if op == 238 /* 0xEE */ { INC(AAbsolute) }
+    else if op == 254 /* 0xFE */ { INC(AAbsolute(X)) }
+
+    else if op == 232 /* 0xE8 */ { INX }
+
+    else if op == 200 /* 0xC8 */ { INY }
+
+    else if op == 76  /* 0x4C */ { JMP(AAbsolute) }
+    else if op == 108 /* 0x6C */ { JMP(AIndirect) }
+
+    else if op == 32  /* 0x20 */ { JSR(AAbsolute) }
+
+    else if op == 169 /* 0xA9 */ { LDA(AImmediate) }
+    else if op == 165 /* 0xA5 */ { LDA(AZeropage) }
+    else if op == 181 /* 0xB5 */ { LDA(AZeropage(X)) }
+    else if op == 173 /* 0xAD */ { LDA(AAbsolute) }
+    else if op == 189 /* 0xBD */ { LDA(AAbsolute(X)) }
+    else if op == 185 /* 0xB9 */ { LDA(AAbsolute(Y)) }
+    else if op == 161 /* 0xA1 */ { LDA(AIndirectX) }
+    else if op == 177 /* 0xB1 */ { LDA(AIndirectY) }
+
+    else if op == 162 /* 0xA2 */ { LDX(AImmediate) }
+    else if op == 166 /* 0xA6 */ { LDX(AZeropage) }
+    else if op == 182 /* 0xB6 */ { LDX(AZeropage(Y)) }
+    else if op == 174 /* 0xAE */ { LDX(AAbsolute) }
+    else if op == 190 /* 0xBE */ { LDX(AAbsolute(Y)) }
+
+    else if op == 160 /* 0xA0 */ { LDY(AImmediate) }
+    else if op == 164 /* 0xA4 */ { LDY(AZeropage) }
+    else if op == 180 /* 0xB4 */ { LDY(AZeropage(X)) }
+    else if op == 172 /* 0xAC */ { LDY(AAbsolute) }
+    else if op == 188 /* 0xBC */ { LDY(AAbsolute(X)) }
+
+    else if op == 74  /* 0x4A */ { LSR(AAccumulator) }
+    else if op == 70  /* 0x46 */ { LSR(AZeropage) }
+    else if op == 86  /* 0x56 */ { LSR(AZeropage(X)) }
+    else if op == 78  /* 0x4E */ { LSR(AAbsolute) }
+    else if op == 94  /* 0x5E */ { LSR(AAbsolute(X)) }
+
+    else if op == 234 /* 0xEA */ { NOP }
+
+    else if op == 9   /* 0x09 */ { ORA(AImmediate) }
+    else if op == 5   /* 0x05 */ { ORA(AZeropage) }
+    else if op == 21  /* 0x15 */ { ORA(AZeropage(X)) }
+    else if op == 13  /* 0x0D */ { ORA(AAbsolute) }
+    else if op == 29  /* 0x1D */ { ORA(AAbsolute(X)) }
+    else if op == 25  /* 0x19 */ { ORA(AAbsolute(Y)) }
+    else if op == 1   /* 0x01 */ { ORA(AIndirectX) }
+    else if op == 17  /* 0x11 */ { ORA(AIndirectY) }
+
+    else if op == 72  /* 0x48 */ { PHA }
+
+    else if op == 8   /* 0x08 */ { PHP }
+
+    else if op == 104 /* 0x68 */ { PLA }
+
+    else if op == 40  /* 0x28 */ { PLP }
+
+    else if op == 42  /* 0x2A */ { ROL(AAccumulator) }
+    else if op == 38  /* 0x26 */ { ROL(AZeropage) }
+    else if op == 54  /* 0x36 */ { ROL(AZeropage(X)) }
+    else if op == 46  /* 0x2E */ { ROL(AAbsolute) }
+    else if op == 62  /* 0x3E */ { ROL(AAbsolute(X)) }
+
+    else if op == 106 /* 0x6A */ { ROR(AAccumulator) }
+    else if op == 102 /* 0x66 */ { ROR(AZeropage) }
+    else if op == 118 /* 0x76 */ { ROR(AZeropage(X)) }
+    else if op == 110 /* 0x6E */ { ROR(AAbsolute) }
+    else if op == 126 /* 0x7E */ { ROR(AAbsolute(X)) }
+
+    else if op == 64  /* 0x40 */ { RTI }
+
+    else if op == 96  /* 0x60 */ { RTS }
+
+    else if op == 233 /* 0xE9 */ { SBC(AImmediate) }
+    else if op == 229 /* 0xE5 */ { SBC(AZeropage) }
+    else if op == 245 /* 0xF5 */ { SBC(AZeropage(X)) }
+    else if op == 237 /* 0xED */ { SBC(AAbsolute) }
+    else if op == 253 /* 0xFD */ { SBC(AAbsolute(X)) }
+    else if op == 249 /* 0xF9 */ { SBC(AAbsolute(Y)) }
+    else if op == 225 /* 0xE1 */ { SBC(AIndirectX) }
+    else if op == 241 /* 0xF1 */ { SBC(AIndirectY) }
+
+    else if op == 56  /* 0x38 */ { SEC }
+
+    else if op == 248 /* 0xF8 */ { SED }
+
+    else if op == 120 /* 0x78 */ { SEI }
+
+    else if op == 133 /* 0x85 */ { STA(AZeropage) }
+    else if op == 149 /* 0x95 */ { STA(AZeropage(X)) }
+    else if op == 141 /* 0x8D */ { STA(AAbsolute) }
+    else if op == 157 /* 0x9D */ { STA(AAbsolute(X)) }
+    else if op == 153 /* 0x99 */ { STA(AAbsolute(Y)) }
+    else if op == 129 /* 0x81 */ { STA(AIndirectX) }
+    else if op == 145 /* 0x91 */ { STA(AIndirectY) }
+
+    else if op == 134 /* 0x86 */ { STX(AZeropage) }
+    else if op == 150 /* 0x96 */ { STX(AZeropage(Y)) }
+    else if op == 142 /* 0x8E */ { STX(AAbsolute) }
+
+    else if op == 132 /* 0x84 */ { STY(AZeropage) }
+    else if op == 148 /* 0x94 */ { STY(AZeropage(X)) }
+    else if op == 140 /* 0x8C */ { STY(AAbsolute) }
+
+    else if op == 170 /* 0xAA */ { TAX }
+
+    else if op == 168 /* 0xA8 */ { TAY }
+
+    else if op == 186 /* 0xBA */ { TSX }
+
+    else if op == 138 /* 0x8A */ { TXA }
+
+    else if op == 154 /* 0x9A */ { TXS }
+
+    else if op == 152 /* 0x98 */ { TYA }
+
+    else if op == 11  /* 0x0B */ { ANC(AImmediate) }
+
+    else if op == 107 /* 0x6B */ { ARR(AImmediate) }
+
+    else if op == 167 /* 0xA7 */ { LAX(AZeropage) }
+    else if op == 183 /* 0xB7 */ { LAX(AZeropage(Y)) }
+    else if op == 175 /* 0xAF */ { LAX(AAbsolute) }
+    else if op == 191 /* 0xBF */ { LAX(undefined) }
+    else if op == 163 /* 0xA3 */ { LAX(AIndirectX) }
+    else if op == 179 /* 0xB3 */ { LAX(AIndirectY) }
+
+    else if op == 39  /* 0x27 */ { RLA(AZeropage) }
+    else if op == 55  /* 0x37 */ { RLA(AZeropage(X)) }
+    else if op == 47  /* 0x2F */ { RLA(AAbsolute) }
+    else if op == 63  /* 0x3F */ { RLA(undefined) }
+    else if op == 59  /* 0x3B */ { RLA(undefined) }
+    else if op == 35  /* 0x23 */ { RLA(AIndirectX) }
+    else if op == 51  /* 0x33 */ { RLA(AIndirectY) }
+
+    else if op == 103 /* 0x67 */ { RRA(AZeropage) }
+    else if op == 119 /* 0x77 */ { RRA(AZeropage(X)) }
+    else if op == 111 /* 0x6F */ { RRA(AAbsolute) }
+    else if op == 127 /* 0x7F */ { RRA(undefined) }
+    else if op == 123 /* 0x7B */ { RRA(undefined) }
+    else if op == 99  /* 0x63 */ { RRA(AIndirectX) }
+    else if op == 115 /* 0x73 */ { RRA(AIndirectY) }
+
+    else if Mem[Pc] == 24 { // 0x18
+        // CLC
+        ClearFlag(Flag:Carry)
+    } else if Mem[Pc] == 169 { // 0xA9
+        // LDA #oper
+        A = Operand
+    }
+    Pc += 1
+}

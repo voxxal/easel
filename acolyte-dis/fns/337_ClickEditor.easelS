@@ -1,0 +1,56 @@
+PushSymbol($WantNoBinding)
+PushString("Do Nothing")
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushSymbol($WantMoveBinding)
+PushString("Move")
+Read(0)
+SubfragmentSlot(1)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushKeycode(KeyQ)
+PushString("Primary Attack")
+Read(0)
+SubfragmentSlot(2)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushKeycode(KeyW)
+PushString("Special Ability")
+Read(0)
+SubfragmentSlot(3)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushKeycode(KeyE)
+PushString("Defensive Ability")
+Read(0)
+SubfragmentSlot(4)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushKeycode(KeyR)
+PushString("Ultimate Ability")
+Read(0)
+SubfragmentSlot(5)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushKeycode(KeyF)
+PushString("Melee Ability")
+Read(0)
+SubfragmentSlot(6)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushKeycode(KeyA)
+PushString("Dash")
+Read(0)
+SubfragmentSlot(7)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0

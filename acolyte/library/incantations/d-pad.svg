@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <g style="" transform="matrix(0.7834889888763428, 0, 0, 0.7834889888763428, 54.125205993652344, 54.127754211425774)">
+    <path d="M 250 0 L 346.184 96.184 L 153.816 96.184 L 250 0 Z" style="fill: rgb(255, 255, 255);"/>
+    <path d="M 250 -500 L 346.184 -403.816 L 153.816 -403.816 L 250 -500 Z" style="fill: rgb(255, 255, 255);" transform="matrix(1, 0, 0, -1, 0, 0)"/>
+    <path d="M 373.832 182.438 L 470.016 278.622 L 277.648 278.622 L 373.832 182.438 Z" style="fill: rgb(255, 255, 255); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(0, 1, -1, 0, 78.075981, 19.470001)"/>
+    <path d="M 373.832 182.438 L 470.016 278.622 L 277.648 278.622 L 373.832 182.438 Z" style="fill: rgb(255, 255, 255); transform-origin: 373.812px 230.501px;" transform="matrix(0, 1, 1, 0, -325.74247, 19.486237)"/>
+  </g>
+  <ellipse style="stroke: rgb(255, 255, 255); fill: rgb(255, 255, 255); fill-opacity: 0.25; stroke-width: 9px;" cx="250" cy="250" rx="245" ry="245" transform="matrix(1, 0, 0, 1, 0, -7.105427357601002e-15)"/>
+</svg>

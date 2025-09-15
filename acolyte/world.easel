@@ -1,0 +1,3 @@
+pub const DefaultLavaDamagePerSecond = 12.5
+pub const DefaultLavaLifesteal = 0.3
+pub const DefaultShrinkDuration = 90s

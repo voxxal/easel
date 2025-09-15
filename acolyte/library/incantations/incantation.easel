@@ -1,0 +1,42 @@
+pub signal unit.IncantationCasted
+
+pub fn ability.NoIncantation([unit, owner]) || {
+    if !unit.Category.Overlaps(Category:Ghost) {
+		// Ghosts can only edit their abilities, not use them
+		delve()
+	}
+}
+
+pub fn ability.SpawnEachIncantation([cooldown, unit, owner, keycode]) |use this = incantation| {
+    if !unit.Category.Overlaps(Category:Ghost) {
+		// Ghosts can only edit their abilities, not use them
+        CooldownTicker
+        Silenceable
+
+		on ButtonDown {
+			IncantationCasted
+		
+			ability.Subspawn incantation {
+				await QueueIncantation(incantation)
+				if Cooldown == 0 {
+					Cooldown = cooldown
+					delve(incantation)
+				}
+				Despawn
+			}
+		}
+	}
+}
+
+field unit.CurrentIncantation
+await fn QueueIncantation(incantation, [unit]) {
+	Interrupt(Interruptor:Self) // This may cancel an existing incantation if it is cancellable, freeing up the queue
+	loop {
+		let current = unit.CurrentIncantation
+		if !Exists(current) { break } // No current incantation, time for us to take over!
+		await current.BeforeDespawn
+		await Tick // Wait until the next tick to ensure the incumbent has expired
+	}
+
+    unit.CurrentIncantation = incantation
+}

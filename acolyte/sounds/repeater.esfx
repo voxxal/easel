@@ -1,0 +1,16 @@
+Play(duration=1s) {
+	BrownNoise
+	BandPass(freq=2000, q=3)
+	Envelope(attack=0.25s)
+	Gain(volume=0.5)
+}
+
+Play(duration=1s) {
+	Oscillator(wave=$triangle, freq=2000, harmonics=[1,1.5])
+	LowPass(freq=1000)
+	Tremolo(volumeModulation=0.8) {
+		Oscillator(freq=15)
+	}
+	Envelope(attack=0.1s)
+	Gain(volume=0.5)
+}

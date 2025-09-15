@@ -1,0 +1,19 @@
+pub fn body.Anchored(speed=0.1, turnRate=0.05revs, proportion=0.02) {
+    let initialPos = body.Pos ?? @(0,0)
+    let initialHeading = body.Heading ?? 0
+	behavior<anchored> on BeforePhysics {
+		let currentPos = body.Pos
+		let posDiff = initialPos - currentPos
+		if posDiff != @(0,0) {
+			body.ForcefulStep(posDiff.Truncate(Max(speed / TicksPerSecond, proportion * Length(posDiff))))
+		}
+
+		let angleDiff = AngleDelta(body.Heading, initialHeading)
+		if angleDiff != 0.0 {
+			body.Heading += angleDiff.Truncate(Max(turnRate / TicksPerSecond, proportion * Abs(angleDiff)))
+		}
+	}
+}
+pub delete fn body.Anchored {
+    delete behavior<anchored>
+}

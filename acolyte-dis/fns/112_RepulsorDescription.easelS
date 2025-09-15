@@ -1,0 +1,82 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Repulsor")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Emit an intense beam of energy which drives your foes backward. Exercise caution, as its fierce recoil propels you backward too, either catapulting you into peril or hastening your retreat to safety. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(2)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 37 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("Damage")
+PushString("fas fa-heart-crack")
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(0.0)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+PushString("Cooldown")
+PushString("fas fa-clock")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(540.0)
+PushNum(60.0)
+Div
+PushString("s")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+PushScript(ScriptId(240))
+Call(2)

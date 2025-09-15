@@ -1,0 +1,21 @@
+Play(duration=1s) {
+	Vibrato(freqModulation=1000) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=40)
+	LowPass(freq=[313,0])
+	Envelope(attack=0.01)
+	Gain(volume=0.5)
+}
+
+Play(duration=1s) {
+	Vibrato(freqModulation=[300,100]) {
+		Oscillator(freq=[313,100])
+	}
+	Oscillator(wave=$triangle, freq=[100,30], harmonics=[1,1.33,1.5])
+	Tremolo(volumeModulation=0.2) {
+		Oscillator(freq=3)
+	}
+	Envelope(attack=0.01)
+	Gain(volume=0.25)
+}

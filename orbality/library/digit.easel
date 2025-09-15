@@ -1,0 +1,55 @@
+pub const DigitSprites = @assets/digit-*.png
+
+// TODO refactor this code for the future
+pub fn this.NumberDisplay<Id = auto>([num, body, radius=1, flicker=0.1, layer=Layer:UI], bodyOffset?=@(0,0)) {
+    let numLen = Length("" + num)
+    let remaining = num
+    // as much as I want to do this easel doesnt support it
+    // for i in Range(0, numLen) {
+    //     let digit = remaining % 10
+    //     Subspawn {
+    //         ImageSprite<digit+i>(DigitSprites[digit], bodyOffset=@((numLen * radius) - i * radius * 2 - radius, 0))
+    //     }
+    //     remaining /= 10
+    // }
+    let digit = remaining % 10
+    if numLen > 0 { ImageSprite<Id+d0>(DigitSprites[digit], bodyOffset=bodyOffset + @((numLen * radius) - 0 * radius * 2 - radius, 0)) }
+    else { delete ImageSprite<Id+d0> }
+    remaining /= 10
+
+    digit = remaining % 10
+    if numLen > 1 { ImageSprite<Id+d1>(DigitSprites[digit], bodyOffset=bodyOffset + @((numLen * radius) - 1 * radius * 2 - radius, 0)) }
+    else { delete ImageSprite<Id+d1> }
+    remaining /= 10
+
+    digit = remaining % 10
+    if numLen > 2 { ImageSprite<Id+d2>(DigitSprites[digit], bodyOffset=bodyOffset + @((numLen * radius) - 2 * radius * 2 - radius, 0)) }
+    else { delete ImageSprite<Id+d2> }
+    remaining /= 10
+
+    digit = remaining % 10
+    if numLen > 3 { ImageSprite<Id+d3>(DigitSprites[digit], bodyOffset=bodyOffset + @((numLen * radius) - 3 * radius * 2 - radius, 0)) }
+    else { delete ImageSprite<Id+d3> }
+    remaining /= 10
+
+    digit = remaining % 10
+    if numLen > 4 { ImageSprite<Id+d4>(DigitSprites[digit], bodyOffset=bodyOffset + @((numLen * radius) - 4 * radius * 2  - radius, 0)) }
+    else { delete ImageSprite<Id+d4> }
+
+    remaining /= 10
+
+    digit = remaining % 10
+    if numLen > 5 { ImageSprite<d5>(DigitSprites[digit], bodyOffset=bodyOffset + @((numLen * radius) - 5 * radius * 2  - radius, 0)) }
+    else { delete ImageSprite<d5> }
+    remaining /= 10
+
+}
+
+pub delete fn this.NumberDisplay<Id = auto> {
+    delete ImageSprite<Id+d0>
+    delete ImageSprite<Id+d1>
+    delete ImageSprite<Id+d2>
+    delete ImageSprite<Id+d3>
+    delete ImageSprite<Id+d4>
+    delete ImageSprite<Id+d5>
+}

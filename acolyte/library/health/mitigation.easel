@@ -1,0 +1,56 @@
+pub prop unit.NumAttackers
+
+field unit.DamagePerAttacker
+field unit.CurrentAttacker
+
+pub const DamageMitigationInterval = 2s
+pub const UnmitigatedDamageProportion = 0.25
+pub const DamageModifierBonusPerTeamer = 0.3
+pub const CooldownRateBonusPerTeamer = 0.3
+
+/// If an acolyte gets attacked by multiple enemies at once, only the one who does the most damage will do full damage.
+pub fn unit.MitigateDamage(damage, attacker) -> acceptedDamage {
+    if (!(damage > 0 && unit && attacker && unit.Category.Overlaps(Category:Unit) && attacker.Category.Overlaps(Category:Unit))) {
+        // Do not waste computation on non-heroes or zero damage
+        return damage
+    }
+
+    const damagePerAttacker = unit.DamagePerAttacker ??= {}
+
+    const incumbentDamage = damagePerAttacker[unit.CurrentAttacker] ?? 0
+    const previousDamage = damagePerAttacker[attacker]
+    if !previousDamage {
+        unit.NumAttackers += 1
+    }
+    const newDamage = previousDamage + damage
+
+    let acceptedDamage = UnmitigatedDamageProportion * damage
+    if newDamage > incumbentDamage {
+        acceptedDamage = Max(acceptedDamage, newDamage - incumbentDamage)
+        unit.CurrentAttacker = attacker
+
+        // This replaces the previous behavior each time, so only the last timeout will actually run
+        behavior once Tick(DamageMitigationInterval) {
+            delete unit.DamagePerAttacker
+            delete unit.CurrentAttacker
+            unit.NumAttackers = 0
+        }
+    }
+    damagePerAttacker[attacker] = newDamage
+
+    return acceptedDamage
+}
+
+pub fn this.AntiTeamingBonus([unit]) {
+    with NumAttackers {
+        if NumAttackers > 1 {
+            const numTeamers = NumAttackers - 1
+            give<damageBonus> DamageModifier(1 + DamageModifierBonusPerTeamer * numTeamers)
+            give<cooldownBonus> UnitCooldownRate(1 + CooldownRateBonusPerTeamer * numTeamers)
+
+        } else {
+            delete give<damageBonus>
+            delete give<cooldownBonus>
+        }
+    }
+}

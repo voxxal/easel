@@ -1,0 +1,150 @@
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Electroshock")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 13 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Shock your enemies at short-range, siphoning away their vitality through the conduit of crackling electricity. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("The surge of lightning through your veins also quickens your movement. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushString("Electrostatic Charge")
+PushString("fas fa-bolt")
+BeginClosure { num_params: 1, return_at: 16 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Hold the button down for up to ")
+PushNum(60.0)
+PushNum(60.0)
+Div
+PushString(" second for up to ")
+PushNum(0.5)
+PushNum(100.0)
+Mul
+PushString("% bonus damage.")
+StringConcatN(5)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(239))
+Call(4)
+PushString("Surging Swiftness")
+PushString("fas fa-running")
+BeginClosure { num_params: 1, return_at: 12 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("While charging up, you will move ")
+PushNum(0.2)
+PushNum(100.0)
+Mul
+PushString("% faster.")
+StringConcatN(3)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+PushScript(ScriptId(239))
+Call(4)
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(4)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 56 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushString("Damage")
+PushString("fas fa-heart-crack")
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(20.0)
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+PushString("Lifesteal")
+PushString("fas fa-circle-plus")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(1.0)
+PushNum(100.0)
+Mul
+PushString("%")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+PushString("Cooldown")
+PushString("fas fa-clock")
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(90.0)
+PushNum(60.0)
+Div
+PushString("s")
+Add
+Text
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(241))
+Call(4)
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+PushScript(ScriptId(240))
+Call(2)

@@ -1,0 +1,9 @@
+pub fn body.ImpulseAway(that, [impulse]) {
+    const outward = that.Pos - body.Pos
+    that.ApplyImpulse(impulse * Direction(outward))
+}
+
+pub fn body.ImpulseAwayAttenuated(that, attenuate=1.0, [impulse, aoe]) {
+    const outward = that.Pos - body.Pos
+    that.ApplyImpulse(impulse * (Length(outward) / aoe).Mix(1.0, attenuate) * Direction(outward))
+}

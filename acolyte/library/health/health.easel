@@ -1,0 +1,72 @@
+pub prop life.Hp
+pub prop life.MaxHp
+
+pub signal life.BeforeOutOfHealth
+
+pub fn life.HasHp -> boolean {
+	return life.MaxHp > 0
+}
+
+pub fn life.HpProportion -> proportion {
+	return life.Hp / life.MaxHp
+}
+
+pub fn life.Health(maxHp=100.0) {
+	Hp = maxHp * ((life.Hp ?? maxHp) / (life.MaxHp ?? maxHp))
+	MaxHp = maxHp
+
+	behavior<deathLoop> on Hp {
+		await BeforeReap
+
+		while Unkillable {
+			await Unkillable
+		}
+		if Hp <= 0.0 {
+			BeforeOutOfHealth
+			Expire
+			break
+		}
+	}
+}
+pub delete fn life.Health() {
+    delete behavior<deathLoop>
+}
+
+// Returns the amount of damage applied
+pub fn that.TakeDamage(damage, [minHealth=0, noRelay?]) -> loss {
+	let loss = 0
+	if GameCommenced && that.Hp {
+		if damage <= 0.0 { return loss }
+
+		// Armor
+		let damage = (damage * that.Vulnerability).Min(that.Hp - minHealth)
+		if damage <= 0.0 { return loss }
+
+		// Relay damage, e.g. to a linked enemy
+		if !noRelay {
+			let surrogate = that.Relay
+			if surrogate {
+				let relayDamage = damage * that.RelayProportion
+				loss += surrogate.TakeDamage(relayDamage, noRelay=true)
+
+				damage -= relayDamage
+				if damage <= 0.0 { return loss }
+			}
+		}
+
+		// Apply damage to target
+		that.Hp -= damage
+		loss += damage
+	}
+	return loss
+
+}
+
+pub fn that.Heal(heal) {
+	if heal > 0 && that?.MaxHp {
+		let newHp = Min(that.MaxHp, that.Hp + heal)
+		if newHp > that.Hp {
+			that.Hp = newHp
+		}
+	}
+}

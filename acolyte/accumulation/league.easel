@@ -1,0 +1,24 @@
+pub field league.LeagueName
+pub field league.LeagueGlyph
+pub field league.LeagueColor
+pub field league.LeagueMinRating
+
+pub const Leagues = [
+	{ LeagueName="Grandmaster", LeagueGlyph=@starsStack.svg, LeagueColor=#00ffff, LeagueMinRating=2100 },
+	{ LeagueName="Master", LeagueGlyph=@rank3.svg, LeagueColor=#00b7ff, LeagueMinRating=1800 },
+	{ LeagueName="Diamond", LeagueGlyph=@rank2.svg, LeagueColor=#0066ff, LeagueMinRating=1600 },
+	{ LeagueName="Platinum", LeagueGlyph=@rank1.svg, LeagueColor=#ff0088, LeagueMinRating=1500 },
+	{ LeagueName="Gold", LeagueGlyph=@sergeant.svg, LeagueColor=#ffd600, LeagueMinRating=1300 },
+	{ LeagueName="Silver", LeagueGlyph=@corporal.svg, LeagueColor=#f1f1f1, LeagueMinRating=1200 },
+	{ LeagueName="Bronze", LeagueGlyph=@private.svg, LeagueColor=#ff7300, LeagueMinRating=1100 },
+	{ LeagueName="Wood", LeagueGlyph=@person.svg, LeagueColor=#42e900, LeagueMinRating=0 },
+]
+
+pub fn FindLeague(rating) -> league {
+	for league in Leagues {
+		if rating >= league.LeagueMinRating {
+			return league
+		}
+	}
+	return Leagues[Leagues.Length - 1]
+}

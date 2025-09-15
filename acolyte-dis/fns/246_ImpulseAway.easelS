@@ -1,0 +1,12 @@
+Read(1)
+Pos
+Read(0)
+Pos
+Sub
+Declare(3)
+Read(1)
+Read(2)
+Read(3)
+Direction
+Mul
+ApplyImpulse

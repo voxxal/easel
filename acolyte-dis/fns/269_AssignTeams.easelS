@@ -1,0 +1,239 @@
+JumpIfVarDefined { var: 1, jump: 3 }
+PushNum(0.5)
+Write(1)
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNum(4.0)
+Write(2)
+PushUndefinedN(4)
+BeginIntrinsic(4)
+QueryPlayers
+EndIntrinsic1
+Declare(3)
+Read(3)
+Length
+Declare(4)
+PushNull
+Declare(5)
+PushNum(2.0)
+Read(2)
+RangeInclusive
+Declare(6)
+PushIndex(0)
+Declare(7)
+Loop { continue_at: 34, break_at: 39 }
+Read(6)
+Read(7)
+Index
+With
+IsUndefined
+JumpIf(32)
+Declare(8)
+Read(4)
+Read(8)
+PushNum(2.0)
+Mul
+Less
+JumpIfNot(2)
+Break
+Read(4)
+Read(8)
+Mod
+PushNum(0.0)
+Equal
+With
+JumpIfNot(8)
+Pop
+Read(0)
+BeginIntrinsic(1)
+Random
+EndIntrinsic1
+Read(1)
+Less
+JumpIfNot(4)
+Read(8)
+WriteShared(5)
+Break
+Undeclare(8, 1)
+Read(7)
+Increment
+Write(7)
+JumpBack(36)
+EndLoop
+Undeclare(6, 2)
+Read(5)
+BooleanNot
+JumpIfNot(2)
+Return0
+ArrayNew
+Declare(6)
+Read(5)
+Declare(7)
+Loop { continue_at: 9, break_at: 14 }
+Read(7)
+GreaterThanZero
+JumpIfNot(10)
+Read(6)
+PushUndefined
+Spawn
+CollectionPush
+Pop
+Read(7)
+Decrement
+Write(7)
+JumpBack(11)
+EndLoop
+Undeclare(7, 1)
+PushNum(0.0)
+Read(4)
+Range
+Declare(7)
+PushIndex(0)
+Declare(8)
+Loop { continue_at: 27, break_at: 32 }
+Read(7)
+Read(8)
+Index
+With
+IsUndefined
+JumpIf(25)
+Declare(9)
+Read(6)
+Read(9)
+Read(6)
+Length
+Mod
+Load
+Declare(10)
+Read(10)
+Read(3)
+Read(9)
+Load
+SetTeam
+Read(10)
+FieldGet($TeamSize)
+PushNum(1.0)
+Add
+Read(10)
+FieldSet($TeamSize)
+Undeclare(9, 2)
+Read(8)
+Increment
+Write(8)
+JumpBack(29)
+EndLoop
+Undeclare(7, 2)
+Read(0)
+PushNum(180.0)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 32 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 19 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+BeginClosure { num_params: 1, return_at: 5 }
+Read(0)
+FieldGet($TeamSize)
+ReturnValue
+EndClosure
+PushUndefinedN(2)
+BeginIntrinsic(4)
+CollectionMap
+EndCollectionMap
+EndIntrinsic1
+PushString("v")
+Join
+FlyInChars
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(15)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Standout)
+EndParagraph
+EndIntrinsic0
+EndClosure
+Read(6)
+ClosureAdd
+PushAfter(3)
+PushScript(ScriptId(269))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(6)
+BeginIntrinsic(7)
+Transmission(Overlay)
+EndTransmission
+EndIntrinsic0
+Read(0)
+PushNum(5400.0)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 55 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushNum(1.1)
+BeginClosure { num_params: 1, return_at: 41 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushColor(Color { r: F8(255), g: F8(204), b: F8(0), a: F8(255) })
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 19 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+BeginClosure { num_params: 1, return_at: 5 }
+Read(0)
+FieldGet($TeamSize)
+ReturnValue
+EndClosure
+PushUndefinedN(2)
+BeginIntrinsic(4)
+CollectionMap
+EndCollectionMap
+EndIntrinsic1
+PushString("v")
+Join
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(2)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(": protect your allies!")
+StringConcatN(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+Read(6)
+ClosureAdd
+PushAfter(3)
+PushScript(ScriptId(269))
+PushIndex(2)
+DiscriminatorConcatN(2)
+WriteBack(6)
+BeginIntrinsic(7)
+Transmission(Main)
+EndTransmission
+EndIntrinsic0

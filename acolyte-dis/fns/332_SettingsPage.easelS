@@ -1,0 +1,330 @@
+Read(0)
+BeginClosure { num_params: 1, return_at: 316 }
+ClearSubfragmentRangeLocal { from: 0, length: 10, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Account")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 29 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushNum(0.9)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Name")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(2)
+PlayerNameEditor
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Settings")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 29 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushNum(0.9)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Graphics")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(2)
+ResolutionDropdown
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 29 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushNum(0.9)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Sound")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(2)
+VolumeDropdown
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 29 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushNum(0.9)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Chat")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(2)
+ChatEnabledDropdown
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 29 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushNum(0.9)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Auto-join next match")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+ClosureRead(0)
+ClosureRead(0)
+Read(0)
+SubfragmentSlot(1)
+PushScript(ScriptId(263))
+Call(3)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+SubfragmentSlot(6)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Controls")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(7)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 29 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushNum(0.9)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Left-click")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+ClosureRead(0)
+ClosureRead(0)
+Read(0)
+SubfragmentSlot(1)
+PushScript(ScriptId(335))
+Call(3)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+SubfragmentSlot(8)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 29 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushNum(0.9)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Right-click/Double Tap")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+ClosureRead(0)
+ClosureRead(0)
+Read(0)
+SubfragmentSlot(1)
+PushScript(ScriptId(336))
+Call(3)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+SubfragmentSlot(9)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(8)
+PushScript(ScriptId(332))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0

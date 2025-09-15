@@ -1,0 +1,62 @@
+PushSymbol($library/players/autoJoin.easel/changeAutoJoin)
+BeginClosure { num_params: 1, return_at: 24 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(4), InitialValueId(10))
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(2)
+Selected
+EndIntrinsic0
+PushBool(false)
+PushString("Disabled")
+Read(0)
+SubfragmentSlot(1)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+PushBool(true)
+PushString("Enabled")
+Read(0)
+SubfragmentSlot(2)
+BeginIntrinsic(3)
+DropdownOption
+EndIntrinsic0
+EndClosure
+Read(1)
+ClosureAdd
+PushAfter(1)
+Read(2)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(3)
+Dropdown
+EndDropdown
+EndIntrinsic0
+PushScript(ScriptId(263))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 20 }
+Loop { continue_at: 1, break_at: 18 }
+ClosureRead(0)
+PushSymbol($library/players/autoJoin.easel/changeAutoJoin)
+BeginIntrinsic(2)
+AwaitSelected
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 5 }
+Read(0)
+ClosureRead(0)
+SavePreference(PreferenceId(4))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(15)
+EndLoop
+EndClosure
+Read(1)
+ClosureAdd
+Hook(0)

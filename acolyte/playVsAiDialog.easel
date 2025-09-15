@@ -1,0 +1,30 @@
+pub fn this.PlayVsAiDialog([singleplayerMode?]) || {
+    if singleplayerMode {
+        delve()
+    } else {
+        Subspawn {
+            once AfterGameLocked { Expire }
+
+            with PlayerJoined, BeforePlayerLeave {
+                await Paint // If a player leaves, wait until after the player has left before updating the dialog
+                if CountPlayers < 2 {
+                    Content<dialog> {
+                        Panel {
+                            H3 {"Waiting for players..."}
+
+                            HStack {
+                                RaisedButton(PressIntent<playVsAi>, backgroundColor=Color:Primary, dismiss=true) { "Play vs AI" }
+                            }
+                        }
+                    }
+
+                    once Pressed<playVsAi> {
+                        delve()
+                    }
+                } else {
+                    delete Content<dialog>
+                }
+            }
+        }
+    }
+}

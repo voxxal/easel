@@ -1,0 +1,173 @@
+JumpIfVarDefined { var: 1, jump: 3 }
+PushNum(420.0)
+Write(1)
+Read(0)
+BeginClosure { num_params: 1, return_at: 163 }
+PushScript(ScriptId(261))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 14 }
+ClosureRead(0)
+PushSymbol($library/players/autoJoin.easel/cancelAutoJoin)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 4 }
+ClosureRead(0)
+Expire
+EndClosure
+ClosureRead(1)
+ClosureAdd
+CallLambda(1)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+Tick
+Declare(1)
+Read(0)
+PushSymbol($library/players/autoJoin.easel/countdown)
+BeginClosure { num_params: 1, return_at: 72 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Loop { continue_at: 1, break_at: 69 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(4), InitialValueId(10))
+BooleanNot
+JumpIfNot(3)
+ClosureRead(1)
+Expire
+ClosureRead(2)
+Tick
+ClosureReadShared(3)
+Sub
+Sub
+Declare(1)
+Read(1)
+PushNum(0.0)
+Greater
+JumpIfNot(46)
+PushIntrinsic(AlignCenter)
+PushAfter(6)
+BeginClosure { num_params: 1, return_at: 32 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Next game in ")
+ClosureReadShared(0)
+PushNum(60.0)
+Div
+Ceiling
+PushString("... ")
+StringConcatN(3)
+Text
+PushSymbol($library/players/autoJoin.easel/cancelAutoJoin)
+PushUndefined
+PressIntent
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("(cancel)")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+EndClosure
+NoShare(1)
+ClosureAdd
+PushAfter(8)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+Jump(2)
+Break
+PushNum(60.0)
+Sleep(Tick)
+Undeclare(1, 1)
+JumpBack(66)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+NoShare(1)
+ClosureAdd
+PushAfter(7)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(OverlayTop)
+EndSection
+EndIntrinsic0
+Read(0)
+PushSymbol($library/players/autoJoin.easel/countdown)
+BeginClosure { num_params: 1, return_at: 34 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 23 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushUndefined
+PushScript(ScriptId(313))
+Call(1)
+PushBool(true)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Joining next game...")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(24)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(SubtleLink)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(15)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(7)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(OverlayTop)
+EndSection
+EndIntrinsic0
+PushNum(180.0)
+Sleep(Tick)
+Read(0)
+Expire
+EndClosure
+Read(0)
+ClosureAdd
+Read(1)
+ClosureAdd
+Subspawn
+Pop

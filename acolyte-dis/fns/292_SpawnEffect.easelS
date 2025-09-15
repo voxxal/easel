@@ -1,0 +1,24 @@
+JumpIfVarDefined { var: 1, jump: 3 }
+PushBool(false)
+Write(1)
+Read(0)
+BeginClosure { num_params: 1, return_at: 12 }
+ClosureRead(0)
+JumpIfNot(5)
+Read(0)
+ClosureRead(1)
+PushScript(ScriptId(295))
+Call(2)
+Read(0)
+ClosureRead(2)
+CallLambda(1)
+Pop
+EndClosure
+Read(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Read(2)
+ClosureAdd
+Subspawn
+ReturnValue

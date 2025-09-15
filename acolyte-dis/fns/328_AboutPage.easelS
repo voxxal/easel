@@ -1,0 +1,1483 @@
+Read(0)
+BeginClosure { num_params: 1, return_at: 1471 }
+ClearSubfragmentRangeLocal { from: 0, length: 29, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("About Acolyte Fight")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 74 }
+ClearSubfragmentRangeLocal { from: 0, length: 6, local: 0 }
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Acolyte Fight")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" is a multiplayer skillshot arena made by ")
+StringConcatN(1)
+Text
+PushString("https://twitter.com/raysplacenspace")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("raysplaceinspace")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(3)
+PushString(" using ")
+StringConcatN(1)
+Text
+PushString("https://easel.games")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Easel")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(5)
+PushString(". ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 18 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("In this arena, you will hone your skills and prepare for the ultimate battle. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("You might not win every battle, but you will learn from every defeat. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("Will you be the last one standing?")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Follow us")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 13 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("The best place to keep up-to-date with the latest news on Acolyte Fight is in our Discord community! ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("That is where you will find our announcements channel and the latest changelogs. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 123 }
+ClearSubfragmentRangeLocal { from: 0, length: 5, local: 0 }
+PushString("https://discord.gg/sZvgpZk")
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-brands fa-discord")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Join the chat on Discord!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+PushString("https://youtube.com/c/AcolyteFight")
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-brands fa-youtube")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" YouTube: Acolyte Fight")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+PushString("https://facebook.com/acolytefight")
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-brands fa-facebook")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Facebook: fb.com/acolytefight")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+PushString("https://reddit.com/r/acolytefight")
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-brands fa-reddit")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Reddit: r/acolytefight")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+PushString("https://twitter.com/acolytefight")
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-brands fa-twitter")
+PushNum(2.0)
+Read(0)
+SubfragmentSlot(0)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Twitter: @acolytefight")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Special Rules")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(6)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 63 }
+ClearSubfragmentRangeLocal { from: 0, length: 6, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Beware! The map shrinks over ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(5400.0)
+PushNum(60.0)
+Div
+PushString(" seconds")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(". The area outside of the map is called the void. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("Stay away from it because it will consume your life force at a rate of ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 9 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(12.5)
+PushString(" per second")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(5)
+PushString(". ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(7)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 49 }
+ClearSubfragmentRangeLocal { from: 0, length: 6, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Most spells have lifesteal - that means a proportion of damage dealt is added back to your health. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("The last player to knockback an enemy will receive ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(0.3)
+PushNum(100.0)
+Mul
+PushString("% lifesteal")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(3)
+PushString(" from their void damage. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(4)
+PushString("If your health is getting low, don't give up! ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(5)
+PushString("If you keep landing your hits while your enemy cannot, you can still turn the tide of battle. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(8)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 96 }
+ClearSubfragmentRangeLocal { from: 0, length: 9, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("If multiple opponents attack you at the same time, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("you will only take damage from the opponent that did the most damage. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("You will also gain a ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(0.3)
+PushNum(100.0)
+Mul
+PushString("% cooldown reduction")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(4)
+PushString(" and ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(0.3)
+PushNum(100.0)
+Mul
+PushString("% extra damage")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(6)
+PushString(" per additional attacker. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(7)
+PushString("This buff resets once no one has attacked you for ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 11 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(120.0)
+PushNum(60.0)
+Div
+PushString(" seconds. ")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(8)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(9)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Tips")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(10)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 23 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("This is a game of skill. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("You must dodge your opponent's attacks while landing your own. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("Sometimes, dodging is more important than attacking! ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("Remember, aim not to where your opponent is, but to where your opponent is going to be! ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(11)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 18 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Most of the damage is done using your primary spell (e.g. Fireball), ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("so your initial focus should be on learning to hit with that. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("When you are new, don't even bother with any other spells other than your Fireball and Charge. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(12)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 18 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Try your best to stay on the map. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("Save your movement spell (e.g. your Charge or Teleport) for when you have been knocked off the map ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("and need to get back quickly. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(13)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 23 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Don't get discouraged when you lose. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("This game plays out faster than you can think. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("Use each game as a lesson on how to improve your intuitions better so you can react better next time. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("Every game is a learning experience! ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(14)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Ranked mode")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(15)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 46 }
+ClearSubfragmentRangeLocal { from: 0, length: 6, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("This is a game of skill, and so once you have been playing this game for a while, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("you might be interested to know how your skill compares to others. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("For that, it is time to turn on ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("ranked mode! ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(4)
+PushString("Find the button to turn on ranked mode in the top right of the homepage. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(5)
+PushString("Now your skill will be rated against others, and you will be placed on the leaderboard! ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(16)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 67 }
+ClearSubfragmentRangeLocal { from: 0, length: 10, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("The rating system is designed to measure your skill accurately, and is based on ")
+StringConcatN(1)
+Text
+PushString("https://en.wikipedia.org/wiki/Elo_rating_system")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Elo")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(", ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("which works on the concept of equilibrium. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(4)
+PushString("The rating system predicts how likely it thinks you are to win a particular match up. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(5)
+PushString("The amount you win or lose are exact mathematical inverses of this prediction. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(6)
+PushString("That means if you are exactly as good as it thinks you are, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(7)
+PushString("you might gain in some matches, and you might lose others, but overall you will stay in the same place. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(8)
+PushString("This might feel unfair, gaining some points only to lose the exact same amount later, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(9)
+PushString("but it means the system is accurately measuring your skill. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(17)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 33 }
+ClearSubfragmentRangeLocal { from: 0, length: 6, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("There is a factor that suppresses both gains and losses when you play against ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("opponents who are far below your skill level. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("This is to stop you from losing a lot of points when you lose against a newbie, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("but also stops farming points by newbie stomping. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(4)
+PushString("The best way to rank up the leaderboard is to play at active times ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(5)
+PushString("when there are many high-level players online.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(18)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 59 }
+ClearSubfragmentRangeLocal { from: 0, length: 5, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("The rating system also awards you one extra activity bonus point per game, up to a maximum of ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 9 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(100.0)
+PushString(" points")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(". Activity bonus points expire after ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 12 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushNum(155520000.0)
+PushNum(5184000.0)
+Div
+Round
+PushString(" days")
+Add
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(4)
+PushString(" so keep playing!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(19)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("What is the minimum rating for each league?")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(20)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H3)
+EndParagraph
+EndIntrinsic0
+ReadStatic(StaticVariableId(0))
+Declare(1)
+PushIndex(0)
+Declare(2)
+Loop { continue_at: 126, break_at: 131 }
+Read(1)
+Read(2)
+Index
+With
+IsUndefined
+JumpIf(124)
+Declare(3)
+Read(0)
+SubfragmentAppendSlot(21)
+Declare(4)
+Read(3)
+FieldGet($LeagueColor)
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 101 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 88 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+PushNum(0.5)
+PushAfter(19)
+ClosureRead(0)
+FieldGet($LeagueColor)
+WriteBack(15)
+ClosureRead(0)
+FieldGet($LeagueName)
+PushAfter(1)
+PushNum(0.5)
+WriteBack(15)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+FieldGet($LeagueGlyph)
+PushNum(1.5)
+PushAfter(3)
+PushNum(0.2)
+PushAfter(2)
+Read(0)
+NoSubfragmentSlot
+PushAfter(3)
+BeginIntrinsic(12)
+Image
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(4)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(PipMedal)
+EndButton
+EndIntrinsic0
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($LeagueName)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(2)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 13 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+ClosureRead(0)
+FieldGet($LeagueMinRating)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString(" rating")
+StringConcatN(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(7)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(19)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+Read(3)
+ClosureAdd
+PushAfter(11)
+Read(4)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(ShinyPanel)
+EndPanel
+EndIntrinsic0
+Undeclare(3, 2)
+Read(2)
+Increment
+Write(2)
+JumpBack(128)
+EndLoop
+Undeclare(1, 2)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Why do I lose so many more points for losing and gain so few points for winning?")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(22)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H3)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 23 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("All Elo rating systems work like this. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("If you win 10 times more than you lose against a particular player, than for each loss, you will lose 10x more points, against that particular player. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("This creates equilibrium. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("Any other system would cause for rating inflation, which would mean the game is not measuring skill, instead it would be measuring how many games you have played. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(23)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Credits")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(24)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 212 }
+ClearSubfragmentRangeLocal { from: 0, length: 18, local: 0 }
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Acolyte Fight!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" was made with ")
+StringConcatN(1)
+Text
+PushString("https://easel.games")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Easel")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(3)
+PushString(" by ")
+StringConcatN(1)
+Text
+PushString("https://twitter.com/raysplacenspace")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("raysplaceinspace")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(5)
+PushString(" and was inspired by the ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("WarCraft III")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(6)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(7)
+PushString(" map ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Warlock")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(8)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(9)
+PushString(", originally created by ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Zymoran")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(10)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(11)
+PushString(", ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Adynathos")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(12)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(13)
+PushString(", ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Toraxxx")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(14)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(15)
+PushString(", and ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("sides")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(16)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(17)
+PushString(". ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(25)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 27 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("https://rapier.rs")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Rapier2D")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" physics engine created by Dimforge and used under Apache 2.0 license.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(26)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 32 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Icons created by Lorc, sbed and Delapouite used under Creative Commons license from ")
+StringConcatN(1)
+Text
+PushString("https://game-icons.net")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("game-icons.net")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(".")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(27)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 27 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("https://fontawesome.com")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("FontAwesome free")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" used under SIL Open Font license.")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(28)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(328))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0

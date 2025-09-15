@@ -1,0 +1,54 @@
+Read(0)
+Read(2)
+BeginClosure { num_params: 2, return_at: 40 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 1 }
+Read(0)
+NoSubfragmentSlot
+Declare(2)
+PushIntrinsic(ColorSelected)
+PushAfter(5)
+PushNum(0.25)
+PushAfter(13)
+BeginClosure { num_params: 1, return_at: 14 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+PushNum(3.0)
+PushAfter(3)
+PushNum(0.2)
+PushAfter(2)
+Read(0)
+NoSubfragmentSlot
+PushAfter(3)
+BeginIntrinsic(12)
+Image
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(6)
+Read(2)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Pip)
+EndButton
+EndIntrinsic0
+Undeclare(2, 1)
+Read(1)
+NoSubfragmentSlot
+ClosureRead(1)
+CallLambda(1)
+Pop
+EndClosure
+Read(1)
+ClosureAdd
+Read(4)
+ClosureAdd
+PushAfter(1)
+Read(3)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(4)
+Tab
+EndTab
+EndIntrinsic0

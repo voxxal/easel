@@ -1,0 +1,92 @@
+PushScript(ScriptId(262))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 54 }
+Loop { continue_at: 2, break_at: 52 }
+Jump(4)
+ClosureRead(0)
+AwaitPreference(PreferenceId(4))
+Pop
+BeginClosure { num_params: 0, return_at: 38 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 1 }
+PushSymbol($library/players/autoJoin.easel/toggleAutoJoin)
+PushUndefined
+PressIntent
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(4), InitialValueId(10))
+JumpIfNot(3)
+PushString("Auto-joining next match")
+Jump(2)
+PushString("Not auto-joining next match")
+PushAfter(20)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(4), InitialValueId(10))
+JumpIfNot(3)
+PushString("fa-solid fa-play")
+Jump(2)
+PushString("fa-solid fa-pause")
+Read(0)
+NoSubfragmentSlot
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(4)
+ClosureRead(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(48)
+EndLoop
+EndClosure
+Read(1)
+ClosureAdd
+Read(2)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(262))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 22 }
+Loop { continue_at: 1, break_at: 20 }
+ClosureRead(0)
+PushSymbol($library/players/autoJoin.easel/toggleAutoJoin)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 7 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(4), InitialValueId(10))
+BooleanNot
+ClosureRead(0)
+SavePreference(PreferenceId(4))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(17)
+EndLoop
+EndClosure
+Read(1)
+ClosureAdd
+Hook(0)

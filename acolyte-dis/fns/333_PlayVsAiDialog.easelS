@@ -1,0 +1,172 @@
+Read(1)
+JumpIfNot(5)
+Read(2)
+CallLambda(0)
+Pop
+Jump(167)
+Read(0)
+BeginClosure { num_params: 1, return_at: 161 }
+PushScript(ScriptId(333))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 10 }
+AwaitAfterGameLocked
+BeginClosure { num_params: 0, return_at: 4 }
+ClosureRead(0)
+Expire
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(0)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(333))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 133 }
+Loop { continue_at: 2, break_at: 131 }
+Jump(13)
+BeginClosure { num_params: 0, return_at: 4 }
+AwaitPlayerJoin
+ReturnValue
+EndClosure
+BeginClosure { num_params: 0, return_at: 5 }
+PushUndefined
+AwaitBeforePlayerLeave
+ReturnValue
+EndClosure
+BeginRace { num_forks: 2 }
+WinRace
+Pop
+BeginClosure { num_params: 0, return_at: 108 }
+PushUndefined
+Sleep(Paint)
+PushUndefinedN(4)
+BeginIntrinsic(4)
+CountPlayers
+EndIntrinsic1
+PushNum(2.0)
+Less
+JumpIfNot(95)
+ClosureRead(0)
+PushSymbol($playVsAiDialog.easel/dialog)
+BeginClosure { num_params: 1, return_at: 64 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 53 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Waiting for players...")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H3)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushSymbol($playVsAiDialog.easel/playVsAi)
+PushUndefined
+PressIntent
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+PushBool(true)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Play vs AI")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+EndClosure
+PushAfter(7)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0
+PushScript(ScriptId(333))
+PushIndex(3)
+DiscriminatorConcatN(2)
+ClosureRead(0)
+BeginClosure { num_params: 0, return_at: 15 }
+PushSymbol($playVsAiDialog.easel/playVsAi)
+PushAfter(1)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 5 }
+ClosureRead(0)
+CallLambda(0)
+Pop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+EndClosure
+ClosureRead(1)
+ClosureAdd
+Hook(0)
+Jump(4)
+ClosureRead(0)
+PushSymbol($playVsAiDialog.easel/dialog)
+DeleteSection(Content)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(127)
+EndLoop
+EndClosure
+Read(0)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+Hook(0)
+EndClosure
+Read(2)
+ClosureAdd
+Subspawn
+Pop

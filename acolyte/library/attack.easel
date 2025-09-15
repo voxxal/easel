@@ -1,0 +1,36 @@
+pub signal this.Hurt
+pub field projectile.CanHurtSelf
+
+pub field owner.KillScore = 0
+pub field owner.OutlastScore = 0
+pub field owner.DamageScore = 0
+
+pub fn Attack(that, [damage, lifesteal?, minHealth?, noHurt?, noRelay?, noInterrupt?, noLavasteal?, unit?]) -> loss {
+    if !that { return 0 }
+
+	let loss = damage > 0 ? that.TakeDamage(that.MitigateDamage(damage, attacker=unit)) : 0
+
+    if unit && lifesteal > 0.0 && loss > 0.0 && that.Category.Overlaps(Category:Unit) && that.Owner && that.Owner != unit.Owner {
+        // Lifesteal back to owner, but only if the target is owned by another enemy player
+        unit.Heal(loss * lifesteal)
+    }
+
+    if !noHurt && (loss > 0 || damage == 0) {
+        // Send hurt event if either was actually hurt, or if this was not meant to hurt (maybe just a knockback-only spell)
+        that.Hurt
+    }
+
+    if !noInterrupt {
+        that.Interrupt
+    }
+    
+    if !noLavasteal && unit && that.IsHurtByLava && that.Owner {
+        that.LavaLifestealer = unit
+    }
+
+    if that.Category.Overlaps(Category:Unit) {
+        unit.Owner.DamageScore += loss
+    }
+
+	return loss
+}

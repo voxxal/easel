@@ -1,0 +1,36 @@
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNull
+Write(2)
+JumpIfVarDefined { var: 3, jump: 3 }
+PushNum(1.0)
+Write(3)
+Read(0)
+Exists
+BooleanNot
+JumpIfNot(2)
+Return0
+Read(1)
+Pos
+Declare(4)
+Read(4)
+BooleanNot
+JumpIfNot(2)
+Return0
+Read(4)
+Read(0)
+Pos
+Sub
+Direction
+Read(3)
+Read(2)
+With
+IsNullish
+JumpIfNot(5)
+Pop
+Read(0)
+Velocity
+Length
+Mul
+Mul
+Read(0)
+SetVelocity

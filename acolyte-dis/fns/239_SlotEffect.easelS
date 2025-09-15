@@ -1,0 +1,81 @@
+PushNum(0.8)
+BeginClosure { num_params: 1, return_at: 66 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushBool(true)
+PushAfter(1)
+PushBool(true)
+PushColor(Color { r: F8(238), g: F8(238), b: F8(238), a: F8(255) })
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 24 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+ClosureRead(0)
+Read(0)
+SubfragmentSlot(0)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+ClosureRead(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString(": ")
+StringConcatN(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+PushAfter(2)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+PushColor(Color { r: F8(221), g: F8(221), b: F8(221), a: F8(255) })
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+CallLambda(1)
+Pop
+EndClosure
+ClosureRead(2)
+ClosureAdd
+PushAfter(2)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+Read(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Read(3)
+ClosureAdd
+PushAfter(14)
+Read(2)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0

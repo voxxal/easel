@@ -1,0 +1,78 @@
+pub signal unit.UngrabMe
+pub signal unit.UngrabThem
+
+const CloseEnough=0.0001
+
+pub fn this.SpawnGrab(that, [severable=false]) |use this = grab| {
+    let parent = this
+	Subspawn grab {
+		grab.DespawnBefore(that)
+
+		if severable {
+			once parent.UngrabThem, that.UngrabMe { Expire }
+		}
+
+		delve(grab)
+	}
+}
+
+// Forces
+pub fn this.Grab:Pull(body, that, impulse, minDistance=0, maxDistance) {
+	on Tick {
+		let thatPos = that?.Pos
+		if !thatPos { break }
+
+		let bodyPos = body.Pos
+		if !bodyPos { break }
+
+		let delta = bodyPos - thatPos
+		let magnitude = ((Length(delta) - minDistance) / Max(0.0001, maxDistance - minDistance)).Mix(0.0, impulse)
+		that.ApplyImpulse(magnitude * Direction(delta))
+	}
+}
+
+pub fn this.Grab:Tow(body, that, minDistance?) {
+	const leash = Length(body.Pos - that.Pos).Max(minDistance)
+	on Tick {
+		let thatPos = that.Pos
+		if !thatPos { break }
+
+		let bodyPos = body.Pos
+		if !bodyPos { break }
+
+		let delta = bodyPos - thatPos
+		let distance = Length(delta)
+		if distance < leash { continue }
+
+		let step = distance - leash
+		that.ForcefulStep(step * Direction(delta))
+	}
+}
+
+pub fn this.Grab:Swing(body, that, turnProportion, momentumFactor=1) {
+	on Tick {
+		let thatPos = that?.Pos
+		if !thatPos { break }
+
+		let bodyPos = body.Pos
+		if !bodyPos { break }
+
+		let diff = thatPos - bodyPos
+		let initialAngle = Angle(diff)
+		let turn = turnProportion * AngleDelta(initialAngle, body.Heading)
+		let target = bodyPos + Direction(initialAngle + turn) * Length(diff)
+
+		let step = target - thatPos
+		if Length(step) <= CloseEnough { continue }
+
+		let velocity = that.Velocity
+
+		// Keep some part of the velocity that is orthogonal to the step.
+		// This makes the swing build up and feel more natural.
+		let orthogonal = RotateRight(Direction(step))
+		velocity = (step * TicksPerSecond) + (Dot(velocity, orthogonal) * orthogonal * momentumFactor)
+		
+		that.ForcefulTurn(turn)
+		that.Velocity = velocity
+	}
+}

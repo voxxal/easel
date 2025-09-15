@@ -1,0 +1,19 @@
+Read(0)
+PushSymbol($LeftClickSlot)
+ReadStatic(StaticVariableId(3))
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushScript(ScriptId(337))
+Call(1)
+EndClosure
+PushAfter(1)
+Read(1)
+WriteBack(4)
+Read(2)
+NoSubfragmentSlot
+WriteBack(2)
+PushScript(ScriptId(237))
+Call(6)

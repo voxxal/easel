@@ -1,0 +1,16 @@
+Read(0)
+FindMax
+PushNum(1.0)
+Max
+Declare(1)
+Read(0)
+FindMin
+PushNum(1.0)
+Min
+PushNum(0.0)
+Max
+Declare(2)
+Read(1)
+Read(2)
+Mul
+ReturnValue

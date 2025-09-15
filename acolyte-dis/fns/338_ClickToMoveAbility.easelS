@@ -1,0 +1,93 @@
+Read(1)
+Declare(4)
+PushScript(ScriptId(338))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 49 }
+Loop { continue_at: 1, break_at: 47 }
+ClosureRead(0)
+ClosureRead(1)
+AwaitButtonDown
+BeginClosure { num_params: 0, return_at: 32 }
+PushSymbol($slots/clicks.easel/followCursor)
+ClosureRead(0)
+BeginClosure { num_params: 0, return_at: 23 }
+Loop { continue_at: 2, break_at: 21 }
+Jump(4)
+ClosureRead(0)
+AwaitPointer
+Pop
+BeginClosure { num_params: 0, return_at: 7 }
+ClosureRead(0)
+ClosureRead(1)
+Pointer
+PushScript(ScriptId(250))
+Call(2)
+EndClosure
+ClosureRead(1)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(17)
+EndLoop
+EndClosure
+ClosureRead(1)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+Hook(0)
+EndClosure
+ClosureRead(2)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+ClosureRead(3)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(44)
+EndLoop
+EndClosure
+Read(2)
+ClosureAdd
+Read(3)
+ClosureAdd
+Read(0)
+ClosureAdd
+Read(4)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(338))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 18 }
+Loop { continue_at: 1, break_at: 16 }
+ClosureRead(0)
+ClosureRead(1)
+AwaitButtonUp
+BeginClosure { num_params: 0, return_at: 5 }
+PushSymbol($slots/clicks.easel/followCursor)
+ClosureRead(0)
+DeleteHook
+EndClosure
+ClosureRead(2)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(13)
+EndLoop
+EndClosure
+Read(2)
+ClosureAdd
+Read(3)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)

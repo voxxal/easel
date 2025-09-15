@@ -1,0 +1,18 @@
+PushSymbol($WantTeleport)
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushScript(ScriptId(133))
+Call(1)
+EndClosure
+PushAfter(3)
+PushAsset(AssetId(47))
+WriteBack(4)
+PushColor(Color { r: F8(34), g: F8(0), b: F8(255), a: F8(255) })
+WriteBack(3)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+PushScript(ScriptId(238))
+Call(5)

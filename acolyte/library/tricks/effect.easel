@@ -1,0 +1,54 @@
+pub signal unit.CleanseEffects
+
+field unit.PreviousEffect<Id>
+field unit.PreviousEffectOwner<Id>
+field unit.PreviousEffectStacks<Id>
+
+pub fn unit.SpawnEffect([cleansable=false]) |use this = effect| -> effect {
+	return Subspawn effect {
+		if cleansable {
+			CleansableEffect
+		}
+		delve(effect)
+	}
+}
+
+pub fn unit.ReplaceEffect<Id>([cleansable=false]) |use this = effect| -> effect {
+	unit.PreviousEffect<Id>.Despawn
+
+	return Subspawn effect {
+		if cleansable {
+			CleansableEffect
+		}
+		unit.PreviousEffect<Id> = effect
+		delve(effect)
+	}
+}
+
+pub fn unit.StackEffect<Id>([maxStacks=null, owner?=null, cleansable=false]) |stacks, use this = effect| -> effect {
+	let stacks = 0
+	if unit.PreviousEffect<Id>.Despawn {
+		if unit.PreviousEffectOwner<Id> == owner {
+			stacks = Min(maxStacks, (unit.PreviousEffectStacks<Id> ?? 0) + 1)
+		}
+	}
+
+	return Subspawn effect {
+		if cleansable {
+			CleansableEffect
+		}
+
+		unit.PreviousEffect<Id> = effect
+		unit.PreviousEffectStacks<Id> = stacks
+		unit.PreviousEffectOwner<Id> = owner
+		delve(stacks=, effect=)
+	}
+}
+
+fn effect.CleansableEffect([unit]) {
+	if unit {
+		once CleanseEffects {
+			Despawn
+		}
+	}
+}

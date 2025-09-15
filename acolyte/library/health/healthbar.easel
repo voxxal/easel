@@ -1,0 +1,100 @@
+symbol BackgroundSprite
+symbol FillSprite
+symbol HintSprite
+
+pub fn this.Healthbar([life, body, height=0.2, width, verticalOffset, backgroundColor=#0008, advent=3s, layer=Layer:Indicator]) {
+	if !(life && body && life.MaxHp && height > 0.0 && width > 0.0) {
+		// Zero-sized healthbar means no healthbar
+		delete Healthbar
+		return
+	}
+
+	behavior<healthbar> {
+        // Don't display the healthbar until the game has actually started, or it is about to start
+        await AfterGameLocked, AfterGameCommenced
+
+        use strobe=false, noRotation=true
+
+        let up = verticalOffset
+        let right = width / 2.0
+        let left = -right
+
+        // Before start of game
+        // During game
+        PolygonSprite<BackgroundSprite>(
+            Line(cap=true, radius=height, points=[@(left,up), @(right,up)]),
+            color=backgroundColor)
+
+        let indicatorHp = life.Hp
+        loop {
+            await Paint
+
+            // Render
+            const hp = life.Hp
+            const proportion = hp / life.MaxHp
+            const hintProportion = indicatorHp / life.MaxHp
+
+            const adventProportion = !GameCommenced && CommencingAtTick ? ((CommencingAtTick - Tick) / advent.Max(1)).Clamp(0, 1) : null
+            const color = adventProportion ? adventProportion.Mix(#8f8, #fff) : proportion.BlendHue(#f04, #0f0)
+
+            let hintColor = hintProportion > proportion ? #fff : color.Darken(0.5)
+
+            let mid = left + proportion * width
+            let hint = left + hintProportion * width
+            if hint > mid {
+                // Lost health
+                PolygonSprite<FillSprite>(
+                    Line(headCap=true, radius=height, points=[@(left,up), @(mid,up)]),
+                    color=)
+
+                PolygonSprite<HintSprite>(
+                    Line(tailCap=!(hint < right), radius=height, points=[@(mid,up), @(hint,up)]),
+                    color=hintColor)
+
+            } else if hint == mid {
+                PolygonSprite<FillSprite>(
+                    Line(headCap=true, tailCap=!(mid < right), radius=height, points=[@(left,up), @(mid,up)]),
+                    color=)
+                delete PolygonSprite<HintSprite>
+
+            } else {
+                // Gained health
+                PolygonSprite<FillSprite>(
+                    Line(headCap=true, radius=height, points=[@(left,up), @(hint,up)]),
+                    color=)
+
+                PolygonSprite<HintSprite>(
+                    Line(tailCap=!(mid < right), radius=height, points=[@(hint,up), @(mid,up)]),
+                    color=hintColor)
+            }
+
+            // Update indicatorHp
+            let delta = hp - indicatorHp
+            if delta == 0.0 {
+                if !adventProportion {
+                    // Stop refreshing the healthbar until the health changes,
+                    // unless we are fading in the healthbar at the start of the game as that requires updating every frame for a smooth transition
+                    await life.Hp
+                }
+
+            } else {
+                if Abs(delta) < 1.0 {
+                    // Close enough
+                    indicatorHp = hp
+                } else if delta > 0.0 {
+                    // Adjust upwards slower so lifesteal clearer
+                    indicatorHp += 0.01 * delta
+                } else {
+                    indicatorHp += 0.025 * delta
+                }
+            }
+        }
+	}
+}
+
+pub delete fn this.Healthbar {
+	delete PolygonSprite<BackgroundSprite>
+	delete PolygonSprite<FillSprite>
+	delete PolygonSprite<HintSprite>
+	delete behavior<healthbar>
+}

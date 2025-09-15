@@ -1,0 +1,28 @@
+JumpIfVarDefined { var: 1, jump: 3 }
+PushNum(15.0)
+Write(1)
+JumpIfVarDefined { var: 2, jump: 3 }
+PushNum(0.0)
+Write(2)
+JumpIfVarDefined { var: 3, jump: 3 }
+PushNum(0.0)
+Write(3)
+PushNum(6.2831855)
+Tick
+Read(1)
+Mod
+Mul
+Read(1)
+Div
+Read(2)
+Add
+PushNum(6.2831855)
+Read(3)
+Mul
+Add
+Declare(5)
+Read(0)
+Read(5)
+Direction
+Mul
+ReturnValue

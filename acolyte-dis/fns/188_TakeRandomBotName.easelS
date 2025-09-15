@@ -1,0 +1,8 @@
+ReadStatic(StaticVariableId(6))
+CollectionPop
+With
+IsNullish
+JumpIfNot(3)
+Pop
+PushString("AcolyteBot")
+ReturnValue

@@ -1,0 +1,23 @@
+Read(1)
+PushFlags(1)
+PushScript(ScriptId(11))
+Call(2)
+Loop { continue_at: 1, break_at: 16 }
+Read(1)
+FieldGet($library/incantations/incantation.easel/CurrentIncantation)
+Declare(2)
+Read(2)
+Exists
+BooleanNot
+JumpIfNot(2)
+Break
+Read(2)
+AwaitBeforeDespawn
+PushUndefined
+Sleep(Tick)
+Undeclare(2, 1)
+JumpBack(13)
+EndLoop
+Read(0)
+Read(1)
+FieldSet($library/incantations/incantation.easel/CurrentIncantation)

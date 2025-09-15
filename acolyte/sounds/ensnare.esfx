@@ -1,0 +1,6 @@
+Play(duration=1.5s, cutoff=0.5s) {
+	Oscillator(wave=$sawtooth, freq=410, harmonics=[1,1.33,1.4,1.5])
+	LowPass(freq=100)
+	Envelope(attack=0.05s)
+	Gain(volume=0.5)
+}

@@ -1,0 +1,4 @@
+Read(0)
+Read(1)
+Read(2)
+EmitSignalN(SignalId(4), 2)

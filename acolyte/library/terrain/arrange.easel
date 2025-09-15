@@ -1,0 +1,12 @@
+pub fn ArrangeRing(numObstacles, orbit, headingOffset=0, angleOffset=0, pattern=null) |use posOffset, use headingOffset| {
+	for index in Range(0, numObstacles) {
+		if pattern && !pattern[index % Length(pattern)] {
+			continue
+		}
+		const angle = angleOffset + index * 1rev / numObstacles
+		delve(
+			posOffset = orbit * Direction(angle),
+			headingOffset = headingOffset + angle,
+		)
+	}
+}

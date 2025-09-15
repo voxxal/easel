@@ -1,0 +1,72 @@
+// A ranking of all players, with the victor first and the defeated last.
+pub prop World.Winner
+
+pub field owner.IsWinner
+pub field owner.VictoryRank
+
+field team.TeamEliminatedTick
+
+pub fn this.VictoryChecker() |winner, ranking| {
+    on PlayerEliminated {
+        if GameCommenced && !GameConcluded {
+            for player in QueryPlayers(isEliminated=false) {
+                player.OutlastScore += 1
+            }
+        }
+
+        if IsGameComplete {
+            let winner, ranking = AssignWinners
+            delve(winner, ranking)
+            break
+        }
+    }
+}
+
+fn IsGameComplete -> boolean {
+	if !GameCommenced { return false }
+
+	let firstTeam = null
+	for player in QueryPlayers {
+		if player.Eliminated { continue } // Ignore defeated players
+
+		// Consider only the undefeated players
+		if firstTeam {
+			if player.Team != firstTeam {
+				// At least two teams remain - game not complete
+				return false
+			}
+		} else {
+			firstTeam = player.Team
+		}
+	}
+
+	// At most one team exists - game complete
+	return true
+}
+
+fn AssignWinners() -> winner, ranking{
+	let undefeated = Tick + 1 // If undefeated, use a future tick as a sentinel value
+	let players = QueryPlayers
+	for player in players {
+		let eliminatedTick = player.EliminatedTick ?? undefeated
+		let team = player.Team
+		team.TeamEliminatedTick = Max(team.TeamEliminatedTick ?? 0, eliminatedTick)
+	}
+
+	let ranking = QueryPlayers.OrderByDesc(
+		|player| [player.Team.TeamEliminatedTick ?? undefeated, player.EliminatedTick ?? undefeated]
+	)
+
+	let winner = ranking[0]
+	let winningTeam = winner.Team
+	let rank = 1
+	for player in ranking {
+	    player.VictoryRank = rank
+	    player.IsWinner = player.Team == winningTeam
+        rank += 1
+	}
+
+	Winner = winner
+
+	return winner, ranking
+}

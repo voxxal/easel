@@ -1,0 +1,27 @@
+PushCategory(GROUP_1 | GROUP_2 | GROUP_3 | GROUP_4 | GROUP_5 | GROUP_6 | GROUP_7 | GROUP_8 | GROUP_9 | GROUP_10 | GROUP_11 | GROUP_12 | GROUP_13 | GROUP_14 | GROUP_15 | GROUP_16 | GROUP_17 | GROUP_18 | GROUP_19 | GROUP_20 | GROUP_21 | GROUP_22 | GROUP_23 | GROUP_24 | GROUP_25 | GROUP_26 | GROUP_27 | GROUP_28 | GROUP_29 | GROUP_30 | GROUP_31 | GROUP_32 | ALL)
+Declare(1)
+Read(0)
+Declare(2)
+PushIndex(0)
+Declare(3)
+Loop { continue_at: 13, break_at: 18 }
+Read(2)
+Read(3)
+Index
+With
+IsUndefined
+JumpIf(11)
+Declare(4)
+ReadShared(1)
+Read(4)
+BitwiseAnd
+WriteShared(1)
+Undeclare(4, 1)
+Read(3)
+Increment
+Write(3)
+JumpBack(15)
+EndLoop
+Undeclare(2, 2)
+Read(1)
+ReturnValue

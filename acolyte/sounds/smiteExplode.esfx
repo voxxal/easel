@@ -1,0 +1,7 @@
+Play(duration=1s) {
+	Oscillator(wave=$triangle, freq=[7000,6000], harmonics=[1, 1.5, 1.75, 2])
+	HighPass(freq=6500)
+	LowPass(freq=[8000,0])
+	Envelope(attack=0.01s, decay=0.07s, decayTo=0.5)
+	Gain(volume=0.15)
+}

@@ -1,0 +1,5 @@
+Play(duration=0.25s) {
+	BrownNoise
+	LowPass(freq=600)
+	Envelope(attack=0.05s)
+}

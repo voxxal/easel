@@ -1,0 +1,182 @@
+Read(2)
+LoadAccumulator(AccumulatorId(7))
+Declare(4)
+Read(4)
+PushNum(0.0)
+Equal
+JumpIfNot(2)
+Return0
+PushScript(ScriptId(171))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 132 }
+Loop { continue_at: 2, break_at: 130 }
+Jump(4)
+ClosureRead(0)
+AwaitPreference(PreferenceId(0))
+Pop
+BeginClosure { num_params: 0, return_at: 112 }
+ClearSubfragmentRangeCaptured { from: 0, length: 2, captured: 2 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(0), InitialValueId(0))
+JumpIfNot(27)
+PushSymbol($accumulation/rating.easel/toggleUnranked)
+PushUndefined
+PressIntent
+PushString("Unranked Mode")
+PushAfter(20)
+ClosureRead(1)
+WriteBack(17)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("fas fa-gamepad")
+Read(0)
+NoSubfragmentSlot
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+PushAfter(4)
+ClosureRead(2)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+Jump(81)
+PushSymbol($accumulation/rating.easel/toggleUnranked)
+PushUndefined
+PressIntent
+PushString("Ranked Mode")
+PushAfter(20)
+ClosureRead(1)
+WriteBack(17)
+BeginClosure { num_params: 1, return_at: 63 }
+ClearSubfragmentRangeLocal { from: 0, length: 5, local: 0 }
+PushString("fas fa-trophy")
+Read(0)
+SubfragmentSlot(0)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureReadShared(0)
+PushScript(ScriptId(159))
+Call(1)
+FieldGet($LeagueName)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(5)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(3)
+PushString(" ")
+StringConcatN(1)
+Text
+PushBool(false)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 9 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureReadShared(0)
+PushNum(0.0)
+FormatWithDecimals
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(5)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+ClosureRead(3)
+ClosureAdd
+PushAfter(4)
+ClosureRead(2)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+ClosureRead(3)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(126)
+EndLoop
+EndClosure
+Read(2)
+ClosureAdd
+Read(1)
+ClosureAdd
+Read(3)
+ClosureAdd
+NoShare(4)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(171))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 22 }
+Loop { continue_at: 1, break_at: 20 }
+ClosureRead(0)
+PushSymbol($accumulation/rating.easel/toggleUnranked)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 7 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(0), InitialValueId(0))
+BooleanNot
+ClosureRead(0)
+SavePreference(PreferenceId(0))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(17)
+EndLoop
+EndClosure
+Read(2)
+ClosureAdd
+Hook(0)

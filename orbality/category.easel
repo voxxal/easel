@@ -1,0 +1,6 @@
+pub tangible category C:Collision
+
+pub category C:Fighter
+pub category C:Projectile
+pub category C:Map
+pub category C:Ghost

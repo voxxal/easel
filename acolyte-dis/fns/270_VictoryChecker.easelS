@@ -1,0 +1,72 @@
+PushScript(ScriptId(270))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 65 }
+Loop { continue_at: 1, break_at: 63 }
+AwaitPlayerEliminated
+BeginClosure { num_params: 1, return_at: 54 }
+GameCommenced
+With
+JumpIfNot(4)
+Pop
+GameConcluded
+BooleanNot
+JumpIfNot(31)
+PushBool(false)
+PushAfter(1)
+PushUndefinedN(2)
+BeginIntrinsic(4)
+QueryPlayers
+EndIntrinsic1
+Declare(1)
+PushIndex(0)
+Declare(2)
+Loop { continue_at: 15, break_at: 20 }
+Read(1)
+Read(2)
+Index
+With
+IsUndefined
+JumpIf(13)
+Declare(3)
+Read(3)
+FieldGetOrInit($OutlastScore, InitialValueId(2))
+PushNum(1.0)
+Add
+Read(3)
+FieldSet($OutlastScore)
+Undeclare(3, 1)
+Read(2)
+Increment
+Write(2)
+JumpBack(17)
+EndLoop
+Undeclare(1, 2)
+PushScript(ScriptId(271))
+Call(0)
+JumpIfNot(13)
+PushScript(ScriptId(272))
+Call(0)
+DeclareInsert(1)
+Declare(2)
+Read(2)
+Read(1)
+ClosureRead(0)
+CallLambda(2)
+Pop
+PushIntrinsic(BreakHook)
+ReturnValue
+Undeclare(1, 2)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(60)
+EndLoop
+EndClosure
+Read(1)
+ClosureAdd
+Hook(0)

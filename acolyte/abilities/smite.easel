@@ -1,0 +1,121 @@
+use glyph=@eclipseFlare.svg, color=#ddddcc
+use damage=10, lifesteal=0.3, cooldown=5s, aoe=2.5, explodeDelay=1s, damageBonus=0.25, buffDuration=5s, range=5.0
+
+const StarPolygon = Polygon(points=[
+    @(aoe, 0),
+    @(0.1*aoe, 0.1*aoe),
+    @(0, aoe),
+    @(-0.1*aoe, 0.1*aoe),
+    @(-aoe, 0),
+    @(-0.1*aoe, -0.1*aoe),
+    @(0, -aoe),
+    @(0.1*aoe, -0.1*aoe)
+])
+
+pub symbol WantSmite
+
+pub fn SmiteDescription([ui]) {
+    H1 { "Smite" }
+
+    P {
+        "Call upon heavenly powers to strike the area in front of you after a short delay, weakening all targets. "
+    }
+
+    SlotEffect("Shattering Divinity", icon="fas fa-shield-halved") {
+        "Enemies are " + (damageBonus * 100) + "% more susceptible to all forms of damage for 5 seconds."
+    }
+
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn SmiteOption([ui]) {
+	SlotOption(WantSmite) {
+        SmiteDescription
+	}
+}
+
+pub fn ability.SmiteAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
+		if Cooldown == 0 && Distance(unit.Pos, target) <= aoe {
+			BotUseAbility
+		}
+	}
+
+    AbilityCommandBtn {
+        SmiteDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
+
+		Spawn projectile {
+			use parent=unit, body=projectile
+			use lifetime=explodeDelay, dissipate=30
+			use luminous=1, layer=Layer:Strand
+            
+    		Body(pos=parent.Pos + Direction(parent.Heading) * range, heading=parent.Heading, velocity=@(0, 0))
+			Movement:MoveWith(unit)
+            ExpireAfterLifetime
+			DespawnBefore(unit)
+
+			Strand<smite>(unit, projectile, color=color.Fade(0.95), radius=0.2, dissipate=5, bloom=2, glare=1, shadow=0.25)
+            PolygonSprite(shape=Circle(aoe), color=color.Fade(0.95), crater=0.85, layer=Layer:Indicator)
+
+    		Sing(@smite.esfx)
+            await Tween(duration=explodeDelay, initial=1.0, final=0.0) factor {
+                PolygonSprite(shape=Circle(factor*aoe), color=color.Fade(0.95), crater=0.85, layer=Layer:Indicator)
+            }
+        
+        
+			once BeforeDespawn {
+                Spawn star {
+                    use body=star, lifetime=15
+                    
+                    Body(pos=projectile.Pos)
+                    ExpireAfterLifetime
+
+                    await Tween(duration=lifetime, initial=1.0, final=0.0) factor {
+                        PolygonSprite(StarPolygon, feather=1, bloom=1, luminous=1, opacity=factor)
+                    }
+                }
+        		Spark(radius=aoe, bloom=3, bloomAlpha=0.5, feather=1, glare=0.3, shine=0.2)
+				Hear(@smiteExplode.esfx)
+
+                for that in QueryWithinRadius(aoe, filter=Category:Aoe) {
+                    if that.Team != owner.Team {
+                        Attack(that)
+
+    					that.ReplaceEffect<smite>(cleansable=true) {
+    						use body = that
+    
+    						ExpireAfterLifetime(lifetime=buffDuration)
+    						Vulnerability(1 + damageBonus)
+    
+							with that.Vanished {
+                                if that.Vanished {
+                                    delete PolygonSprite<shatter>
+                                } else {
+                                    PolygonSprite<shatter>(shape=Circle(0), bloom=3, bloomAlpha=0.8, layer=Layer:Bloom)
+                                }
+							}
+    					}
+                        
+                        that.Tombstone victim {
+                            PlayerNameDisplay(owner)
+                            " smited "
+                            PlayerNameDisplay(victim)
+                        }
+                    }
+                }
+			}
+		}
+	}
+}

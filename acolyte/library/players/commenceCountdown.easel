@@ -1,0 +1,65 @@
+pub prop World.CommencingAtTick
+
+pub signal World.BeginCommenceCountdown
+
+pub fn this.CommenceCountdownWhenEnoughPlayers(startupDuration=0s) |numPlayers| {
+    behavior {
+        loop {
+            if GameLocked { break }
+
+            await BeginCommenceCountdown
+            const countdown = delve(CountPlayers)
+            if !(countdown >= 0) { continue } // check countdown is a number before continuing
+
+            let remaining = countdown
+            let countdownComplete = false
+            loop {
+                if remaining <= 0 {
+                    countdownComplete = true
+                    break
+                }
+
+                CountdownDialog(remaining + startupDuration)
+                await Tick(1s)
+                remaining -= 1s
+
+                const countdown = delve(CountPlayers)
+                if countdown >= 0 {
+                    remaining = Min(countdown, remaining)
+                } else {
+                    break // Stop the countdown
+                }
+            }
+            delete CountdownDialog
+
+            if countdownComplete { break }
+        }
+
+        LockGame
+
+        CommencingAtTick = Tick + startupDuration
+        await Tick(startupDuration)
+
+        CommenceGame
+    }
+}
+
+fn World.CountdownDialog(remaining) {
+	if remaining > 0 {
+		Transmission<countdown>(duration=remaining) {
+			P(fontSize=0.9) {
+				"Waiting "
+				Span(bold=true) {
+					%(Ceiling(remaining / TicksPerSecond))
+					" seconds"
+				}
+				" for more players to join..."
+			}
+		}
+	} else {
+		delete Transmission<countdown>
+	}
+}
+delete fn World.CountdownDialog() {
+	delete Transmission<countdown>
+}

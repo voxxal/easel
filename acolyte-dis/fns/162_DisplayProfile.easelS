@@ -1,0 +1,185 @@
+Read(0)
+LoadAccumulator(AccumulatorId(7))
+PushScript(ScriptId(159))
+Call(1)
+Declare(2)
+Read(2)
+FieldGet($LeagueColor)
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 101 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushIntrinsic(AlignCenter)
+PushNum(2.0)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 83 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+ClosureRead(0)
+FieldGet($LeagueColor)
+PushAfter(5)
+PushNum(0.75)
+PushAfter(13)
+PushNum(2.5)
+WriteBack(13)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+FieldGet($LeagueGlyph)
+PushNum(10.0)
+PushAfter(3)
+PushNum(0.3)
+PushAfter(2)
+Read(0)
+NoSubfragmentSlot
+PushAfter(3)
+BeginIntrinsic(12)
+Image
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(6)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(PipMedal)
+EndButton
+EndIntrinsic0
+PushNum(4.0)
+BeginClosure { num_params: 1, return_at: 35 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($LeagueName)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(5)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+ClosureRead(1)
+LoadAccumulator(AccumulatorId(7))
+PushNum(0.0)
+FormatWithDecimals
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+PushAfter(6)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+PushAfter(13)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+Read(2)
+ClosureAdd
+Read(0)
+ClosureAdd
+PushAfter(11)
+Read(1)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(ShinyPanel)
+EndPanel
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 54 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushString("Games Played")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+LoadAccumulator(AccumulatorId(0))
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(1)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+PushScript(ScriptId(163))
+Call(3)
+PushString("Outlasts")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+LoadAccumulator(AccumulatorId(2))
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(1)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+PushScript(ScriptId(163))
+Call(3)
+PushString("Wins")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+LoadAccumulator(AccumulatorId(4))
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(1)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(163))
+Call(3)
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(19)
+Read(1)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0

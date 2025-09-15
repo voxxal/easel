@@ -1,0 +1,30 @@
+pub prop body.IsInLava
+pub field this.LavaLifestealer
+pub field this.IsHurtByLava
+
+pub fn this.LavaBehavior(damageInterval=20, damagePerSecond=DefaultLavaDamagePerSecond, lifesteal=DefaultLavaLifesteal) {
+    this.IsHurtByLava = true
+
+    let damage = (damagePerSecond / TicksPerSecond) * damageInterval
+    on Tick(damageInterval) {
+        let isInLava = !this.Pos.QueryAnyOverlapping(filter=Category:Turf)
+
+        // Apply lava damage
+        if isInLava {
+            let damage = damage * this.LavaDamageModifier
+            if damage > 0.0 {
+                const loss = this.TakeDamage(damage)
+                if this.Category.Overlaps(Category:Unit) {
+                    this.Hurt
+                }
+
+                const lifestealer = this.LavaLifestealer
+                if lifestealer && lifestealer != this {
+                    lifestealer.Heal(loss * lifesteal)
+                }
+            }
+        }
+
+        this.IsInLava = isInLava
+    }
+}

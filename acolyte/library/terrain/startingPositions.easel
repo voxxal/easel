@@ -1,0 +1,14 @@
+pub collect World.StartingTurf = null
+
+field turf.NextPlayerIndex
+
+pub fn NextStartingPosition(radiusFraction=0.4, [maxPlayers]) -> pos {
+	use turf = StartingTurf
+	if !turf { return @(0,0) }
+
+	let index = NextPlayerIndex ?? 0
+	let pos = turf.LocatePerimeterPoint(edgeFraction=(index / maxPlayers) % 1.0, radiusFraction=)
+	NextPlayerIndex = index + 1
+
+	return pos
+}

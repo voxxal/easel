@@ -1,0 +1,100 @@
+Read(0)
+BeginClosure { num_params: 1, return_at: 86 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushNum(0.5)
+PushAfter(11)
+BeginClosure { num_params: 1, return_at: 71 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushScript(ScriptId(226))
+PushIndex(1)
+DiscriminatorConcatN(2)
+ClosureRead(0)
+BeginClosure { num_params: 0, return_at: 59 }
+Loop { continue_at: 2, break_at: 57 }
+Jump(17)
+BeginClosure { num_params: 0, return_at: 5 }
+ClosureRead(0)
+AwaitTouchscreenMode
+ReturnValue
+EndClosure
+ClosureRead(0)
+ClosureAdd
+BeginClosure { num_params: 0, return_at: 4 }
+ClosureRead(0)
+AwaitBuff(BuffId(18))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+BeginRace { num_forks: 2 }
+WinRace
+Pop
+BeginClosure { num_params: 0, return_at: 30 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 1 }
+ClosureRead(0)
+TouchscreenMode
+BooleanNot
+With
+JumpIfNot(6)
+Pop
+ClosureRead(0)
+Buff(BuffId(18))
+EndBuff(BuffId(18))
+BooleanNot
+JumpIfNot(17)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Click a button below to change your abilities")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+ClosureRead(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(53)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(7)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(8)
+PushScript(ScriptId(226))
+PushIndex(2)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(OverlayBottom)
+EndSection
+EndIntrinsic0

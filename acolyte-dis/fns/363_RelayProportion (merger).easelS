@@ -1,0 +1,8 @@
+Read(0)
+FindMin
+With
+IsNullish
+JumpIfNot(3)
+Pop
+PushNum(1.0)
+ReturnValue

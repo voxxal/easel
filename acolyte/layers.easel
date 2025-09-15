@@ -1,0 +1,16 @@
+pub const Layer:Indicator=10
+pub const Layer:Spark=3
+pub const Layer:Projectile=2
+pub const Layer:Shield=1
+pub const Layer:Default=0
+pub const Layer:Unit=-1
+pub const Layer:Charger=-2
+pub const Layer:Label=-3
+pub const Layer:Buff=-4 // Buff underneath unit to avoid color washout
+pub const Layer:Saber=-5
+pub const Layer:Obstacle=-6
+pub const Layer:Strand=-8
+pub const Layer:Aim=-11
+pub const Layer:Bloom=-12 // Bloom underneath everything to avoid color washout
+pub const Layer:Zone=-13
+pub const Layer:Turf=-14

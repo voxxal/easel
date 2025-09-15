@@ -1,0 +1,7 @@
+Play(duration=5s, cutoff=0.25s) {
+	BrownNoise
+	BandPass(freq=240, q=0.7)
+	LowShelf(freq=80, db=12)
+	Envelope(attack=0.5s)
+	Gain(volume=0.25)
+}

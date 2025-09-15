@@ -1,0 +1,8 @@
+JumpIfVarDefined { var: 0, jump: 3 }
+Cosmos
+Write(0)
+Read(0)
+PushSymbol($library/players/commenceCountdown.easel/countdown)
+BeginIntrinsic(2)
+DeleteTransmission(Main)
+EndIntrinsic0

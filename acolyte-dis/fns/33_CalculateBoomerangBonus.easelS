@@ -1,0 +1,15 @@
+Read(0)
+PushNum(1.0)
+AtMost
+JumpIfNot(4)
+PushNum(1.0)
+ReturnValue
+Jump(9)
+PushNum(1.0)
+PushNum(0.5)
+Sub
+Read(0)
+PushNum(1.0)
+Sub
+Pow
+ReturnValue

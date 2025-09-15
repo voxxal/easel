@@ -1,0 +1,9 @@
+Play(duration=0.5s) {
+	Vibrato(freqModulation=100) {
+		Oscillator(freq=200)
+	}
+	Oscillator(freq=100)
+	LowPass(freq=100)
+	Envelope(attack=0.01s)
+	Gain(volume=0.5)
+}

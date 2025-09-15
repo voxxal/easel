@@ -1,0 +1,24 @@
+pub field World.Team:Cyan
+pub field World.Team:Purple
+pub field World.Team:Neutral
+pub game fn World.Main(maxHumanPlayers=4, matchId=0) {
+    Team:Cyan = Spawn
+    Team:Purple = Spawn
+    Team:Neutral = Spawn
+    if matchId == 0 {
+        Spawn map {
+            Hub
+        }
+    }
+    
+    SpawnEachPlayer owner {
+        if owner.IsHuman {
+            owner.Team = Team:Purple
+            Subspawn unit {
+                Astari
+            }
+        } else {
+            owner.Team = Team:Neutral
+        }
+    }
+}

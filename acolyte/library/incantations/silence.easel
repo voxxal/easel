@@ -1,0 +1,9 @@
+pub signal unit.Silence(silence)
+
+pub fn ability.Silenceable([unit]) {
+	on unit.Silence silence {
+		if Cooldown < silence {
+			Cooldown = silence
+		}
+	}
+}

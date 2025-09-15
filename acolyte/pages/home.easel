@@ -1,0 +1,121 @@
+pub page fn owner.HomePage {
+	Toolbar {
+		FlatButton(SettingsPage, tooltip="Settings") {
+            Icon("fas fa-cog")
+		}
+		FlatButton(HighestRatedLeaderboard) {
+			Icon("fas fa-trophy")
+			" Leaderboard"
+		}
+		FlatButton(RemixIntent, tooltip="Modding") {
+            Icon("fas fa-wrench")
+        }
+		FlatButton(AboutPage, tooltip="About") {
+            Icon("fas fa-info-circle")
+        }
+	}
+
+	ToolbarRight {
+        UnrankedTool(backgroundColor=#fff1)
+        if IsUserLoggedIn {
+            FlatButton(ProfilePage(owner.UserId), backgroundColor=#fff2) { %(PlayerName) }
+        } else {
+            FlatButton(LoginIntent, backgroundColor=Color:Primary) { "Login" }
+        }
+	}
+
+	BottomLeftContent {
+	    HStack {
+	        FlatButton("https://iogames.space", fontSize=0.8, backgroundColor=#fff1, bold=false) {
+                "More .io games"
+	        }
+	    }
+	}
+
+	BottomRightContent {
+	    HStack(gap=0.5) {
+	        FlatButton(RebornPage, fontSize=0.8, backgroundColor=#fff1, bold=false) {
+                "Acolyte Fight has been reborn!"
+	        }
+	        FlatButton("https://discord.gg/sZvgpZk", fontSize=0.8, backgroundColor=#fff1, bold=false) {
+                "Discord "
+                Icon("fa-brands fa-discord")
+	        }
+	    }
+	}
+
+	ContentScreen {
+		VStack(expand=8, vAlign=VAlign:Middle, zStack=true) {
+		    ZUnderlay(backgroundColor=#000) {
+		        Video(@homeScreenVideo.mp4, expand=true, stretch=true, cover=true, noControls=true)
+		    }
+			Standout(animate=Animate:Throb, margin=0) {
+				FlyInWords(ProjectName)
+			}
+			H2(animate=Animate:FlyFromBottom, margin=0) {
+				"Skillshot Arena"
+			}
+		}
+
+		Blank(expand=0.5)
+
+		VStack(animate=Animate:FlyFromBottom, width=25) {
+			VStack(gap=0.3) {
+				P(fontSize=0.8) { "Choose Your Name" }
+				PlayerNameEditor
+			}
+
+            RaisedButton(Main, backgroundColor=Color:Primary, width=25, fontSize=1.5) { "Play" }
+
+            RaisedButton(ScrollToBookmarkIntent<belowFold>, backgroundColor=Color:Secondary, width=25) { "Choose Your Abilities" }
+
+            HStack(align=Align:Justify) {
+                Button(SpectateIntent, backgroundColor=#fff1, width=12) { "Spectate" }
+                Button(Main(maxHumanPlayers=1), backgroundColor=#fff1, width=12) { "Singleplayer" }
+            }
+
+            P(fontSize=0.9) {
+                "Invite friends to "
+                Link(PartyIntent, bold=true) { "party!" }
+            }
+		}
+
+		Blank(expand=true)
+	}
+
+	Content {
+		Bookmark<belowFold>
+
+        H1 {
+            with PlayerName { %(PlayerName) }
+            %(", your destiny awaits!")
+        }
+
+		P {
+			"Our Warlocks have fallen! Their valiant sacrifice shall forever be remembered. "
+			"Young Acolyte, fate has hastened the hour of your destiny, as your vulnerable homeland now turns to you to as one of the last remaining keepers of magic. "
+			"With no mentors to guide you, the path to mastery lies in your hands. "
+		}
+
+		P {
+			"Venture into the enigmatic mirror dimension within your school of magic, challenging your fellow Acolytes to battle. "
+			"Together you will hone your skills, forging unbreakable bonds while rediscovering the lost arcane wisdom that once made the Warlocks so formidable. "
+			"Through perseverance and unity, you will rise as the new generation of Warlocks, standing resolute against the ever-encroaching darkness that threatens your homeland. "
+		}
+
+		P {
+			"Young Acolyte, you have much to learn, and the shadow of our adversaries grows ever closer. Embrace your destiny! "
+		}
+
+		H1 { "Choose Your Abilities" }
+		SlotEditors
+	}
+}
+
+fn NavButton(intent, icon, [ui]) |use ui| {
+    FlatButton(intent, align=Align:Left) {
+        Icon(icon, width=1)
+        Blank(width=1)
+        delve()
+    }
+}

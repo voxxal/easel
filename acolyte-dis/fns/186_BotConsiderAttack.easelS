@@ -1,0 +1,14 @@
+Read(0)
+FieldGet($bot.easel/HasAction)
+With
+JumpIf(4)
+Pop
+GameCommenced
+BooleanNot
+JumpIfNot(2)
+Return0
+Read(0)
+Read(1)
+Read(2)
+PushScript(ScriptId(9))
+Call(3)

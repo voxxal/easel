@@ -1,0 +1,35 @@
+JumpIfVarDefined { var: 2, jump: 3 }
+PushBool(false)
+Write(2)
+Read(0)
+Read(1)
+FieldGetK($library/tricks/effect.easel/PreviousEffect)
+Despawn
+Pop
+Read(0)
+BeginClosure { num_params: 1, return_at: 16 }
+ClosureRead(0)
+JumpIfNot(5)
+Read(0)
+ClosureRead(1)
+PushScript(ScriptId(295))
+Call(2)
+Read(0)
+ClosureRead(1)
+ClosureRead(2)
+FieldSetK($library/tricks/effect.easel/PreviousEffect)
+Read(0)
+ClosureRead(3)
+CallLambda(1)
+Pop
+EndClosure
+Read(2)
+ClosureAdd
+Read(0)
+ClosureAdd
+Read(1)
+ClosureAdd
+Read(3)
+ClosureAdd
+Subspawn
+ReturnValue

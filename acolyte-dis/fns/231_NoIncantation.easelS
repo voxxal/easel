@@ -1,0 +1,9 @@
+Read(1)
+Category
+PushCategory(GROUP_11)
+Overlaps
+BooleanNot
+JumpIfNot(4)
+Read(3)
+CallLambda(0)
+Pop

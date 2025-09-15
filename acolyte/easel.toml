@@ -1,0 +1,12 @@
+[project]
+name = "Bewildered Quaint Florist"
+
+[authors]
+"u1z.DHAVSGw" = "raysplaceinspace"
+"u179z.Fs9teNs" = "Acolyte7513"
+
+[remixOf]
+"g1z.EWffkC4" = "Acolyte Fight!"
+
+[engine]
+edition = 11

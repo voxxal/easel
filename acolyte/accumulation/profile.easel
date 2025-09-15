@@ -1,0 +1,246 @@
+pub field pastEpisode.PastReplayId // String
+pub field pastEpisode.PastRatingDelta // Number or Null if unranked
+
+pub field pastEpisode.PastPlayers // Array of pastPlayer
+pub field pastPlayer.PastPlayerName // String
+pub field pastPlayer.PastPlayerUserId // String
+pub field pastPlayer.PastPlayerIsWinner // Boolean
+
+pub field pastEpisode.PastEpisodeTimestamp // Timestamp or Null
+pub field pastEpisode.PastLossDelta // Number or Null
+pub field pastEpisode.PastLossDeltaMirror // Number or Null
+pub field pastEpisode.PastLossOpponentName // String or Null
+pub field pastEpisode.PastLossWinProbability // Number or Null
+pub field pastEpisode.PastGainDelta // Number or Null
+pub field pastEpisode.PastGainDeltaMirror // Number or Null
+pub field pastEpisode.PastGainOpponentName // String or Null
+pub field pastEpisode.PastGainWinProbability // Number or Null
+pub field pastEpisode.PastActivityDelta // Number or Null
+pub field pastEpisode.PastActivityBonusRemaining // Number or Null
+
+pub page fn owner.ProfilePage(userId) {
+    // Loading placeholders
+    Content<profile> {
+        P { "Loading..." }
+    }
+
+    Content<history> { }
+
+    // Fetch content and replace placeholders
+    once FetchUserAccumulators(userId) player {
+        Content<profile> {
+            if player {
+                H1 { PlayerNameDisplay(player) }
+
+                if userId == owner.UserId {
+                    DisplayManageAccount
+
+                    RankedModeSwitcher
+                    Blank(height=5)
+                }
+
+                DisplayProfile(player)
+            }
+        }
+    }
+
+    once FetchUserEpisodeHistory(userId) pastEpisodes {
+        if !pastEpisodes { return }
+
+        Content<history> {
+            H1 { "Recent Games" }
+
+            if pastEpisodes.Length == 0 {
+                P { "No recent games" }
+                return
+            }
+
+            for pastEpisode in pastEpisodes %%{
+                DisplayPastEpisode(pastEpisode)
+            }
+        }
+    }
+}
+
+fn DisplayManageAccount([ui]) {
+    HStack {
+        RaisedButton(ManageAccountIntent, backgroundColor=Color:Primary) { "Manage Account" }
+        RaisedButton(LogoutIntent, backgroundColor=Color:Secondary) { "Logout" }
+    }
+
+    Blank(height=3)
+}
+
+fn DisplayProfile(owner, [ui]) {
+    use league = FindLeague(Rating)
+
+    ShinyPanel(backgroundColor=LeagueColor) {
+        HStack(align=Align:Center, gap=2) {
+            PipMedal(backgroundColor=LeagueColor, shadow=0.75, borderRounding=2.5) {
+                Image(LeagueGlyph, height=10, shadow=0.3)
+            }
+
+            Span(fontSize=4) {
+                Span(bold=true) {
+                    %(LeagueName)
+                }
+                " "
+                %(Rating.FormatWithDecimals(0))
+            }
+        }
+    }
+
+    HStack {
+        DigitCard(heading="Games Played") { %(NumLifetimeGames) }
+        DigitCard(heading="Outlasts") { %(NumLifetimeOutlasts) }
+        DigitCard(heading="Wins") { %(NumLifetimeWins) }
+    }
+
+}
+
+fn DigitCard(heading=null, [ui]) |use ui| {
+	Panel(align=Align:Center, gap=0, expand=1) {
+		%(heading)
+		P(fontSize=4, bold=true) {
+			delve()
+		}
+	}
+}
+
+fn DisplayPastEpisode(pastEpisode, [ui]) {
+    if !pastEpisode.PastPlayers.IsArray { return }
+
+    let showDrawer = PastGainDelta.IsNum || PastLossDelta.IsNum || PastActivityDelta.IsNum
+    DrawerBoundary {
+        Panel(padding=0, gap=0) {
+            HStack(hPadding=1, vPadding=0.4, minHeight=2.5, gap=0.4) {
+                P(fontSize=1.1) {
+                    let isFirst = true
+                    for use pastPlayer in PastPlayers %%{
+                        if isFirst { isFirst = false }
+                        else { ", " }
+
+                        Link(ProfilePage(PastPlayerUserId), bold=PastPlayerIsWinner) { %(PastPlayerName) }
+                    }
+                }
+
+                P {
+                    Link(ReplayIntent(PastReplayId, showOnlyIfExists=true), tooltip="Watch Replay") {
+                        Icon("fa-solid fa-video")
+                    }
+                }
+
+                if PastEpisodeTimestamp {
+                    P(reveal=true, color=#ccc) {
+                        " • "
+                        %(FormatEpisodeAge(GameStartTimestamp - PastEpisodeTimestamp))
+                    }
+                }
+
+                Blank(expand=true)
+
+                if showDrawer {
+                    P(reveal=true) { DrawerToggle }
+                }
+
+                if PastRatingDelta {
+                    P(
+                        color=PastRatingDelta < 0 ? Color:Negative : Color:Positive, bold=true, fontSize=1.5,
+                        tooltip=PastRatingDelta >= 0 ? "+" + PastRatingDelta : PastRatingDelta) {
+
+                        %(FormatRatingDelta(PastRatingDelta))
+                    }
+                }
+            }
+
+            if showDrawer {
+                Drawer {
+                    if PastGainDelta {
+                        HStack(hPadding=1, vPadding=0.4, backgroundColor=#0002) {
+                            VStack(align=Align:Left, gap=0) {
+                                P(fontSize=1.1) {
+                                    "Won against "
+                                    Span(bold=true) { %(PastGainOpponentName) }
+                                }
+                                P(color=#aaa) {
+                                    "Would have lost " + FormatRatingDelta(PastGainDeltaMirror)
+                                    if PastGainWinProbability {
+                                        " (win probability " + (PastGainWinProbability * 100).Round + "%)"
+                                    }
+                                }
+                            }
+                            Blank(expand=true)
+                            P(color=Color:Positive, bold=true, fontSize=1.1) {
+                                %(FormatRatingDelta(PastGainDelta))
+                            }
+                        }
+                    }
+
+                    if PastLossDelta {
+                        HStack(hPadding=1, vPadding=0.4, backgroundColor=#0002) {
+                            VStack(align=Align:Left, gap=0) {
+                                P(fontSize=1.1) {
+                                    "Lost against "
+                                    Span(bold=true) { %(PastLossOpponentName) }
+                                }
+                                P(color=#ccc) {
+                                    "Would have gained " + FormatRatingDelta(PastLossDeltaMirror)
+                                    if PastLossWinProbability {
+                                        " (win probability " + (PastLossWinProbability * 100).Round + "%)"
+                                    }
+                                }
+                            }
+                            Blank(expand=true)
+                            P(color=Color:Negative, bold=true, fontSize=1.1) {
+                                %(FormatRatingDelta(PastLossDelta))
+                            }
+                        }
+                    }
+
+                    if PastActivityDelta {
+                        HStack(hPadding=1, vPadding=0.4, backgroundColor=#0002) {
+                            VStack(align=Align:Left, gap=0) {
+                                P(fontSize=1.1) { "Activity bonus" }
+                                P(color=#ccc) {
+                                    if PastActivityBonusRemaining {
+                                        "+" + PastActivityBonusRemaining + " points still available"
+                                    }
+                                }
+                            }
+                            Blank(expand=true)
+                            P(color=Color:Positive, bold=true, fontSize=1.1) {
+                                %(FormatRatingDelta(PastActivityDelta))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn CollectPastPlayers(ranking) -> pastPlayers {
+    let pastPlayers = []
+    for player in ranking {
+        if player.IsHuman && player.UserId {
+            pastPlayers.Push({
+                PastPlayerName = player.PlayerName,
+                PastPlayerUserId = player.UserId,
+                PastPlayerIsWinner = player.IsWinner,
+            })
+        }
+    }
+    return pastPlayers
+}
+
+fn FormatEpisodeAge(age) -> string {
+    if age > 1d {
+        return (age / 1d).Round + "d"
+    } else if age > 1h {
+        return (age / 1h).Round + "h"
+    } else if age > 1m {
+        return (age / 1m).Round + "m"
+    } else {
+        return (age / 1s).Round + "s"
+    }
+}

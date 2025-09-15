@@ -1,0 +1,40 @@
+Read(0)
+PushColor(Color { r: F8(42), g: F8(27), b: F8(44), a: F8(255) })
+PushUndefinedN(3)
+BeginIntrinsic(5)
+SolidBackground
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 32 }
+Read(0)
+PushColor(Color { r: F8(65), g: F8(50), b: F8(67), a: F8(255) })
+PushAfter(2)
+PushUndefinedN(2)
+PushScript(ScriptId(284))
+Call(6)
+Read(0)
+Read(0)
+PushAfter(1)
+BuffInsertCosmos(BuffId(19))
+Read(0)
+PushScript(ScriptId(285))
+Call(1)
+Read(0)
+BeginClosure { num_params: 1, return_at: 11 }
+PushNum(32.0)
+Read(0)
+Mul
+PushUndefined
+BeginIntrinsic(2)
+Circle
+EndIntrinsic1
+ClosureRead(0)
+PropSet(PropId(11))
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(4)
+PushScript(ScriptId(282))
+Call(6)
+EndClosure
+Spawn
+Pop

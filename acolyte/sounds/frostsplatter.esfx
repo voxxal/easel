@@ -1,0 +1,5 @@
+Play(duration=0.6s, cutoff=0.5s) {
+	BrownNoise
+	BandPass(freq=125, q=1)
+	Envelope(attack=0.07s)
+}

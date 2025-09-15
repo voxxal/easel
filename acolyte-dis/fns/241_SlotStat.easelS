@@ -1,0 +1,36 @@
+PushNum(0.9)
+PushColor(Color { r: F8(238), g: F8(238), b: F8(238), a: F8(255) })
+PushAfter(3)
+Read(0)
+BeginClosure { num_params: 1, return_at: 20 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+ClosureRead(0)
+CallLambda(1)
+Pop
+Read(0)
+SubfragmentSlot(1)
+PushString(" ")
+StringConcatN(1)
+Text
+ClosureRead(1)
+Read(0)
+SubfragmentSlot(2)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+Read(3)
+ClosureAdd
+Read(1)
+ClosureAdd
+PushAfter(9)
+Read(2)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0

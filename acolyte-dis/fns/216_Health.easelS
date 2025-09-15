@@ -1,0 +1,66 @@
+JumpIfVarDefined { var: 1, jump: 3 }
+PushNum(100.0)
+Write(1)
+Read(1)
+Read(0)
+PropGet(PropId(2))
+With
+IsNullish
+JumpIfNot(3)
+Pop
+Read(1)
+Read(0)
+PropGet(PropId(3))
+With
+IsNullish
+JumpIfNot(3)
+Pop
+Read(1)
+Div
+Mul
+Read(0)
+PropSet(PropId(2))
+Read(1)
+Read(0)
+PropSet(PropId(3))
+PushSymbol($library/health/health.easel/deathLoop)
+Read(0)
+BeginClosure { num_params: 0, return_at: 36 }
+Loop { continue_at: 1, break_at: 34 }
+ClosureRead(0)
+AwaitProp(PropId(2))
+BeginClosure { num_params: 1, return_at: 24 }
+PushUndefined
+Sleep(BeforeReap)
+Loop { continue_at: 1, break_at: 9 }
+ClosureRead(0)
+Buff(BuffId(5))
+EndBuff(BuffId(5))
+JumpIfNot(4)
+ClosureRead(0)
+AwaitBuff(BuffId(5))
+JumpBack(6)
+EndLoop
+ClosureRead(0)
+PropGet(PropId(2))
+PushNum(0.0)
+AtMost
+JumpIfNot(7)
+ClosureRead(0)
+EmitSignal(SignalId(11))
+ClosureRead(0)
+Expire
+PushIntrinsic(BreakHook)
+ReturnValue
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(31)
+EndLoop
+EndClosure
+Read(0)
+ClosureAdd
+Hook(0)

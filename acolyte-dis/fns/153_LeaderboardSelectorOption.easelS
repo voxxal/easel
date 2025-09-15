@@ -1,0 +1,34 @@
+Read(3)
+Read(0)
+Equal
+Declare(4)
+Read(0)
+Read(4)
+JumpIfNot(3)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(51) })
+Jump(2)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+PushAfter(4)
+Read(4)
+JumpIfNot(3)
+PushIntrinsic(ColorAccent)
+Jump(2)
+PushNull
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+Text
+EndClosure
+Read(1)
+ClosureAdd
+PushAfter(17)
+Read(2)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Button)
+EndButton
+EndIntrinsic0

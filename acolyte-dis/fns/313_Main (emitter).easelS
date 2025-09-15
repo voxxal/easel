@@ -1,0 +1,8 @@
+JumpIfVarDefined { var: 0, jump: 3 }
+PushNum(8.0)
+Write(0)
+Read(0)
+Read(0)
+PushBool(true)
+ModeIntent(1)
+ReturnValue

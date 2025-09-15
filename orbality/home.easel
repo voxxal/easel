@@ -1,0 +1,15 @@
+pub page fn owner.HomePage {
+    ContentScreen {
+        Standout {
+            Image(@assets/logo.png, height=32)
+        }
+
+        VStack(gap=0.3) {
+            P(fontSize=0.8) { "Choose Your Name" }
+            PlayerNameEditor(width=25)
+        }
+
+        RaisedButton(Main, backgroundColor=Color:Primary, width=25, fontSize=1.5) { "Play" }
+    }
+}
+

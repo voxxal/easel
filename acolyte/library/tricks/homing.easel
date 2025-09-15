@@ -1,0 +1,23 @@
+/// Adds a behavior to `this` that makes `body` continually turn towards `prey`.
+pub fn this.Homing(prey, turnProportion=1, turnRate=1, [body]) {
+	let previousTarget = null
+	behavior<homing> on BeforePhysics {
+		if !Exists(body) { break }
+
+		let target = prey.Pos
+		if previousTarget && IsEntity(prey) && prey.Untrackable {
+			target = previousTarget
+		}
+		if !target { break }
+		previousTarget = target
+
+		let currentAngle = Angle(body.Velocity)
+		let targetAngle = Angle(target - body.Pos)
+
+		body.Velocity = Length(body.Velocity) * Direction(currentAngle + (AngleDelta(currentAngle, targetAngle) * turnProportion).Clamp(-turnRate, turnRate))
+	}
+}
+
+pub delete fn this.Homing {
+    delete behavior<homing>
+}

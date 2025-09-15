@@ -1,0 +1,8 @@
+/// The purpose of the Ghost is to allow a player to continue to edit their abilities after they are dead.
+pub fn this.Ghost([owner, parent?]) {
+	Category = Category:Ghost
+	Owner = owner
+
+    // Add a body just to avoid any potential crashes if someone looks for it
+    Body(parent.Pos, heading=parent.Heading, immovable=true)
+}

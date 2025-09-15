@@ -1,0 +1,8 @@
+PushNum(80.0)
+PushNum(4.0)
+Mul
+PushNum(60.0)
+Div
+With
+WriteStatic(StaticVariableId(1))
+ReturnValue

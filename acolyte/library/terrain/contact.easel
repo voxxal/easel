@@ -1,0 +1,19 @@
+pub fn this.SpawnContact<Id>(filter=Category:Unit, [body]) |that, use this = contact| {
+    on body.BeforeCollide that {
+        if that.Category.Overlaps(filter) {
+            Subspawn contact {
+                DespawnBefore(that)
+
+                // Despawn when the contact ends
+                on body.AfterCollide ended {
+                    if ended == that {
+                        Expire
+                        break
+                    }
+                }
+
+                delve(that, contact=)
+            }
+        }
+    }
+}

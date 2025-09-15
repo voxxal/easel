@@ -1,0 +1,8 @@
+Play(duration=0.5s) {
+	Vibrato(freqModulation=90) {
+		Oscillator(freq=180)
+	}
+	Oscillator(wave=$sine, freq=90)
+	Envelope(attack=0.01s)
+	Gain(volume=0.5)
+}

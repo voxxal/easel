@@ -1,0 +1,25 @@
+pub prop turf.TurfShape
+
+pub fn turf.Turf(shape=null, ownerColor=0.15, [color, pos=@(0,0), heading=0]) {
+	use body=turf, owner=null
+	use shadow=0.5, bloom=0, bloomAlpha=0
+	use layer=Layer:Turf
+	use category=Category:Turf, collideWith=Category:None
+	use isSensor=true, immovable=true
+
+	Body(pos, heading=)
+
+	with Winner, TurfShape {
+		use shape = TurfShape ?? shape
+
+		PolygonPerimeter
+		PolygonCollider
+		PolygonSprite(owner=Winner)
+	}
+}
+
+pub fn turf.FlashTurfOnVictory {
+	once Winner {
+		Strobe(growth=0.05, shine=0.2, dissipate=10)
+	}
+}

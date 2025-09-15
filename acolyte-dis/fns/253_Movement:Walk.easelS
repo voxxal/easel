@@ -1,0 +1,3 @@
+PushSymbol($library/physics/movement.easel/walk)
+Read(0)
+DeleteHook

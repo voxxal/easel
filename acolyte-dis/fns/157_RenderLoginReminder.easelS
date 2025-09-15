@@ -1,0 +1,45 @@
+PushNum(0.9)
+BeginClosure { num_params: 1, return_at: 34 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+ClosureRead(0)
+IsUserLoggedIn
+BooleanNot
+JumpIfNot(28)
+Read(0)
+SubfragmentSlot(0)
+PushString("Would you like to appear on the leaderboard? Please ")
+StringConcatN(1)
+Text
+LoginIntent
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("login")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(".")
+StringConcatN(1)
+Text
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(14)
+Read(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0

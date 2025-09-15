@@ -1,0 +1,5 @@
+Read(0)
+PropGet(PropId(3))
+PushNum(0.0)
+Greater
+ReturnValue

@@ -1,0 +1,56 @@
+pub preference owner.AutoJoinEnabled = true
+
+pub fn owner.DisplayAutoJoinCountdown(countdownDuration=7s) {
+    Subspawn countdown {
+        once Pressed<cancelAutoJoin> { Expire }
+
+        let birth = Tick
+        TopContent<countdown> {
+            loop {
+                if !AutoJoinEnabled { Expire }
+                let remaining = countdownDuration - (Tick - birth)
+                if remaining > 0 {
+                    P(align=Align:Center) {
+                        "Next game in " + (remaining / 1s).Ceiling + "... "
+                        Link(PressIntent<cancelAutoJoin>) { "(cancel)" }
+                    }
+                } else {
+                    break
+                }
+
+                await Tick(1s)
+            }
+        }
+
+        TopContent<countdown> {
+            P { SubtleLink(Main, autoClick=true) { "Joining next game..." } }
+        }
+
+        await Tick(3s) // If we haven't joined in 3 seconds, give up, the user is probably busy changing their spells
+        Expire
+    }
+}
+
+pub fn this.AutoJoinEnabledTool([owner, ui]) {
+    with AutoJoinEnabled {
+        FlatButton(PressIntent<toggleAutoJoin>, tooltip = (AutoJoinEnabled ? "Auto-joining next match" : "Not auto-joining next match")) {
+            Icon(AutoJoinEnabled ? "fa-solid fa-play" : "fa-solid fa-pause" )
+        }
+    }
+
+    on Pressed<toggleAutoJoin> {
+        AutoJoinEnabled = !AutoJoinEnabled
+    }
+}
+
+pub fn this.AutoJoinEnabledDropdown([owner, ui]) {
+    Dropdown<changeAutoJoin> {
+        Selected(AutoJoinEnabled)
+        DropdownOption(false, "Disabled")
+        DropdownOption(true, "Enabled")
+    }
+
+    on Selected<changeAutoJoin> value {
+        AutoJoinEnabled = value
+    }
+}

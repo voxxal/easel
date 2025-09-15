@@ -1,0 +1,7 @@
+pub fn this.Poison<Id = auto>(that, duration=, interval=20, [damage, lifesteal?, minHealth?, noRelay?, unit?]) {
+	let damage = damage * interval / duration
+	with Tick(interval) {
+		// Must set noHurt and noInterrupt otherwise the enemy will be constantly flashing
+		Attack(that, damage=, noHurt=true, noInterrupt=true)
+	}
+}

@@ -1,0 +1,725 @@
+Read(0)
+FieldGet($PastPlayers)
+IsArray
+BooleanNot
+JumpIfNot(2)
+Return0
+Read(0)
+FieldGet($PastGainDelta)
+IsNum
+With
+JumpIf(11)
+Pop
+Read(0)
+FieldGet($PastLossDelta)
+IsNum
+With
+JumpIf(5)
+Pop
+Read(0)
+FieldGet($PastActivityDelta)
+IsNum
+Declare(2)
+BeginClosure { num_params: 1, return_at: 691 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushNum(0.0)
+PushAfter(9)
+PushNum(0.0)
+WriteBack(6)
+BeginClosure { num_params: 1, return_at: 672 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushNum(1.0)
+PushAfter(7)
+PushNum(0.4)
+PushAfter(6)
+PushNum(2.5)
+WriteBack(6)
+PushNum(0.4)
+WriteBack(10)
+BeginClosure { num_params: 1, return_at: 224 }
+ClearSubfragmentRangeLocal { from: 0, length: 6, local: 0 }
+PushNum(1.1)
+BeginClosure { num_params: 1, return_at: 62 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushBool(true)
+Declare(1)
+ClosureRead(0)
+FieldGet($PastPlayers)
+Declare(2)
+PushIndex(0)
+Declare(3)
+Loop { continue_at: 46, break_at: 51 }
+Read(2)
+Read(3)
+Index
+With
+IsUndefined
+JumpIf(44)
+Declare(4)
+Read(0)
+SubfragmentAppendSlot(0)
+Declare(5)
+ReadShared(1)
+JumpIfNot(4)
+PushBool(false)
+WriteShared(1)
+Jump(6)
+Read(5)
+SubfragmentSlot(0)
+PushString(", ")
+StringConcatN(1)
+Text
+Read(4)
+FieldGet($PastPlayerUserId)
+PageIntent(PageId(2), 1)
+Read(4)
+FieldGet($PastPlayerIsWinner)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($PastPlayerName)
+Text
+EndClosure
+Read(4)
+ClosureAdd
+PushAfter(19)
+Read(5)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Undeclare(4, 2)
+Read(3)
+Increment
+Write(3)
+JumpBack(48)
+EndLoop
+Undeclare(2, 2)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 27 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+FieldGet($PastReplayId)
+PushBool(true)
+ReplayIntent
+PushString("Watch Replay")
+PushAfter(20)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("fa-solid fa-video")
+Read(0)
+NoSubfragmentSlot
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+PushAfter(4)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+ClosureRead(0)
+FieldGet($PastEpisodeTimestamp)
+JumpIfNot(32)
+PushBool(true)
+PushAfter(10)
+PushColor(Color { r: F8(204), g: F8(204), b: F8(204), a: F8(255) })
+WriteBack(7)
+BeginClosure { num_params: 1, return_at: 17 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString(" • ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+GameStartTimestamp
+ClosureRead(0)
+FieldGet($PastEpisodeTimestamp)
+Sub
+PushScript(ScriptId(166))
+Call(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(4)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(3)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+ClosureReadShared(1)
+JumpIfNot(21)
+PushBool(true)
+PushAfter(10)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushUndefined
+BeginIntrinsic(2)
+DrawerToggle
+EndDrawerToggle
+EndIntrinsic0
+EndClosure
+PushAfter(4)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+ClosureRead(0)
+FieldGet($PastRatingDelta)
+JumpIfNot(46)
+ClosureRead(0)
+FieldGet($PastRatingDelta)
+PushNum(0.0)
+Less
+JumpIfNot(3)
+PushIntrinsic(ColorNegative)
+Jump(2)
+PushIntrinsic(ColorPositive)
+PushAfter(4)
+PushBool(true)
+WriteBack(4)
+PushNum(1.5)
+WriteBack(5)
+ClosureRead(0)
+FieldGet($PastRatingDelta)
+PushNum(0.0)
+AtLeast
+JumpIfNot(6)
+PushString("+")
+ClosureRead(0)
+FieldGet($PastRatingDelta)
+Add
+Jump(3)
+ClosureRead(0)
+FieldGet($PastRatingDelta)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($PastRatingDelta)
+PushScript(ScriptId(170))
+Call(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(9)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+PushAfter(4)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+ClosureReadShared(1)
+JumpIfNot(424)
+BeginClosure { num_params: 1, return_at: 413 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+ClosureRead(0)
+FieldGet($PastGainDelta)
+JumpIfNot(146)
+PushNum(1.0)
+PushAfter(7)
+PushNum(0.4)
+PushAfter(6)
+PushColor(Color { r: F8(0), g: F8(0), b: F8(0), a: F8(34) })
+WriteBack(13)
+BeginClosure { num_params: 1, return_at: 129 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushIntrinsic(AlignLeft)
+PushNum(0.0)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 80 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushNum(1.1)
+BeginClosure { num_params: 1, return_at: 28 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Won against ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($PastGainOpponentName)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushColor(Color { r: F8(170), g: F8(170), b: F8(170), a: F8(255) })
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Would have lost ")
+ClosureRead(0)
+FieldGet($PastGainDeltaMirror)
+PushScript(ScriptId(170))
+Call(1)
+StringConcatN(2)
+Text
+ClosureRead(0)
+FieldGet($PastGainWinProbability)
+JumpIfNot(12)
+Read(0)
+SubfragmentSlot(1)
+PushString(" (win probability ")
+ClosureRead(0)
+FieldGet($PastGainWinProbability)
+PushNum(100.0)
+Mul
+Round
+PushString("%)")
+StringConcatN(3)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(10)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(13)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+PushIntrinsic(ColorPositive)
+PushAfter(4)
+PushBool(true)
+WriteBack(4)
+PushNum(1.1)
+WriteBack(5)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($PastGainDelta)
+PushScript(ScriptId(170))
+Call(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(10)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(4)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+ClosureRead(0)
+FieldGet($PastLossDelta)
+JumpIfNot(146)
+PushNum(1.0)
+PushAfter(7)
+PushNum(0.4)
+PushAfter(6)
+PushColor(Color { r: F8(0), g: F8(0), b: F8(0), a: F8(34) })
+WriteBack(13)
+BeginClosure { num_params: 1, return_at: 129 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushIntrinsic(AlignLeft)
+PushNum(0.0)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 80 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushNum(1.1)
+BeginClosure { num_params: 1, return_at: 28 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Lost against ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($PastLossOpponentName)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushColor(Color { r: F8(204), g: F8(204), b: F8(204), a: F8(255) })
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Would have gained ")
+ClosureRead(0)
+FieldGet($PastLossDeltaMirror)
+PushScript(ScriptId(170))
+Call(1)
+StringConcatN(2)
+Text
+ClosureRead(0)
+FieldGet($PastLossWinProbability)
+JumpIfNot(12)
+Read(0)
+SubfragmentSlot(1)
+PushString(" (win probability ")
+ClosureRead(0)
+FieldGet($PastLossWinProbability)
+PushNum(100.0)
+Mul
+Round
+PushString("%)")
+StringConcatN(3)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(10)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(13)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+PushIntrinsic(ColorNegative)
+PushAfter(4)
+PushBool(true)
+WriteBack(4)
+PushNum(1.1)
+WriteBack(5)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($PastLossDelta)
+PushScript(ScriptId(170))
+Call(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(10)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(4)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+ClosureRead(0)
+FieldGet($PastActivityDelta)
+JumpIfNot(112)
+PushNum(1.0)
+PushAfter(7)
+PushNum(0.4)
+PushAfter(6)
+PushColor(Color { r: F8(0), g: F8(0), b: F8(0), a: F8(34) })
+WriteBack(13)
+BeginClosure { num_params: 1, return_at: 95 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushIntrinsic(AlignLeft)
+PushNum(0.0)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 46 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushNum(1.1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Activity bonus")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(14)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+PushColor(Color { r: F8(204), g: F8(204), b: F8(204), a: F8(255) })
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 14 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+FieldGet($PastActivityBonusRemaining)
+JumpIfNot(9)
+Read(0)
+NoSubfragmentSlot
+PushString("+")
+ClosureRead(0)
+FieldGet($PastActivityBonusRemaining)
+PushString(" points still available")
+StringConcatN(3)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(10)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(13)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+PushIntrinsic(ColorPositive)
+PushAfter(4)
+PushBool(true)
+WriteBack(4)
+PushNum(1.1)
+WriteBack(5)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+FieldGet($PastActivityDelta)
+PushScript(ScriptId(170))
+Call(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(10)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(4)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(1)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(2)
+Drawer
+EndDrawer
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+PushAfter(4)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+NoShare(2)
+ClosureAdd
+PushAfter(2)
+Read(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(3)
+DrawerBoundary
+EndDrawerBoundary
+EndIntrinsic0

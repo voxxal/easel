@@ -1,0 +1,4 @@
+PushKeycode(KeyE)
+With
+WriteStatic(StaticVariableId(8))
+ReturnValue

@@ -1,0 +1,5 @@
+[players]
+defaultPrefix = "Acolyte"
+selfColor = "#00ccff"
+colors = ["#f58c81", "#b69cf6", "#54c794", "#e09f47", "#e08747", "#e58cc5", "#a9b852", "#6eb2fd"]
+teamHueJitter = 10

@@ -1,0 +1,87 @@
+Read(0)
+Category
+PushCategory(GROUP_1)
+Overlaps
+BooleanNot
+JumpIfNot(2)
+Return0
+PushSymbol($library/health/tombstone.easel/tombstone)
+Read(0)
+BeginClosure { num_params: 0, return_at: 71 }
+ClosureRead(0)
+AwaitSignal(SignalId(11))
+BeginClosure { num_params: 0, return_at: 60 }
+ClosureRead(0)
+Declare(0)
+ClosureRead(1)
+Owner
+Declare(1)
+Read(0)
+Read(1)
+NotEqual
+JumpIfNot(7)
+Read(0)
+FieldGetOrInit($KillScore, InitialValueId(1))
+PushNum(1.0)
+Add
+Read(0)
+FieldSet($KillScore)
+ClosureRead(1)
+PushIntrinsic(AudienceAll)
+PushAfter(3)
+BeginClosure { num_params: 1, return_at: 25 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushNum(0.9)
+BeginClosure { num_params: 1, return_at: 9 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureReadShared(1)
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+CallLambda(2)
+Pop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+PushAfter(14)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(2)
+ClosureAdd
+NoShare(1)
+ClosureAdd
+PushAfter(1)
+PushScript(ScriptId(224))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(6)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(7)
+Transmission(Main)
+EndTransmission
+EndIntrinsic0
+EndClosure
+ClosureRead(1)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+ClosureRead(2)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(0)
+ClosureAdd
+Read(1)
+ClosureAdd
+Read(2)
+ClosureAdd
+Hook(0)

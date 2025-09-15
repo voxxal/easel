@@ -1,0 +1,232 @@
+PushScript(ScriptId(173))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 194 }
+Loop { continue_at: 2, break_at: 192 }
+Jump(4)
+ClosureRead(0)
+AwaitPreference(PreferenceId(0))
+Pop
+BeginClosure { num_params: 0, return_at: 178 }
+ClearSubfragmentRangeCaptured { from: 0, length: 6, captured: 1 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(0), InitialValueId(0))
+JumpIfNot(85)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-solid fa-gamepad")
+Read(0)
+SubfragmentSlot(0)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Unranked Mode")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+ClosureRead(1)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("You are currently playing unranked. Play for fun, not points! You will not lose or gain points on the rating system. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+ClosureRead(1)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 36 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushSymbol($accumulation/rating.easel/switchUnranked)
+PushUndefined
+PressIntent
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 20 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Switch to ")
+StringConcatN(1)
+Text
+PushString("fa-solid fa-trophy")
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(" Ranked Mode")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(15)
+ClosureRead(1)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+Jump(89)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-solid fa-trophy")
+Read(0)
+SubfragmentSlot(0)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Ranked Mode")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+ClosureRead(1)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 13 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("You are currently playing ranked. You will lose and gain points on the rating system and, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("if you're good enough, appear on the leaderboard. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+ClosureRead(1)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 36 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushSymbol($accumulation/rating.easel/switchUnranked)
+PushUndefined
+PressIntent
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 20 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Switch to ")
+StringConcatN(1)
+Text
+PushString("fa-solid fa-gamepad")
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(" Unranked Mode")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(15)
+ClosureRead(1)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(188)
+EndLoop
+EndClosure
+Read(1)
+ClosureAdd
+Read(2)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(173))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 22 }
+Loop { continue_at: 1, break_at: 20 }
+ClosureRead(0)
+PushSymbol($accumulation/rating.easel/switchUnranked)
+BeginIntrinsic(2)
+AwaitPressed
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 7 }
+ClosureRead(0)
+LoadPreferenceOrInit(PreferenceId(0), InitialValueId(0))
+BooleanNot
+ClosureRead(0)
+SavePreference(PreferenceId(0))
+EndClosure
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(17)
+EndLoop
+EndClosure
+Read(1)
+ClosureAdd
+Hook(0)

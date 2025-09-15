@@ -1,0 +1,40 @@
+Tick
+Declare(3)
+PushNum(0.0)
+Read(0)
+Range
+Declare(4)
+PushIndex(0)
+Declare(5)
+Loop { continue_at: 26, break_at: 31 }
+Read(4)
+Read(5)
+Index
+With
+IsUndefined
+JumpIf(24)
+Declare(6)
+ReadShared(3)
+Read(1)
+Read(6)
+Mul
+Add
+Declare(7)
+Read(7)
+Tick
+Sub
+Floor
+Declare(8)
+Read(8)
+Sleep(Tick)
+Read(6)
+Read(2)
+CallLambda(1)
+Pop
+Undeclare(6, 3)
+Read(5)
+Increment
+Write(5)
+JumpBack(28)
+EndLoop
+Undeclare(4, 2)

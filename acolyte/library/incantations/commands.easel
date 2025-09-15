@@ -1,0 +1,124 @@
+pub field owner.NumCommandBtns = 5
+
+pub field owner.CommandWheelOrigin = @(8,8)
+pub field owner.CommandWheelRadius = 5
+pub field owner.CommandWheelShift = 0.5
+
+pub fn owner.DisplayEditCommandsHint() {
+    // Display a helpful message when the slots are editable
+    BottomContent {
+        VStack(padding=0.5) {
+            with TouchscreenMode, SlotsUneditable {
+                if !TouchscreenMode && !SlotsUneditable {
+                    P { "Click a button below to change your abilities" }
+                }
+            }
+        }
+    }
+}
+
+pub fn owner.CommandWheelUnderlay() {
+    // Display a little a D-pad to teach the player how to move on a touchscreen
+    BottomLeftCommand(order=-1, offset=CommandWheelOrigin, blend=BlendMode:Screen) {
+        with TouchscreenMode {
+            await Paint
+
+            if TouchscreenMode {
+                Image(@d-pad.svg, opacity=0.25, width=CommandWheelRadius*2, height=CommandWheelRadius*2)
+            }
+        }
+    }
+
+    // Display a little circle under the command wheel to make it look more cohesive
+    BottomRightCommand(order=-1, offset=CommandWheelOrigin, blend=BlendMode:Screen) {
+        with TouchscreenMode {
+            await Paint
+
+            if TouchscreenMode {
+                VStack(backgroundColor=#fff1, borderRounding=true) {
+                    Blank(width=CommandWheelRadius*2, height=CommandWheelRadius*2)
+                }
+            }
+        }
+    }
+}
+
+pub fn ability.AbilityCommandBtn([unit, owner, glyph, color, keycode?, passive?, btnEdit?, btnOrder, btnSize=4]) |use ui|? {
+    if !owner.IsHuman { return } // Bots don't need any user interface elements
+
+    BottomRightContent<infoBox>(key=ability, dismissed=true, blend=BlendMode:Screen) {
+        VStack(padding=1, gap=0) {
+            HStack(vOverlap=1.5, hPadding=1) {
+                Pip(backgroundColor=color, shadow=0.5) {
+                    Image(glyph, height=3, shadow=0.2)
+                }
+            }
+            ShinyPanel(backgroundColor=color, width=32) {
+                delve()
+            }
+        }
+    }
+    let showInfoBox = RevealOnHoverIntent<infoBox>(ability)
+
+    with TouchscreenMode {
+        if TouchscreenMode {
+            let angle = -1rev * (btnOrder + CommandWheelShift) / NumCommandBtns
+            let offset = CommandWheelOrigin + CommandWheelRadius * Direction(angle)
+
+            BottomRightCommand(order=btnOrder, offset=) {
+                CommandBtnContent(intent=keycode, keycode=null, borderRounding=true)
+            }
+
+        } else {
+            CommandBar(order=btnOrder, blend=BlendMode:Screen) {
+                with SlotsUneditable {
+                    CommandBtnContent(
+                        intent = SlotsUneditable ? showInfoBox : [btnEdit, showInfoBox],
+                        pointerPassthrough=SlotsUneditable,
+                    )
+                }
+            }
+        }
+    }
+}
+
+fn ability.CommandBtnContent(
+    intent, borderRounding?, pointerPassthrough?,
+    [unit, owner, glyph, color, passive, keycode, btnSize, ui]) {
+
+    with Cooldown {
+        await Paint
+
+        let cooldown = passive ? 0 : Cooldown
+        let color = passive ? #333 : color
+        let glyphOpacity = 1.0
+        if cooldown >= 1s {
+            color = #222
+            glyphOpacity = 0.6
+        } else if cooldown > 0.1s {
+            color = #777
+            glyphOpacity = 0.9
+        } else if cooldown > 0s {
+            color = #111
+            glyphOpacity = 0.5
+        }
+
+        Pip(intent=, backgroundColor=color, shadow=0, borderRounding=, pointerPassthrough=, zStack=true) {
+            Image(glyph, height=btnSize, shadow=0.2, opacity=glyphOpacity)
+
+            if (cooldown > 0s) {
+                ZOverlay(padding=0) {
+                    Span(bold=true, fontSize=0.6*btnSize) {
+                        %((cooldown / TicksPerSecond).FormatWithDecimals(cooldown > 1s ? 0 : 1))
+                    }
+                }
+            } else if keycode && !passive {
+                ZOverlay(align=Align:Left, vAlign=VAlign:Bottom, padding=0.05*btnSize) {
+                    Span(bold=true, fontSize=0.4*btnSize) {
+                        KeyBindingDisplay(keycode)
+                    }
+                }
+            }
+        }
+    }
+}

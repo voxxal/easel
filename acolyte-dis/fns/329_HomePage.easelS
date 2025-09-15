@@ -1,0 +1,879 @@
+Read(0)
+BeginClosure { num_params: 1, return_at: 201 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushNum(12.0)
+PushAfter(8)
+PushBool(true)
+WriteBack(5)
+PushNum(1.0)
+PushAfter(2)
+BeginClosure { num_params: 2, return_at: 158 }
+ClearSubfragmentRangeLocal { from: 0, length: 11, local: 1 }
+PushUndefined
+PushScript(ScriptId(313))
+Call(1)
+PushString("fas fa-gamepad")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Play")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(0)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+SpectateIntent
+PushString("fas fa-eye")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Spectate")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(1)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+PartyIntent
+PushString("fas fa-user-group")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Party")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(2)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+PushNum(1.0)
+PushAfter(1)
+Read(1)
+SubfragmentSlot(3)
+PushAfter(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+ClosureRead(0)
+UserId
+PageIntent(PageId(2), 1)
+PushString("fas fa-user")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Profile")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(4)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+PageIntent(PageId(0), 0)
+PushString("fas fa-trophy")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Leaderboard")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(5)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+PushNum(1.0)
+PushAfter(1)
+Read(1)
+SubfragmentSlot(6)
+PushAfter(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+PageIntent(PageId(6), 0)
+PushString("fas fa-cog")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Settings")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(7)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+PageIntent(PageId(3), 0)
+PushString("fas fa-info-circle")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("About")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(8)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+PushBool(true)
+PushAfter(2)
+Read(1)
+SubfragmentSlot(9)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+RemixIntent
+PushString("fas fa-wrench")
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Modding")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(1)
+Read(1)
+SubfragmentSlot(10)
+WriteBack(2)
+PushScript(ScriptId(330))
+Call(4)
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(3)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+PopoutMenu
+EndPopoutMenu
+EndIntrinsic0
+PageIntent(PageId(0), 0)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fas fa-trophy")
+Read(0)
+SubfragmentSlot(0)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Leaderboard")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(8)
+PushScript(ScriptId(329))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Toolbar)
+EndSection
+EndIntrinsic0
+Read(0)
+BeginClosure { num_params: 1, return_at: 56 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+ClosureRead(0)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+ClosureRead(0)
+Read(0)
+SubfragmentSlot(0)
+PushScript(ScriptId(171))
+Call(4)
+ClosureRead(0)
+IsUserLoggedIn
+JumpIfNot(25)
+ClosureRead(0)
+UserId
+PageIntent(PageId(2), 1)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(34) })
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+PlayerName
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(20)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+Jump(20)
+LoginIntent
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Login")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(20)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(8)
+PushScript(ScriptId(329))
+PushIndex(2)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(ToolbarRight)
+EndSection
+EndIntrinsic0
+Read(0)
+BeginClosure { num_params: 1, return_at: 37 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("https://iogames.space")
+PushNum(0.8)
+PushAfter(8)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+WriteBack(5)
+PushBool(false)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("More .io games")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(16)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(19)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(329))
+PushIndex(3)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(LeftCorner)
+EndSection
+EndIntrinsic0
+Read(0)
+BeginClosure { num_params: 1, return_at: 69 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushNum(0.5)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 56 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PageIntent(PageId(5), 0)
+PushNum(0.8)
+PushAfter(8)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+WriteBack(5)
+PushBool(false)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Acolyte Fight has been reborn!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(16)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+PushString("https://discord.gg/sZvgpZk")
+PushNum(0.8)
+PushAfter(8)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+WriteBack(5)
+PushBool(false)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Discord ")
+StringConcatN(1)
+Text
+PushString("fa-brands fa-discord")
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+EndClosure
+PushAfter(16)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(FlatButton)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(13)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(329))
+PushIndex(4)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(RightCorner)
+EndSection
+EndIntrinsic0
+Read(0)
+BeginClosure { num_params: 1, return_at: 290 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+PushNum(8.0)
+PushAfter(4)
+PushIntrinsic(VAlignMiddle)
+PushAfter(7)
+PushBool(true)
+PushAfter(4)
+BeginClosure { num_params: 1, return_at: 68 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+PushColor(Color { r: F8(0), g: F8(0), b: F8(0), a: F8(255) })
+PushAfter(2)
+BeginClosure { num_params: 1, return_at: 16 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushAsset(AssetId(0))
+PushBool(true)
+PushAfter(4)
+PushBool(true)
+PushBool(true)
+PushBool(true)
+WriteBack(6)
+Read(0)
+NoSubfragmentSlot
+PushAfter(3)
+BeginIntrinsic(12)
+Video
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(12)
+ZLayer(ZUnderlay)
+EndZLayer
+EndIntrinsic0
+PushIntrinsic(AnimateThrob)
+PushAfter(7)
+PushNum(0.0)
+PushAfter(3)
+BeginClosure { num_params: 1, return_at: 7 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ProjectName
+FlyInWords
+EndClosure
+PushAfter(3)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Standout)
+EndParagraph
+EndIntrinsic0
+PushIntrinsic(AnimateFlyFromBottom)
+PushAfter(7)
+PushNum(0.0)
+PushAfter(3)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Skillshot Arena")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(3)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(1)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+PushNum(0.5)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+PushIntrinsic(AnimateFlyFromBottom)
+PushAfter(1)
+PushNum(25.0)
+PushAfter(13)
+BeginClosure { num_params: 1, return_at: 179 }
+ClearSubfragmentRangeLocal { from: 0, length: 5, local: 0 }
+PushNum(0.3)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushNum(0.8)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Choose Your Name")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(14)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(2)
+PlayerNameEditor
+EndIntrinsic0
+EndClosure
+PushAfter(13)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+PushUndefined
+PushScript(ScriptId(313))
+Call(1)
+PushIntrinsic(ColorPrimary)
+PushAfter(4)
+PushNum(25.0)
+PushAfter(16)
+PushNum(1.5)
+WriteBack(14)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Play")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(3)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+PushSymbol($pages/home.easel/belowFold)
+PushUndefined
+ScrollToBookmarkIntent
+PushIntrinsic(ColorSecondary)
+PushAfter(4)
+PushNum(25.0)
+PushAfter(16)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Choose Your Abilities")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(3)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(RaisedButton)
+EndButton
+EndIntrinsic0
+PushIntrinsic(AlignJustify)
+BeginClosure { num_params: 1, return_at: 47 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+SpectateIntent
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+PushAfter(4)
+PushNum(12.0)
+PushAfter(16)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Spectate")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(3)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Button)
+EndButton
+EndIntrinsic0
+PushNum(1.0)
+PushScript(ScriptId(313))
+Call(1)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+PushAfter(4)
+PushNum(12.0)
+PushAfter(16)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Singleplayer")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(3)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Button)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(18)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(HStack)
+EndStack
+EndIntrinsic0
+PushNum(0.9)
+BeginClosure { num_params: 1, return_at: 27 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Invite friends to ")
+StringConcatN(1)
+Text
+PartyIntent
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("party!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(14)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(3)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+PushBool(true)
+PushAfter(2)
+Read(0)
+SubfragmentSlot(3)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(329))
+PushIndex(5)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(ContentScreen)
+EndSection
+EndIntrinsic0
+Read(0)
+BeginClosure { num_params: 1, return_at: 148 }
+ClearSubfragmentRangeLocal { from: 0, length: 7, local: 0 }
+PushSymbol($pages/home.easel/belowFold)
+Read(0)
+SubfragmentSlot(0)
+PushAfter(1)
+Bookmark
+BeginClosure { num_params: 1, return_at: 40 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushScript(ScriptId(329))
+PushIndex(6)
+DiscriminatorConcatN(2)
+ClosureRead(0)
+BeginClosure { num_params: 0, return_at: 24 }
+Loop { continue_at: 2, break_at: 22 }
+Jump(4)
+ClosureRead(0)
+AwaitPlayerName
+Pop
+BeginClosure { num_params: 0, return_at: 8 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 0 }
+ClosureRead(0)
+SubfragmentSlot(0)
+ClosureRead(1)
+PlayerName
+Text
+EndClosure
+ClosureRead(1)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(18)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+Read(0)
+SubfragmentSlot(1)
+PushString(", your destiny awaits!")
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 18 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Our Warlocks have fallen! Their valiant sacrifice shall forever be remembered. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("Young Acolyte, fate has hastened the hour of your destiny, as your vulnerable homeland now turns to you to as one of the last remaining keepers of magic. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("With no mentors to guide you, the path to mastery lies in your hands. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 18 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Venture into the enigmatic mirror dimension within your school of magic, challenging your fellow Acolytes to battle. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("Together you will hone your skills, forging unbreakable bonds while rediscovering the lost arcane wisdom that once made the Warlocks so formidable. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("Through perseverance and unity, you will rise as the new generation of Warlocks, standing resolute against the ever-encroaching darkness that threatens your homeland. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Young Acolyte, you have much to learn, and the shadow of our adversaries grows ever closer. Embrace your destiny! ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Choose Your Abilities")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+ClosureRead(0)
+Read(0)
+SubfragmentSlot(6)
+ClosureRead(0)
+PushScript(ScriptId(359))
+Call(3)
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(8)
+PushScript(ScriptId(329))
+PushIndex(7)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0

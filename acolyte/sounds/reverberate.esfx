@@ -1,0 +1,9 @@
+Play(duration=0.2s) {
+	Vibrato(freqModulation=80) {
+		Oscillator(freq=240)
+	}
+	Oscillator(wave=$square, freq=80)
+	LowPass(freq=120)
+	Envelope(attack=0.001s)
+	Gain(volume=0.1)
+}

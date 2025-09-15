@@ -1,0 +1,17 @@
+Read(1)
+IsUserLoggedIn
+JumpIfNot(15)
+Read(0)
+Read(1)
+Read(2)
+SubfragmentSlot(0)
+PushScript(ScriptId(173))
+Call(3)
+PushNum(5.0)
+PushAfter(1)
+Read(2)
+SubfragmentSlot(1)
+PushAfter(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0

@@ -1,0 +1,34 @@
+pub fn this.ShrinkOverTime(
+	shrinkDuration = DefaultShrinkDuration,
+
+	// This is the maximum number of players each map is designed to hold
+	// Smaller than this and we will quickly shrink to the proportional area (not radius) for that number of players
+	shrinkMaxPlayers = 8,
+
+	// This is the rate at which the turf will shrink to its target size
+	shrinkRatePerTick = 0.003,
+
+	// Reshape the shrink curve according to this power - less than 1 means the shrinking is slower at start and faster at end, the opposite for greater than 1
+	shrinkPower = 0.5,
+) |scale| {
+
+    behavior {
+        let scale = 1.0
+        delve(scale)
+
+        await AfterGameCommenced
+
+        const startTick = Tick
+        loop {
+            await BeforeTick
+            if GameConcluded { break } // Stop shrinking once game is complete
+
+            const decayOverTime = 1.0 - ((Tick - startTick) / shrinkDuration).Max(0.0)
+            const decayOverNumPlayers = ((CountPlayers(isEliminated=false) / shrinkMaxPlayers) ** 0.5).Min(1.0) // 0.5 power to square root because we want to prorate area not radius
+            const target = (decayOverTime * decayOverNumPlayers) ** shrinkPower
+
+            scale = shrinkRatePerTick.Mix(scale, target)
+            delve(scale)
+        }
+    }
+}

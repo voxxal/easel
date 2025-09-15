@@ -1,0 +1,258 @@
+Read(0)
+BeginClosure { num_params: 1, return_at: 246 }
+ClearSubfragmentRangeLocal { from: 0, length: 8, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Acolyte Fight has been reborn!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 42 }
+ClearSubfragmentRangeLocal { from: 0, length: 5, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Welcome to the new version of Acolyte Fight! ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("This version of Acolyte Fight has been 100% re-created from the ground up using a new game engine called ")
+StringConcatN(1)
+Text
+PushString("https://easel.games")
+PushBool(true)
+PushAfter(5)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Easel")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(19)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(3)
+PushString(". ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(4)
+PushString("This new version of Acolyte Fight should be better, faster, and more fun than ever before. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 23 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("With Easel, multiplayer now uses a peer-to-peer relay and a new technique called rollback netcode, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("which should provide the lowest latency experience that you have ever seen in a webgame. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("There is no need for separate servers in North America, Europe and Asia anymore, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("because now the server is wherever you are!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(2)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 23 }
+ClearSubfragmentRangeLocal { from: 0, length: 4, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Also thanks to Easel, modding is now vastly more powerful. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString("Easel is not only a game engine, it is a full programming language and deployment platform. ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(2)
+PushString("This means you can create not only new spells and abilities, but entirely new games, ")
+StringConcatN(1)
+Text
+Read(0)
+SubfragmentSlot(3)
+PushString("and publish them for everyone to play. ")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(3)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 26 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Thank you for your continued support since the beginning of Acolyte Fight. ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Welcome to the new era!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(4)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 27 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("https://discord.gg/sZvgpZk")
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+PushString("fa-brands fa-discord")
+Read(0)
+SubfragmentSlot(0)
+PushAfter(1)
+BeginIntrinsic(3)
+Icon
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(1)
+PushString(" Discuss our rebirth on Discord!")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(25)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(5)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Miss the old Acolyte Fight?")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(6)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H2)
+EndParagraph
+EndIntrinsic0
+BeginClosure { num_params: 1, return_at: 22 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushString("https://us.acolytefight.io")
+PushBool(true)
+PushAfter(11)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Play Acolyte Fight classic here")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(13)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(Link)
+EndButton
+EndIntrinsic0
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(7)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(8)
+PushScript(ScriptId(331))
+PushIndex(1)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0

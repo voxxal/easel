@@ -1,0 +1,141 @@
+pub preference owner.SlotChoice<Slot>
+pub collect owner.SlotsUneditable = false
+
+const PipSize = 3
+
+field unit.PreviousAbility<Slot>
+
+/// Spawns an ability on the unit, and replaces the spawn whenever the slot changes
+pub fn unit.SpawnEachAbility<Slot>([owner, slotDefault?]) |choice, use this = ability| {
+	with owner.SlotChoice<Slot> {
+        // Destroy previous ability
+		let previous = unit.PreviousAbility<Slot> ?? null
+        let cooldown = previous.Cooldown ?? 0 // capture cooldown so we can assign it to the new ability
+		previous.Despawn
+
+        // Create new ability
+		unit.PreviousAbility<Slot> = Subspawn ability {
+            Cooldown = cooldown
+
+			delve(
+                choice = owner.SlotChoice<Slot> ?? slotDefault,
+                ability=,
+            )
+		}
+	}
+}
+
+/// Adds a SlotEditor pip tab panel to the UI
+pub fn this.SlotEditor<Slot>([keycode?, owner, slotDefault?, dismiss=true, ui]) |use ui| {
+	Tabs<Slot>(unselectedColor=#fff1, gap=0, dismiss=) {
+		delve()
+
+        HStack(vOverlap=PipSize/3, gap=PipSize/5, align=Align:Right, hPadding=1) {
+            TabHeadersDisplay
+		}
+
+		ShinyPanel(backgroundColor=Color:Selected, padding=0) {
+			HStack(height=18) {
+				if !TouchscreenMode && InPageMode && keycode {
+					// Don't show the rebinding block in-game - it takes too much space
+					// Also touchscreen users don't have a keyboard so this block is irrelevant for them
+					KeyRebindingBlock(backgroundColor=#0001, fontSize=2, width=8, stretch=true)
+				}
+
+				VStack(expand=1, padding=1) {
+					TabDisplay
+				}
+			}
+		}
+
+		with owner.SlotChoice<Slot> {
+			Selected(owner.SlotChoice<Slot> ?? slotDefault)
+		}
+	}
+    on Selected<Slot> choice {
+        owner.SlotChoice<Slot> = choice
+    }
+}
+/// Adds a SlotEditor dropdown to the UI
+pub fn this.SlotDropdown<Slot>([owner, slotDefault?, ui]) |use ui| {
+	Dropdown<Slot> {
+		delve()
+		with owner.SlotChoice<Slot> {
+			Selected(owner.SlotChoice<Slot> ?? slotDefault)
+		}
+	}
+    on Selected<Slot> choice {
+        owner.SlotChoice<Slot> = choice
+    }
+}
+
+/// Adds an option tab for one particular ability to a SlotEditor - must be called within SlotEditor
+pub fn SlotOption(id, [glyph, color, ui]) |use ui| {
+	Tab(id, color=) {
+        %ui:header {
+            Pip(backgroundColor=Color:Selected, shadow=0.25) {
+                Image(glyph, height=PipSize, shadow=0.2)
+            }
+        }
+
+        delve()
+    }
+}
+
+pub fn SlotEffect(effect, icon, [ui]) |use ui| {
+	P(fontSize=0.8) {
+		Span(bold=true, italic=true, color=#eee) {
+			Icon(icon=)
+			" "
+			%(effect)
+			": "
+		}
+		Span(italic=true, color=#ddd) {
+			delve()
+		}
+	}
+}
+
+pub fn SlotStats([ui]) |use ui| {
+	HStack(align=Align:Right) {
+		delve()
+	}
+}
+
+pub fn SlotStat(stat, icon, [ui]) |use ui| {
+	P(fontSize=0.9, color=#eee, tooltip=stat) {
+		delve()
+		" "
+		Icon(icon=)
+	}
+}
+
+pub fn this.SlotLoadoutTool(tooltip, icon="fas fa-list", [owner, ui]) |use ui| {
+	with SlotsUneditable {
+		if SlotsUneditable {
+			delete Modal<loadoutDialog>
+
+		} else {
+			Modal<loadoutDialog>(dismissed=true) { delve() }
+            FlatButton(ShowIntent<loadoutDialog>, tooltip=) {
+                Icon(icon)
+            }
+		}
+	}
+}
+
+pub fn this.SlotRandomizeTool(tooltip, icon="fas fa-dice", [owner, ui]) || {
+	with SlotsUneditable {
+		if SlotsUneditable {
+			delete behavior<randomizeHook>
+
+		} else {
+            FlatButton(PressIntent<randomizeSlots>,tooltip=) {
+                Icon(icon)
+            }
+			behavior<randomizeHook> on Pressed<randomizeSlots> {
+				delve()
+			}
+		}
+	}
+}

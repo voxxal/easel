@@ -1,0 +1,77 @@
+JumpIfVarDefined { var: 0, jump: 3 }
+Cosmos
+Write(0)
+Read(1)
+PushNum(0.0)
+Greater
+JumpIfNot(66)
+Read(0)
+PushSymbol($library/players/commenceCountdown.easel/countdown)
+Read(1)
+BeginClosure { num_params: 1, return_at: 54 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushNum(0.9)
+BeginClosure { num_params: 1, return_at: 40 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+PushString("Waiting ")
+StringConcatN(1)
+Text
+PushBool(true)
+PushAfter(1)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+ClosureRead(0)
+PushNum(60.0)
+Div
+Ceiling
+Text
+Read(0)
+SubfragmentSlot(1)
+PushString(" seconds")
+StringConcatN(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(5)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(8)
+Span(Inline)
+EndSpan
+EndIntrinsic0
+Read(0)
+SubfragmentSlot(2)
+PushString(" for more players to join...")
+StringConcatN(1)
+Text
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(14)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+Read(1)
+ClosureAdd
+PushAfter(3)
+BeginIntrinsic(7)
+Transmission(Main)
+EndTransmission
+EndIntrinsic0
+Jump(6)
+Read(0)
+PushSymbol($library/players/commenceCountdown.easel/countdown)
+BeginIntrinsic(2)
+DeleteTransmission(Main)
+EndIntrinsic0

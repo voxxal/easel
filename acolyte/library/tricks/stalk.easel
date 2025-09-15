@@ -1,0 +1,27 @@
+prop this.StalkTarget
+
+pub fn this.Stalk(against=Alliance:Enemy, filter=Category:Tangible, [body, owner, stalkRange, stalkSpeed]) {
+    PolygonCollider<stalk>(Circle(stalkRange), isSensor=true, category=Category:All, collideWith=filter, isolate=true)
+
+    on BeforeCollide<stalk> that {
+        if !StalkTarget && (that.Alliance(owner).Overlaps(against)) {
+            StalkTarget = that
+        }
+    }
+    on AfterCollide<stalk> that {
+        if that == StalkTarget {
+            StalkTarget = null
+        }
+    }
+
+    on BeforePhysics {
+        const target = StalkTarget
+        if !target || target.Untrackable {
+            // Wait until we have a target
+            await StalkTarget
+            continue
+        }
+
+        ForcefulStep((stalkSpeed / TicksPerSecond) * Direction(target.Pos - body.Pos))
+    }
+}

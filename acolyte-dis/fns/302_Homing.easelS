@@ -1,0 +1,3 @@
+PushSymbol($library/tricks/homing.easel/homing)
+Read(0)
+DeleteHook

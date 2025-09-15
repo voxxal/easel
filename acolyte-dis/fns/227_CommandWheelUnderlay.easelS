@@ -1,0 +1,160 @@
+Read(0)
+PushNum(-1.0)
+PushAfter(4)
+Read(0)
+FieldGetOrInit($CommandWheelOrigin, InitialValueId(5))
+PushIntrinsic(BlendScreen)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 54 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushScript(ScriptId(227))
+PushIndex(1)
+DiscriminatorConcatN(2)
+ClosureRead(0)
+BeginClosure { num_params: 0, return_at: 42 }
+Loop { continue_at: 2, break_at: 40 }
+Jump(4)
+ClosureRead(0)
+AwaitTouchscreenMode
+Pop
+BeginClosure { num_params: 0, return_at: 26 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 1 }
+PushUndefined
+Sleep(Paint)
+ClosureRead(0)
+TouchscreenMode
+JumpIfNot(19)
+PushAsset(AssetId(53))
+PushNum(0.25)
+PushAfter(4)
+ClosureRead(0)
+FieldGetOrInit($CommandWheelRadius, InitialValueId(6))
+PushNum(2.0)
+Mul
+PushAfter(4)
+ClosureRead(0)
+FieldGetOrInit($CommandWheelRadius, InitialValueId(6))
+PushNum(2.0)
+Mul
+WriteBack(7)
+ClosureRead(1)
+NoSubfragmentSlot
+BeginIntrinsic(12)
+Image
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(36)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(2)
+PushScript(ScriptId(227))
+PushIndex(2)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(FloatBottomLeft)
+EndSection
+EndIntrinsic0
+Read(0)
+PushNum(-1.0)
+PushAfter(4)
+Read(0)
+FieldGetOrInit($CommandWheelOrigin, InitialValueId(5))
+PushIntrinsic(BlendScreen)
+WriteBack(4)
+BeginClosure { num_params: 1, return_at: 66 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+PushScript(ScriptId(227))
+PushIndex(3)
+DiscriminatorConcatN(2)
+ClosureRead(0)
+BeginClosure { num_params: 0, return_at: 54 }
+Loop { continue_at: 2, break_at: 52 }
+Jump(4)
+ClosureRead(0)
+AwaitTouchscreenMode
+Pop
+BeginClosure { num_params: 0, return_at: 38 }
+ClearSubfragmentRangeCaptured { from: 0, length: 1, captured: 1 }
+PushUndefined
+Sleep(Paint)
+ClosureRead(0)
+TouchscreenMode
+JumpIfNot(31)
+PushColor(Color { r: F8(255), g: F8(255), b: F8(255), a: F8(17) })
+PushAfter(2)
+PushBool(true)
+BeginClosure { num_params: 1, return_at: 17 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+FieldGetOrInit($CommandWheelRadius, InitialValueId(6))
+PushNum(2.0)
+Mul
+ClosureRead(0)
+FieldGetOrInit($CommandWheelRadius, InitialValueId(6))
+PushNum(2.0)
+Mul
+Read(0)
+NoSubfragmentSlot
+PushAfter(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(15)
+ClosureRead(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(20)
+Stack(VStack)
+EndStack
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+PushIntrinsic(BreakHook)
+NotEqual
+JumpBackIf(48)
+EndLoop
+EndClosure
+ClosureRead(0)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(2)
+PushScript(ScriptId(227))
+PushIndex(4)
+DiscriminatorConcatN(2)
+WriteBack(9)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(FloatBottomRight)
+EndSection
+EndIntrinsic0

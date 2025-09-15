@@ -1,0 +1,20 @@
+let BotNames = Shuffle([
+    "Aurelie",
+    "Benedict",
+    "Constance",
+    "Dahlia",
+    "Echo",
+    "Faraday",
+    "Genevieve",
+    "Jasper",
+    "Indigo",
+    "Lyra",
+    "Milo",
+    "Sabriel",
+    "Wren",
+    "Violet",
+])
+
+pub fn TakeRandomBotName() -> string {
+    return BotNames.Pop ?? "AcolyteBot"
+}

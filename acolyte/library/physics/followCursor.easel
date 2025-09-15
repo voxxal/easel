@@ -1,0 +1,10 @@
+pub fn this.FollowCursorAbility([unit, owner]) {
+    use body=unit
+	with Pointer, IsPointerActive {
+		if IsPointerActive {
+			Movement:WalkTo(Pointer)
+		} else {
+			Movement:Stop
+		}
+	}
+}

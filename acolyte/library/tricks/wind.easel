@@ -1,0 +1,24 @@
+pub fn this.Wind(
+	wind,
+	filter = Category:Projectile | Category:Obstacle,
+	against = Alliance:NotFriendly,
+	[radius, body, owner]) {
+
+	on Tick {
+		const windVelocity = body.Velocity
+		const windDirection = Direction(windVelocity)
+		const windSpeed = Length(windVelocity)
+		const mass = body.Mass
+
+		for that in QueryWithinRadius(radius, filter=) {
+			if that.Category.Overlaps(Category:AlwaysBlow) || (Alliance(owner, that).Overlaps(against)) {
+				let speed = Dot(windDirection, that.Velocity)
+				if speed < windSpeed {
+					let delta = windSpeed - speed
+					let acceleration = delta * wind * mass / (mass + that.Mass)
+					that.Velocity += acceleration * windDirection
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,47 @@
+JumpIfVarDefined { var: 0, jump: 3 }
+PushNull
+Write(0)
+PushIntrinsic(AlignCenter)
+PushNum(0.0)
+PushAfter(3)
+PushNum(1.0)
+WriteBack(2)
+BeginClosure { num_params: 1, return_at: 27 }
+ClearSubfragmentRangeLocal { from: 0, length: 2, local: 0 }
+Read(0)
+SubfragmentSlot(0)
+ClosureRead(0)
+Text
+PushNum(4.0)
+PushBool(true)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+ClosureRead(0)
+CallLambda(1)
+Pop
+EndClosure
+ClosureRead(1)
+ClosureAdd
+PushAfter(13)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+Read(2)
+ClosureAdd
+PushAfter(9)
+Read(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(15)
+Panel(Panel)
+EndPanel
+EndIntrinsic0

@@ -1,0 +1,557 @@
+pub fn unit.Dummy(pos=@(0,0)) {
+    use body = unit
+    use radius = 1
+    use shape = Rectangle(height=3, width=2)
+    Body(pos=, noRotation=true)
+    PolygonSprite(color=#dba63d)
+    PolygonCollider(category=C:Collision | C:Fighter, collideWith=C:Map | C:Projectile, density=0)
+    Mass(2)
+
+    Gravity
+    DecaySpeedVec(@(0.05, 0.025))
+}
+
+fn body.Mass(mass = 2) {
+    PolygonCollider<mass>(shape=Rectangle(height=1, width=1), density = mass, category=Category:None)
+}
+
+                     // camera    // screen
+fn oui.OUICommandBar<Id>([pos, radius, owner], padding? = 6, [audience?=owner]) |use this = oui, use body| {
+    use body = oui
+    let aspectRatio = ScreenSize.X / ScreenSize.Y
+    if aspectRatio < 1 {
+        Transmission { "Bruh what type of device are you playing this on! get onto something with a horizontal screen please!"}
+    }
+    Body(@(pos.X + radius * aspectRatio - FromEM(padding), pos.Y + radius - FromEM(padding)))
+
+    delve(oui)
+}
+
+fn FromEM(em, [radius, owner]) -> num {
+    let unitsHeight = radius * 2 // TODO this assumes aspect ratio is > 1
+    // since size is in em, this should give us units per em
+    let unitsPerEm = unitsHeight / ScreenSize.Y
+    
+    return unitsPerEm * em
+}
+pub field unit.Marker<Name>
+pub collect unit.Jumps ~ |buffs| buffs.FindMax ?? 1
+pub fn unit.Acolyte([owner]) {
+    use body = unit, fighter = unit
+    use height = 3, width = 2, shape = Rectangle(width=, height=)
+    use speed = 30, jumpHeight=65
+
+    Body(pos=@(0,0), noRotation=true)
+    PolygonSprite(color=#00ccff)
+    PolygonCollider(category=C:Collision | C:Fighter, collideWith=C:Map | C:Projectile, density=0)
+    Mass(2)
+
+    Gravity
+    give Jumps(2)
+    WASDControls
+    DecaySpeedVec(@(0.05, 0.025))
+    LimitSpeedVec(@(speed, 999999))
+
+    let abilityClick = Subspawn ability {
+        use cooldown = 1s, keycode = Click, leadIn = 3, followThrough = 7
+        SpawnEachIncantation incantation {
+
+            Spawn proj {
+    			use parent=unit, body=proj
+    			use dissipate=30
+    			use radius=0.24, speed=48.0
+                use color=#ff8800
+    			use luminous=1, layer=Layer:Projectile
+    
+    			Body(pos=parent.Pos, heading=AimDirection.Angle, velocity=speed*Direction(heading), bullet=true)
+    			RecoverSpeed
+    			once Tick(0.75s) {
+                    Expire
+                }
+    
+    			PolygonCollider(
+                    Circle,
+                    category=C:Collision|C:Projectile,
+                    density=2, restitution=1
+                )
+    
+    			on Paint {
+    				Streak(bloom=3, bloomAlpha=1, glare=1)
+    				Spark(splatter=0.15, feather=1, shine=0.5)
+    			}
+    
+    			on BeforeCollide that {
+    				if that.Category.Contains(C:Map) || that.Category.Contains(C:Fighter) && that.Team != owner.Team {
+                		Strobe(growth=0.5, shine=1.0)
+    			     	repeat 10 {
+    						Spark(splatter=1, feather=1, shine=0.5)
+    					}
+                        on AfterCollide {
+                            Expire
+                        }
+    				}
+    			}
+    		}
+        }
+    }
+
+    let abilityE = Subspawn ability {
+        use cooldown = 7s, keycode = KeyE, leadIn = 5, followThrough = 7, teleportDelay = 0.25s, color=#2200ff, maxDistance = 24
+        SpawnEachIncantation incantation {
+            const target = Pointer
+            const step = target - unit.Pos
+            const targetClamped = Direction(step) * Length(step).Min(maxDistance) + unit.Pos
+            let charge = Subspawn {
+                give unit.GravityModifier(-0.2)
+                on BeforePhysics {
+                    unit.Velocity = @(0, 0)
+                }
+                
+                on Paint {
+                    Spark(body=targetClamped, radius=0.3,
+					shine=0.5, feather=1, glare=0.4, shadow=0.5,
+					speed=5.5, splatter=0.3,
+					screenOffset=SwirlOffset(0.2,period=20))
+                }
+                
+                await Tick(teleportDelay)
+                Expire
+            }
+            await charge.BeforeDespawn
+            ApplyTeleport(target, maxDistance)
+            Spark(radius=3, crater=0.7, bloom=3, bloomAlpha=0.5, feather=1, glare=0.3, shine=0.2)
+        }
+    }
+
+    DynamicCamera pos radius {
+        // spawn bottom corner anchor
+        Subspawn oui {
+            with ScreenSize {
+                OUICommandBar<aco> {
+                    abilityClick.AbilityBtn(bodyOffset=@(-6, 1), size=4)
+                    abilityE.AbilityBtn(bodyOffset=@(0, 0), size=6)
+                }
+            }
+        }
+    }
+}
+
+fn ability.AbilityBtn<Id = auto>([owner, oui, body, radius], bodyOffset=@(0, 0), size=6) {
+    PolygonSprite(shape=Rectangle(width=FromEM(size), height=FromEM(size)), bodyOffset=FromEM(bodyOffset), color=#f0f, layer=Layer:UI)
+    if Type == AbilityType:Cooldown {
+        with Cooldown {
+            // TODO format this properly
+            if Cooldown > 0s {
+                NumberDisplay<Id>(Ceiling(Cooldown / 1s), radius=FromEM(1), bodyOffset=FromEM(bodyOffset), layer=Layer:UI)
+            } else {
+                delete NumberDisplay<Id>
+            }
+        }
+    } else if Type == AbilityType:Charge {
+        with Charge, RequiredCharge {
+            if Charge < RequiredCharge {
+                NumberDisplay<Id>(Floor((Charge / RequiredCharge) * 100), radius=FromEM(1), bodyOffset=FromEM(bodyOffset), layer=Layer:UI)
+            } else {
+                delete NumberDisplay<Id>
+            }
+        }
+    }
+} 
+
+// taken from acolyte fight
+fn body.ApplyTeleport(target, maxDistance=null, against=Alliance:All, blockFilter=Category:None, [owner]) {
+	let step = target - body.Pos
+	let direction = Direction(step)
+	let distance = Length(step).Min(maxDistance)
+
+	if blockFilter {
+		let found, foundDistance = QueryNearestAlongRay(direction, maxDistance=distance, filter=blockFilter, against=)
+		distance = Min(distance, foundDistance)
+	}
+
+	body.Pos = body.Pos + distance * direction
+}
+
+pub fn SwirlOffset(radius, period=15, angleOffset=0rev, phase=0, [body]) -> screenOffset {
+    let angle = (1rev * (Tick % period) / period) + angleOffset + (1rev * phase)
+    return radius * Direction(angle)
+}
+
+
+pub collect astari.REmpowered = false
+pub fn unit.Astari([owner]) {
+    use body = unit, fighter = unit, astari = unit
+    use height = 3, width = 2, shape = Rectangle(width=, height=)
+    use speed = 40, jumpHeight=70
+
+    Body(pos=@(0,0), noRotation=true, bullet=true)
+    PolygonSprite(color=#a0a)
+    PolygonCollider(category=C:Collision | C:Fighter, collideWith=C:Map | C:Projectile, density=0)
+    Mass(2)
+
+    
+    Gravity
+    give Jumps(2)
+    WASDControls
+    DecaySpeedVec(@(0.05, 0.025))
+    LimitSpeedVec(@(speed, 999999))
+
+    // basic attack // TODO should be a short range jab attack
+    let abilityClick = Subspawn ability {
+        use cooldown = 0.5s, keycode = Click, leadIn = 7, followThrough = 7
+        SpawnEachIncantation incantation {
+            let projectile = unit.Subspawn proj {
+                use shape=Rectangle(width = 4, height = 1)
+                let alreadyDragged = []
+                let direction = AimHorizontal
+                let bodyOffset = @((width + 1.2) * direction, 0)
+                PolygonSprite(color=#f00, bodyOffset=)
+                PolygonCollider(bodyOffset=, category=C:Collision | C:Projectile, sense=C:Fighter, collideWith=C:Fighter, parent=unit, density=0)
+    
+                once Tick(0.1s) {
+                    Expire
+                }
+                
+                on BeforeCollide that {
+                    if that.Category.Contains(C:Fighter) && that.Team != owner.Team && !alreadyDragged.Contains(that) {
+                        that.Velocity = that.Velocity.WithX(0)
+                        that.ApplyImpulse(@(direction * -20, -20) * KnockbackModifier)
+                        alreadyDragged.Push(that)
+                    }
+                }
+            }
+            await projectile.BeforeDespawn
+        }
+    }
+    // secondary uppercut
+    let abilitySecondary = Subspawn ability {
+        use cooldown = 0.5s, keycode = SecondaryClick, leadIn = 7, followThrough = 7
+        SpawnEachIncantation incantation {
+            let projectile = unit.Subspawn proj {
+                use shape=Rectangle(height=height * 1.5 , width=1)
+                let alreadyDragged = []
+                let direction = AimHorizontal
+                let bodyOffset = @((width + 0.2) * direction, -0.75)
+                PolygonSprite(color=#f00, bodyOffset=)
+                PolygonCollider(bodyOffset=, category=C:Collision | C:Projectile, sense=C:Fighter, collideWith=C:Fighter, parent=unit, density=0)
+    
+                once Tick(0.1s) {
+                    Expire
+                }
+                
+                on BeforeCollide that {
+                    if that.Category.Contains(C:Fighter) && that.Team != owner.Team && !alreadyDragged.Contains(that) {
+                        that.Velocity = that.Velocity.WithX(0)
+                        that.ApplyImpulse(@(direction * 10, -50) * KnockbackModifier)
+                        alreadyDragged.Push(that)
+                    }
+                }
+            }
+            await projectile.BeforeDespawn
+        }
+    }
+
+    let abilityE = Subspawn ability {
+        use cooldown = 7s, keycode = KeyE, leadIn = 7, followThrough = 20
+        SpawnEachIncantation incantation {
+            let direction = AimHorizontal
+            Spawn {
+                give unit.GravityModifier(0)
+                on BeforePhysics {
+                    unit.Velocity = @(Max(50, Abs(unit.Velocity.X)) * direction, 0)
+                }
+                once Tick(0.2s) { Expire }
+            }
+            let projectile = unit.Subspawn proj {
+                use shape=Circle(0.5)
+                let alreadyDragged = []
+                let angle = 0
+    
+                on Tick {
+                    angle += 0.1
+                    let offsetOne = @(Cos(angle + Pi), Sin(angle + Pi))
+                    PolygonSprite<one>(color=#f00, bodyOffset=offsetOne)
+                    PolygonCollider<one>(bodyOffset=offsetOne, category=C:Collision | C:Projectile, sense=C:Fighter, collideWith=C:Fighter, parent=unit, density=0, isolate=true)
+    
+                    let offsetTwo = @(Cos(angle), Sin(angle))
+                    PolygonSprite<two>(color=#f00, bodyOffset=offsetTwo)
+                    PolygonCollider<two>(bodyOffset=offsetTwo, category=C:Collision | C:Projectile, sense=C:Fighter, collideWith=C:Fighter, parent=unit, density=0, isolate=true)
+                }
+
+                // might just be better to replace with one big circle
+                on BeforeCollide<one> that {
+                    if that.Category.Contains(C:Fighter) && that.Team != owner.Team && !alreadyDragged.Contains(that) {
+                        that.Velocity = that.Velocity.WithX(direction * Abs(unit.Velocity.X) * KnockbackModifier)
+                        alreadyDragged.Push(that)
+                    }
+                }
+
+                on BeforeCollide<two> that {
+                    if that.Category.Contains(C:Fighter) && that.Team != owner.Team && !alreadyDragged.Contains(that) {
+                        that.Velocity = that.Velocity.WithX(direction * Abs(unit.Velocity.X) * KnockbackModifier)
+                        alreadyDragged.Push(that)
+                    }
+                }
+
+    
+                once Tick(0.7s) {
+                    Expire
+                }
+            }
+            await projectile.BeforeDespawn
+        }
+    }
+
+    let abilityQ = Subspawn ability {
+        use cooldown = 4s, keycode = KeyQ, leadIn = 10, followThrough = 3
+        SpawnEachIncantation incantation {
+            let projectile = Subspawn proj {
+                use body=proj, shape=Circle(0.5)
+                
+                let pullingBack = false
+                let alreadyDragged = []
+                Body(pos=unit.Pos, velocity=50 * AimDirection, noRotation=true)
+                PolygonSprite(color=#f00)
+                PolygonCollider<collider>(category=C:Collision | C:Projectile, sense=C:Fighter, collideWith=C:Fighter|C:Map, parent=unit, density=0)
+                LimitSpeed(50)
+                behavior on BeforePhysics {
+                    if pullingBack {
+                        let pullDirection = (unit.Pos - proj.Pos).Direction
+                        proj.Velocity = 50 * pullDirection
+                    }
+                }
+                let travelDuration = REmpowered ? 0.45s : 0.25s
+                once Tick(travelDuration) {
+                    pullingBack = true
+                    PolygonCollider<collider>(category=C:Collision|C:Projectile, sense=C:Fighter, collideWith=C:Fighter)
+                }
+                
+                on Tick(1s) {
+                    Expire
+                }
+                
+                on BeforeCollide<collider> that {
+                    if that == unit {
+                        Expire
+                    }
+                    
+                    if that.Category.Contains(C:Fighter) && that.Team != owner.Team && !alreadyDragged.Contains(that) {                    
+                        let pullDirection = (unit.Pos - that.Pos).Direction
+                        let distance = unit.Pos.Distance(that.Pos)
+                        let impulse = pullDirection * 80 * Min(1.5, distance / 40 + 0.3) * KnockbackModifier
+                        impulse = impulse.WithX(impulse.X * 2)
+                        give that.GravityModifier(0)
+                        that.ApplyImpulse(impulse)
+                        alreadyDragged.Push(that)
+                    }
+                    
+                    if !pullingBack {
+                        if unit.Pos.Distance(proj.Pos) < 3 { Expire }
+                        PolygonCollider<collider>(category=C:Collision|C:Projectile, sense=C:Fighter, collideWith=C:Fighter)
+                    }
+                    
+                    // let it travel inside for a more satisfying animation
+                    once Tick(1) {
+                        pullingBack = true
+                    }
+                }
+            }
+            await projectile.BeforeDespawn
+        }
+    }
+
+    let abilityR = Subspawn ability {
+        use charge = 200, keycode = KeyR, leadIn = 1s, followThrough = 3
+        SpawnEachIncantation incantation {
+            unit.Subspawn proj {
+                use shape=Circle(11)
+                give Jumps(3)
+                give SpeedModifier(1.2)
+                give KnockbackModifier(1.5)
+                give REmpowered(true)
+                PolygonSprite(color=#a00, layer=Layer:Aura)
+                PolygonCollider(category=C:Collision | C:Projectile, sense=C:Fighter, collideWith=C:Fighter, density=0)
+
+                on BeforeCollide that {
+                    that.Marker<astariRDebuff>.Expire
+                    that.Marker<astariRDebuff> = proj.Subspawn auraEffect {
+                        give that.GravityModifier(0.5)
+                        give that.SpeedModifier(0.5)
+                    }
+                }
+
+                on AfterCollide that {
+                    once Tick(1s) {
+                        that.Marker<astariRDebuff>.Expire
+                    }
+                }
+
+                once Tick(8s) {
+                    Expire
+                }
+            }
+        }
+    }
+
+    DynamicCamera pos radius {
+        // spawn bottom corner anchor
+        Subspawn oui {
+            with ScreenSize {
+                OUICommandBar<aco> {
+                    // TODO yeah this bodyOffset manual setting aint gonna cut it, write a layouting system
+                    
+                    abilityClick.AbilityBtn(bodyOffset=@(-26, 2), size=4)
+                    abilitySecondary.AbilityBtn(bodyOffset=@(-21, 2), size=4)
+                    abilityQ.AbilityBtn(bodyOffset=@(-15, 1), size=6)
+                    abilityE.AbilityBtn(bodyOffset=@(-8, 1), size=6)
+                    abilityR.AbilityBtn(bodyOffset=@(0, 0), size=8)
+                }
+            }
+        }
+    }
+}
+
+pub fn body.DecaySpeedVec<Id = auto>(vec) {
+    behavior<Id> on BeforePhysics {
+        Velocity = Velocity.WithX(Velocity.X * (1 - vec.X)).WithY(Velocity.Y * (1 - vec.Y))
+    }
+}
+
+pub fn body.LimitSpeedVec(vec) {
+    behavior on BeforePhysics {
+        Velocity = Velocity.WithX(Velocity.X.Clamp(-vec.X, vec.X)).WithY(Velocity.Y.Clamp(-vec.Y, vec.Y))
+    }
+}
+
+
+fn unit.AimDirection([owner]) -> dir {
+    return (owner.Pointer - unit.Pos).Direction
+}
+
+fn unit.AimHorizontal([owner]) -> sign {
+    if owner.Pointer.X > unit.Pos.X {
+        return 1
+    } else {
+        return -1
+    }
+}
+
+fn unit.AimVertical([owner]) -> sign {
+    if owner.Pointer.Y > unit.Pos.Y {
+        return 1
+    } else {
+        return -1
+    }
+}
+
+
+fn unit.Gravity([body]) {
+    behavior<gravity> on BeforePhysics {
+        ApplyImpulse(2.5 * @(0, 1) * GravityModifier)
+    }
+}
+
+fn unit.WASDControls([owner, body, speed, jumpHeight, height]) ||? {
+    let speedPerTick = speed / 0.25s
+    let travelingUp = false
+    let remainingJumps = 0
+    
+    // TODO coyote time implementation. place a marker at the last spot they were touching the platform
+    // then calculate distance
+
+    on BeforePhysics {
+        let pos = body.Pos + @(0, height / 2)
+        if pos.QueryNearestAlongRay(direction=@(0, 1), maxDistance=0.01, filter=C:Map) {
+            remainingJumps = Jumps - 1
+        }
+    }
+    
+    on ButtonDown(KeyW) {
+        let jumped = false
+        behavior<jump> on BeforePhysics {
+            // we'll need double jumps in the future so here it is
+            if delve {
+                delve()
+            } else {
+                let pos = body.Pos + @(0, height / 2)
+                if pos.QueryNearestAlongRay(direction=@(0, 1), maxDistance=0.01, filter=C:Map) {
+                    remainingJumps = Jumps
+                }
+                if !jumped && remainingJumps > 0 {
+                    jumped = true
+                    remainingJumps -= 1
+                    body.Velocity = body.Velocity.WithY(0)
+                    ApplyImpulse(jumpHeight * @(0, -1))
+                    travelingUp = true
+                } else if body.Velocity.Y > 0 && travelingUp { 
+                    travelingUp = false
+                }
+
+                // push them up for a bit so you can control jump height
+                if travelingUp {
+                    ApplyImpulse(0.5 * @(0, -1) * GravityModifier)
+                }
+            }
+        }
+    }
+    
+    on ButtonUp(KeyW) {
+        // push them down so people can do small hops
+        if travelingUp { 
+            travelingUp = false
+            ApplyImpulse(15 * @(0, 1) * GravityModifier)
+        }
+
+        delete behavior<jump>
+    }
+
+    
+    on ButtonDown(KeyS) { 
+        behavior<moveDown> on BeforePhysics {
+            ApplyImpulse(speedPerTick * @(0, 1))
+        }
+    }
+    on ButtonUp(KeyS) {
+        delete behavior<moveDown>
+    }
+
+    on ButtonDown(KeyA) {
+        if Velocity.X > 0 {
+            Velocity = Velocity.WithX(Velocity.X * 0.5)
+        }
+
+        behavior<moveLeft> on BeforePhysics {
+            delete behavior<movementDecel>
+            ApplyImpulse(speedPerTick * @(-1, 0) * SpeedModifier)
+        }
+    }
+    on ButtonUp(KeyA) {
+        Subspawn {
+            DecaySpeedVec<movementDecel>(@(0.2, 0.025))
+            await Tick(0.3s)
+            delete behavior<movementDecel>
+            Expire
+        }
+        delete behavior<moveLeft>
+    }
+    
+    on ButtonDown(KeyD) {
+        if Velocity.X < 0 {
+            Velocity = Velocity.WithX(Velocity.X * 0.5)
+        }
+        behavior<moveRight> on BeforePhysics {
+            delete behavior<movementDecel>
+            ApplyImpulse(speedPerTick * @(1, 0) * SpeedModifier)
+        }
+    }
+    on ButtonUp(KeyD) {
+        Subspawn {
+            DecaySpeedVec<movementDecel>(@(0.2, 0.025))
+            await Tick(0.3s)
+            delete behavior<movementDecel>
+            Expire
+        }
+        delete behavior<moveRight>
+    }
+
+}

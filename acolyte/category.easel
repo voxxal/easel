@@ -1,0 +1,22 @@
+// Physical attributes - setting any one of these will cause other entities to collide with us
+pub tangible category Category:Unit
+
+pub tangible category Category:Shield
+
+pub tangible category Category:Projectile
+pub tangible category Category:Disintegrator // Meteors and beams destroy everything
+
+pub tangible category Category:Turf
+pub tangible category Category:Obstacle
+pub tangible category Category:Zone
+
+
+// Non-physical attributes - setting these won't cause other entities to collide with us
+pub category Category:Aoe // Affected by area-of-effect
+pub category Category:AlwaysBlow // Always affected by whirlwind, even when on the same team
+pub category Category:Destructible // Destroyed by explosions
+pub category Category:Ghost // A unit for a dead player
+pub category Category:Grabbable
+pub category Category:Grapple // Create a specific category so meteorite can have a specific exception to not split on Grapple
+
+

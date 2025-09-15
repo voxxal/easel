@@ -1,0 +1,14 @@
+field this.NumHitsLookup
+
+pub fn this.TakeHitIfWithinLimit(that, [maxHits]) -> shouldTakeHit {
+	if !that { return false }
+
+	const lookup = this.NumHitsLookup ??= {}
+	const numHits = lookup[that] ?? 0
+	if numHits < maxHits {
+		lookup[that] = numHits + 1
+		return true
+	} else {
+		return false
+	}
+}

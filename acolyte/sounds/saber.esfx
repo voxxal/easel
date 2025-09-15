@@ -1,0 +1,13 @@
+Play(duration=5s) {
+	Vibrato(freqModulation=1) {
+		Oscillator(freq=[5,4])
+	}
+	Oscillator(wave=$square, freq=30, harmonics=[1,2,4,8])
+	LowPass(freq=70)
+	HighPass(freq=40)
+	Tremolo(volumeModulation=0.4) {
+		Oscillator(freq=14)
+	}
+	Envelope(attack=0.15s)
+	Gain(volume=0.1s)
+}

@@ -1,0 +1,35 @@
+PushNum(0.5)
+PushAfter(19)
+Read(0)
+FieldGet($LeagueColor)
+WriteBack(15)
+Read(0)
+FieldGet($LeagueName)
+PushAfter(1)
+PushNum(0.5)
+WriteBack(15)
+BeginClosure { num_params: 1, return_at: 15 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+FieldGet($LeagueGlyph)
+PushNum(1.5)
+PushAfter(3)
+PushNum(0.2)
+PushAfter(2)
+Read(0)
+NoSubfragmentSlot
+PushAfter(3)
+BeginIntrinsic(12)
+Image
+EndIntrinsic0
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(4)
+Read(1)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(27)
+Button(PipMedal)
+EndButton
+EndIntrinsic0

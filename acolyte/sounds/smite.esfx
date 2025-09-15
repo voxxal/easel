@@ -1,0 +1,5 @@
+Play(duration=1s) {
+	Oscillator(wave=$triangle, freq=[8000,10000], harmonics=[1, 1.167, 1.33, 1.78, 2, 2.25])
+	Envelope(attack=0.99s)
+	Gain(volume=0.1)
+}

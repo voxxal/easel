@@ -1,0 +1,16 @@
+pub await fn body.Retreated(prey, range) {
+	loop {
+		await Tick
+
+		let target = prey.Pos
+		if !target { break }
+
+		let bodyPos = body.Pos
+		if !bodyPos { break }
+
+		let distance = Length(target - bodyPos)
+		if distance > range {
+			break
+		}
+	}
+}

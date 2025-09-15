@@ -1,0 +1,23 @@
+Read(1)
+JumpIfNot(22)
+PushScript(ScriptId(295))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 12 }
+ClosureRead(0)
+AwaitSignal(SignalId(18))
+BeginClosure { num_params: 0, return_at: 5 }
+ClosureRead(0)
+Despawn
+Pop
+EndClosure
+ClosureRead(1)
+ClosureAdd
+CallLambda(0)
+EndClosure
+Read(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)

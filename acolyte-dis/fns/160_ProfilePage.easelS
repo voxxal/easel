@@ -1,0 +1,233 @@
+Read(0)
+PushSymbol($accumulation/profile.easel/profile)
+BeginClosure { num_params: 1, return_at: 19 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Loading...")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+NoSubfragmentSlot
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+EndClosure
+PushAfter(7)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0
+Read(0)
+PushSymbol($accumulation/profile.easel/history)
+BeginClosure { num_params: 1, return_at: 2 }
+EndClosure
+PushAfter(7)
+Read(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0
+PushScript(ScriptId(160))
+PushIndex(1)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 81 }
+ClosureRead(0)
+BeginIntrinsic(1)
+FetchUserAccumulators
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 70 }
+ClosureRead(0)
+PushSymbol($accumulation/profile.easel/profile)
+BeginClosure { num_params: 1, return_at: 53 }
+ClearSubfragmentRangeLocal { from: 0, length: 5, local: 0 }
+ClosureRead(0)
+JumpIfNot(49)
+BeginClosure { num_params: 1, return_at: 10 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+ClosureRead(0)
+Read(0)
+NoSubfragmentSlot
+PushAfter(3)
+BeginIntrinsic(5)
+PlayerNameDisplay
+EndIntrinsic0
+EndClosure
+ClosureRead(0)
+ClosureAdd
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+ClosureRead(1)
+ClosureRead(2)
+UserId
+Equal
+JumpIfNot(19)
+Read(0)
+SubfragmentSlot(1)
+PushScript(ScriptId(161))
+Call(1)
+ClosureRead(2)
+ClosureRead(2)
+Read(0)
+SubfragmentSlot(2)
+PushScript(ScriptId(173))
+Call(3)
+PushNum(5.0)
+PushAfter(1)
+Read(0)
+SubfragmentSlot(3)
+PushAfter(1)
+BeginIntrinsic(4)
+Blank
+EndIntrinsic0
+ClosureRead(0)
+Read(0)
+SubfragmentSlot(4)
+PushScript(ScriptId(162))
+Call(2)
+EndClosure
+Read(0)
+ClosureAdd
+ClosureRead(1)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+PushAfter(7)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0
+EndClosure
+ClosureRead(1)
+ClosureAdd
+ClosureRead(0)
+ClosureAdd
+CallLambda(1)
+EndClosure
+Read(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)
+PushScript(ScriptId(160))
+PushIndex(2)
+DiscriminatorConcatN(2)
+Read(0)
+BeginClosure { num_params: 0, return_at: 95 }
+ClosureRead(0)
+PushUndefined
+BeginIntrinsic(2)
+FetchUserEpisodeHistory
+EndIntrinsic1
+BeginClosure { num_params: 1, return_at: 85 }
+Read(0)
+BooleanNot
+JumpIfNot(2)
+Return1
+ClosureRead(0)
+PushSymbol($accumulation/profile.easel/history)
+BeginClosure { num_params: 1, return_at: 68 }
+ClearSubfragmentRangeLocal { from: 0, length: 3, local: 0 }
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("Recent Games")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(0)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(H1)
+EndParagraph
+EndIntrinsic0
+ClosureRead(0)
+Length
+PushNum(0.0)
+Equal
+JumpIfNot(18)
+BeginClosure { num_params: 1, return_at: 8 }
+ClearSubfragmentRangeLocal { from: 0, length: 1, local: 0 }
+Read(0)
+NoSubfragmentSlot
+PushString("No recent games")
+StringConcatN(1)
+Text
+EndClosure
+PushAfter(15)
+Read(0)
+SubfragmentSlot(1)
+WriteBack(2)
+BeginIntrinsic(16)
+Paragraph(Paragraph)
+EndParagraph
+EndIntrinsic0
+Return1
+ClosureRead(0)
+Declare(1)
+PushIndex(0)
+Declare(2)
+Loop { continue_at: 17, break_at: 22 }
+Read(1)
+Read(2)
+Index
+With
+IsUndefined
+JumpIf(15)
+Declare(3)
+Read(0)
+SubfragmentAppendSlot(2)
+Declare(4)
+Read(3)
+Read(4)
+NoSubfragmentSlot
+PushScript(ScriptId(164))
+Call(2)
+Undeclare(3, 2)
+Read(2)
+Increment
+Write(2)
+JumpBack(19)
+EndLoop
+Undeclare(1, 2)
+EndClosure
+Read(0)
+ClosureAdd
+PushAfter(7)
+ClosureRead(0)
+WriteBack(2)
+BeginIntrinsic(10)
+Section(Content)
+EndSection
+EndIntrinsic0
+EndClosure
+ClosureRead(1)
+ClosureAdd
+CallLambda(1)
+EndClosure
+Read(1)
+ClosureAdd
+Read(0)
+ClosureAdd
+Hook(0)

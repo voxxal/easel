@@ -1,0 +1,11 @@
+Play(duration=1s) {
+	Vibrato(freqModulation=2500) {
+		WhiteNoise
+	}
+	Oscillator(wave=$triangle, freq=160)
+	LowPass(freq=[280,0])
+	HighShelf(freq=[140,0], db=-6)
+	Peaking(freq=70, q=1, db=6)
+	Envelope(attack=0.03s, decay=0.1s, decayTo=0.2)
+	Gain(volume=0.67)
+}

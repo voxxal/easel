@@ -1,0 +1,24 @@
+pub fn this.Introducer {
+    behavior<introducer> with PlayerJoined, BeforePlayerLeave {
+        await Paint // if a player leaves, wait until the end of the tick before updating so that the player has actually left
+        Transmission(duration=15s) {
+            P {
+                let isFirst = true
+                for player in QueryPlayers %%{
+                    if isFirst {
+                        isFirst = false
+                    } else {
+                        ", "
+                    }
+                    PlayerNameDisplay(player)
+                }
+                " joined"
+            }
+        }
+    }
+
+    once AfterGameCommenced {
+        // Expire once the game starts so we don't keep re-notifying when players leave during/after the game
+        delete behavior<introducer>
+    }
+}

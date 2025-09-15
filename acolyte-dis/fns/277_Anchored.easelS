@@ -1,0 +1,3 @@
+PushSymbol($library/terrain/anchored.easel/anchored)
+Read(0)
+DeleteHook

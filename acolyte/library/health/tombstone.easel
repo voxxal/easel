@@ -1,0 +1,22 @@
+// unit refers to the victim
+// owner refers to the player doing the killing
+pub fn unit.Tombstone([owner?]) |victim, use ui| {
+	if !unit.Category.Overlaps(Category:Unit) { return }
+
+    // Replaces the previous `behavior<tombstone>`
+	behavior<tombstone> once unit.BeforeOutOfHealth {
+        let killer = owner
+        let victim = unit.Owner
+
+	    if killer != victim {
+            killer.KillScore += 1
+	    }
+
+        Transmission(audience=Audience:All) {
+            P(fontSize=0.9) { delve(victim=) }
+        }
+	}
+}
+pub delete fn unit.Tombstone() {
+    delete behavior<tombstone>
+}

@@ -1,0 +1,16 @@
+Play(duration=5s, cutoff=0.5s) {
+	BrownNoise
+	HighPass(freq=1800)
+	LowPass(freq=1803)
+	Gain(volume=0.25)
+	Envelope(attack=0.5s)
+}
+
+Play(duration=5s, cutoff=0.5s) {
+	Oscillator(freq=800, harmonics=[1,1.5])
+	LowPass(freq=200)
+	Tremolo(volumeModulation=0.4) {
+		Oscillator(freq=6.67)
+	}
+	Envelope(attack=0.5s)
+}

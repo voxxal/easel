@@ -1,0 +1,40 @@
+pub fn owner.DynamicCamera() |use this = entity, pos, radius| {
+    Spawn camera {
+        use body = this, pos = @(0, 0)
+        let radius = 20
+        Body
+        Camera(radius=)
+        let previousChildren = Spawn entity {
+            delve(entity, pos, radius)
+        }
+
+        on ButtonDown(KeyK) {
+            CommenceGame
+            Transmission { "Game Started" }
+        }
+
+        on ButtonDown(KeyL) {
+            CommenceGame
+            Transmission { "Game Concluded" }
+        }
+
+
+        on ButtonDown(KeyO) {
+            radius += 2
+            Camera(radius=)
+            previousChildren.Despawn
+            previousChildren = Spawn entity {
+                delve(entity, pos, radius)
+            }
+        }
+
+        on ButtonDown(KeyP) {
+            radius -= 2
+            Camera(radius=)
+            previousChildren.Despawn
+            previousChildren = Spawn entity {
+                delve(entity, pos, radius)
+            }
+        }
+    }
+}
