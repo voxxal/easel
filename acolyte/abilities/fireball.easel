@@ -1,93 +1,95 @@
-.. glyph=Thunderball:Glyph, color=#ff8800, damage=16.0, lifesteal=0.3, cooldown=1.5s
+use glyph=@thunderball.svg, color=#ff8800, damage=16.0, lifesteal=0.3, cooldown=1.5s
 
 pub symbol WantFireball
 
-pub fn FireballOption(.. ui) {
-	SlotOption<WantFireball> {
-		H1 { %("Fireball") }
+pub fn FireballDescription([ui]) {
+    H1 { "Fireball" }
 
-		P {
-			%("From your outstretched hand, a fierce, blazing orb of fire hurtles forward, sending enemies tumbling backward. With its short cooldown, you can unleash this swift and reliable spell time and time again.")
-		}
+    P {
+        "From your outstretched hand, a fierce, blazing orb of fire hurtles forward, sending enemies tumbling backward. With its short cooldown, you can unleash this swift and reliable spell time and time again."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn FireballOption([ui]) {
+	SlotOption(WantFireball) {
+	    FireballDescription
 	}
 }
 
-pub fn ability.FireballAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.FireballAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        FireballDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 
 		Spawn projectile {
-			.. parent=unit 
-			.. lifetime=90, dissipation=30 
-			.. radius=0.24, speed=48.0
-			.. luminous=1.0, depth=Depth:Projectile
-			.. density=30.5, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Medium
+			use parent=unit, body=projectile
+			use lifetime=90, dissipate=30
+			use radius=0.24, speed=48.0
+			use luminous=1, layer=Layer:Projectile
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			Smoke(splatter=0.15)
-			RayEmitter
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:Medium
+			RecoverSpeed
 			ExpireAfterLifetime
-			Sing(Fireball:Sound)
+			Sing(@fireball.esfx)
 
-			Collider {
-				Shape:Circle
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile,
+                density=30.5, restitution=1,
+            )
+
+			on Paint {
+				Streak(bloom=3, bloomAlpha=1, glare=1, shadow=0.25)
+				Spark(splatter=0.15, feather=1, shine=0.5)
 			}
 
-			let canHurtSelf = false
 			on BeforeCollide that {
-				if canHurtSelf || that.Team != owner.Team {
+				if CanHurtSelf || that.Team != owner.Team {
 					Attack(that)
 
 					that.Tombstone victim {
-						NameBlock(owner)
-						%(" scorched ")
-						NameBlock(victim)
+						PlayerNameDisplay(owner)
+						" scorched "
+						PlayerNameDisplay(victim)
 					}
 				}
 			}
 			on AfterCollide that {
-				if that.Category & Category:Shield {
-					canHurtSelf = true // Can bounce off shield to hurt self
+				if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team {
+					CanHurtSelf = true // Can bounce off shield to hurt self
 				}
 
 				if that.Durability >= this.Durability {
 					Strobe(growth=0.5, shine=1.0)
-					Puff(count=10, splatter=1)
-					Hear(Fireball:HitSound)
+					Hear(@fireballHit.esfx)
+
+			     	repeat 10 {
+						Spark(splatter=1, feather=1, shine=0.5)
+					}
+
 					Expire
 				}
 			}
 		}
 	}
-}
-
-sound Fireball:Sound(duration=1.5s, cutoff=0.5s) {
-	BrownNoise
-	BandPass(freq=[220,330], q=[1,5])
-	Envelope(attack=0.25s, release=0.5s)
-}
-
-sound Fireball:HitSound(duration=1s) {
-	Vibrato(freqModulation=350) {
-		WhiteNoise
-	}
-	Oscillator(wave=$triangle, freq=40)
-	LowPass(freq=[500,0], q=1)
-	Peaking(freq=165, db=12)
-	Envelope(attack=0.01s, decay=0.05s, sustain=0s, sustainVolume=0.2)
 }

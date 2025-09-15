@@ -1,6 +1,0 @@
-pub const Interruptor:None      = 0b00
-pub const Interruptor:Self      = 0b01
-pub const Interruptor:NotSelf   = 0b10
-pub const Interruptor:Any       = 0b11
-
-pub signal unit.Interrupt(interruptor=Interruptor:NotSelf)

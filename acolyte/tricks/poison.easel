@@ -1,8 +1,0 @@
-pub behavior fn this.Poison<Id?>(that, damage, poisonDuration, .. interval=20, lifesteal?, minHealth?, noRelay?, unit?) {
-	let damage = damage * interval / poisonDuration
-	loop {
-		// Must set noHurt and noInterrupt otherwise the enemy will be constantly flashing
-		Attack(that, damage, noHurt=true, noInterrupt=true)
-		await Sleep(interval)
-	}
-}

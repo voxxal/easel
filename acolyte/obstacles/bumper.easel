@@ -1,61 +1,47 @@
-.. owner=null
+use owner=null
 
-pub fn obstacle.Bumper(pos, heading?=0, maxHp=50, impulse=200, radius=1, density=50) .. shape {
-	.. color=#c94, fade=#753,
-	.. bloom=0, luminous=0,
-	.. shading=0.25, depth=Depth:Obstacle,
-	.. categories=(Category:Obstacle | Category:CanGrab | Category:HurtByLava | Category:Aoe),
-	.. collideWith=Category:Solid,
-	.. durability=Durability:Maximum,
-	.. ccd=false
+pub fn obstacle.Bumper(shape, pos=@(0,0), heading=0, maxHp=50, impulse=200, radius=1, density=50, [posOffset?, headingOffset?]) {
+    use body=obstacle, life=obstacle
+	use color=#c94, fade=#753,
+	use bloom=0, luminous=0,
+	use shading=0.25, layer=Layer:Obstacle,
+	use restitution=1
 
-	Body(pos, heading=)
-	PrepareForCollision
-	DecayingMotion(turningDecay=0.05)
+	Body(pos = pos + posOffset, heading = heading + headingOffset)
+	Durability = Durability:Maximum
+	DecaySpeed
+	DecayTurnRate(turningDecay=0.05)
 
 	Health(maxHp)
+	LavaBehavior
 
-	Collider {
-		Sprite {
-			Perimeter shape {
-				delve()
-			}
-		}
-	}
+	Anchored
+	once AfterGameCommenced { delete Anchored }
 
-	Anchored(pos, heading)
-	once AfterCommence { delete Anchored }
+	PolygonCollider(
+        category=(Category:Obstacle | Category:Grabbable | Category:Aoe),
+        restitution=1,
+    )
+	PolygonPerimeter
 
-	hook Hp {
-		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
-		.. color = HpProportion.Mix(fade, color)
+	with Hp {
+		await Paint // coalesce multiple changes to HP into a single paint at the end of tick
+		use color = HpProportion.Mix(fade, color)
 
-		SpriteProps(shadow=0.5)
+		PolygonSprite(shadow=0.5)
 	}
 
 	on BeforeCollide that {
-		if that.Category & (Category:Hero | Category:Obstacle) {
+		if that.Category.Overlaps(Category:Unit | Category:Obstacle) {
 			that.ApplyImpulse(impulse * Direction(that.Pos - this.Pos))
-			Strobe(dissipation=10, shine=0.5, growth=0.5)
-			Hear(Obstacle:Bumper)
+			Strobe(dissipate=10, shine=0.5, growth=0.5)
+			Hear(@bumper.esfx)
 		}
 	}
 
 	once BeforeOutOfHealth {
-		Puff(
-			count=10, shadow=0,
-			luminous=1.0, shine=1.0, bloom=1.0,
-			dissipation=30, splatter=Splatter:Outwards(10.0),
-			flutter=$area)
+		repeat 10 {
+			Spark(shadow=0, luminous=1, feather=1, shine=1, bloom=1, dissipate=30, speed=10, splatter=1, glaze=true)
+		}
 	}
-}
-
-sound Obstacle:Bumper(duration=0.5s) {
-	Vibrato(freqModulation=120) {
-		Oscillator(freq=240)
-	}
-	Oscillator(wave=$square, freq=120)
-	LowPass(freq=120)
-	HighPass(freq=40)
-	Envelope(attack=0.001s, sustain=0s)
 }

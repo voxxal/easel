@@ -1,57 +1,70 @@
-.. glyph=ShieldReflect:Glyph, color=#3366ff, cooldown=10.0s, lifetime=2.0s, slowProportion=0.5
-.. easeInFraction=0.05
+use glyph=@shieldReflect.svg, color=#3366ff, cooldown=9s, lifetime=2.0s, slowProportion=0.5
+use easeInFraction=0.05
 
 pub symbol WantReflect
 
-pub fn ReflectOption(.. ui) {
-	SlotOption<WantReflect> {
-		H1 { %("Reflect") }
+pub fn ReflectDescription([ui]) {
+    H1 { "Reflect" }
 
-		P {
-			%("Forge a luminous barrier of shimmering energy that repels enemy projectiles and may even reflect them back upon their caster. Beware, the shield is powerless against the pervasive force of area-of-effect spells.")
-		}
+    P {
+        "Forge a luminous barrier of shimmering energy that repels enemy projectiles and may even reflect them back upon their caster. Beware, the shield is powerless against the pervasive force of area-of-effect spells."
+    }
 
-		P {
-			SlotEffect("Heavy Protection", icon="fas fa-snowflake") {
-				%("The weight of the shield slows you down by " + (slowProportion * 100) + "%.")
-			}
-		}
+    SlotEffect("Heavy Protection", icon="fas fa-snowflake") {
+        "The weight of the shield slows you down by " + (slowProportion * 100) + "%."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn ReflectOption([ui]) {
+	SlotOption(WantReflect) {
+        ReflectDescription
 	}
 }
 
-pub fn ability.ReflectAbility(unit, owner, btn) {
-	on BotDeflecting {
+pub fn ability.ReflectAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotDeflecting target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		ability.Subspawn shield {
-			.. dissipation=10, radius=2.1, density=0.0, restitution=0.0
-			.. luminous=1.0, depth=Depth:Shield
-			.. categories=Category:Shield, durability=Durability:Shield, collideWith=Category:Projectile, ccd=true
+    AbilityCommandBtn {
+        ReflectDescription
+    }
 
-			PrepareForCollision
-			TurnRateModifier(-0.9)
-			Sing(Reflect:Sound)
+	SpawnEachIncantation incantation {
+		ability.Subspawn shield {
+		    use body=shield
+			use dissipate=10, radius=2.1
+			use luminous=1, layer=Layer:Shield
+			use arc=0.5rev
+
+			Durability = Durability:Reflector
+			TurnRateModifier(0.1)
+			Sing(@reflect.esfx)
 			ExpireAfterLifetime
 
-			Collider(unit) { // Attach this Collider to the unit
-				Shape:Sector(angleOffset=-0.25rev, arc=0.5rev)
-			}
+			PolygonCollider(
+                Sector(arc=), body=unit, // Attach this Collider to the unit
+                category=Category:Shield, collideWith=Category:Projectile,
+                density=0,
+            )
 
 			on Hurt {
-				Strobe(dissipation=10, shine=1.0, growth=0.25)
+				Strobe(dissipate=10, shine=1.0, growth=0.25)
 			}
 
 			on BeforeCollide that {
-				if that.Category & Category:Projectile {
-					Hear(Reflect:HitSound)
+				if that.Category.Overlaps(Category:Projectile) {
+					Hear(@reflectHit.esfx)
 					if that.Team != owner.Team {
 						that.Velocity:RedirectTowards(unit.Pos, speedFactor=-1)
 					}
@@ -59,35 +72,18 @@ pub fn ability.ReflectAbility(unit, owner, btn) {
 			}
 
 			await Tween(duration=lifetime, initial=0, final=1) a {
-				.. fade = a * 0.5, color=color.Fade(fade)
-				.. ease = Min(1, a/easeInFraction), radius=radius*ease
+				use fade = a * 0.5, color=color.Fade(fade)
+				use ease = Min(1, a/easeInFraction), radius=radius*ease
 
-				SpeedModifier(a.Mix(-slowProportion, 0))
+				SpeedModifier(1 + a.Mix(-slowProportion, 0))
 
 				if unit.Vanished {
-					delete Sprite
+					delete PolygonSprite<shield>
 
 				} else {
-					Sprite(unit, bloom=5.0, flicker=0.1, shadow=0.25) {
-						Shape:Sector(angleOffset=-0.25rev, arc=0.5rev)
-					}
+					PolygonSprite<shield>(Sector(arc=), body=unit, bloom=5.0, flicker=0.1, shadow=0.25)
 				}
 			}
 		}
 	}
-}
-
-sound Reflect:Sound(duration=2s) {
-	Oscillator(wave=$sine, freq=90)
-	Envelope(attack=0.1s, sustain=0s)
-	Gain(volume=0.5)
-}
-
-sound Reflect:HitSound(duration=0.5s) {
-	Vibrato(freqModulation=90) {
-		Oscillator(freq=180)
-	}
-	Oscillator(wave=$sine, freq=90)
-	Envelope(attack=0.01s, sustain=0s)
-	Gain(volume=0.5)
 }

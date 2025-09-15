@@ -1,9 +1,16 @@
-.. btn="KeyR", slotDefault=WantBeam
+use keycode=KeyR, slotDefault=WantBeam
 
-pub preference owner.UltimateSlot
+pub symbol UltimateSlot
 
-pub fn unit.UltimateSlotAbility(.. owner, btnIndex?, btnSize=1) {
-	SlotAbility<UltimateSlot> choice {
+pub fn unit.UltimateSlotAbility([owner, btnOrder?, btnSize?]) {
+    use btnEdit = ShowIntent<UltimateSlot>
+    if owner.IsHuman {
+        BottomModal<UltimateSlot>(dismissed=true) {
+            UltimateSlotEditor
+        }
+    }
+
+	SpawnEachAbility<UltimateSlot> choice ability {
 		if choice == WantBeam { BeamAbility }
 		else if choice == WantApexAcolyte { ApexAcolyteAbility }
 		else if choice == WantBlast { BlastAbility }
@@ -11,13 +18,10 @@ pub fn unit.UltimateSlotAbility(.. owner, btnIndex?, btnSize=1) {
 		else if choice == WantSpiritBomb { SpiritBombAbility }
 		else if choice == WantRepeater { RepeaterAbility }
 		else if choice == WantBouncer { BouncerAbility }
-		else { SlotWithoutAbility }
-
-		SlotPopup<UltimateSlot> { UltimateSlotEditor }
 	}
 }
 
-pub fn this.UltimateSlotEditor(.. owner, ui) {
+pub fn this.UltimateSlotEditor([dismiss?, owner, ui]) {
 	SlotEditor<UltimateSlot> {
 		BeamOption
 		BlastOption
@@ -30,7 +34,7 @@ pub fn this.UltimateSlotEditor(.. owner, ui) {
 }
 
 pub fn owner.RandomizeUltimateSlot {
-	UltimateSlot = PickRandom([
+	SlotChoice<UltimateSlot> = PickRandom([
 		WantBeam,
 		WantBlast,
 		WantSupernova,

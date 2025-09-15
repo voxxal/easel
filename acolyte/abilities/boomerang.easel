@@ -1,64 +1,73 @@
-.. glyph=CrackedBallDunk:Glyph, color=#00ffff, damage=20.0, lifesteal=0.3, cooldown=2s, secondStrikeBonus=0.25
+use glyph=@crackedBallDunk.svg, color=#00ffff, damage=20.0, lifesteal=0.3, cooldown=2s, thirdPlusStrikePenalty=0.5
 
 pub symbol WantBoomerang
 
-pub fn BoomerangOption(.. ui) {
-	SlotOption<WantBoomerang> {
-		H1 { %("Boomerang") }
+pub fn BoomerangDescription([ui]) {
+    H1 { "Boomerang" }
 
-		P {
-			%("Send forth a projectile that slices through the air before returning to your hand. With the potential to strike enemies twice, Boomerang becomes a fearsome weapon in the hands of a skilled wielder.")
-		}
+    P {
+        "Send forth a projectile that slices through the air before returning to your hand. With the potential to strike enemies twice, Boomerang becomes a fearsome weapon in the hands of a skilled wielder."
+    }
 
-		P {
-			SlotEffect("Second Strike", icon="fas fa-sword") {
-				%("The second strike of Boomerang, if successfully landed, delivers an additional " + (secondStrikeBonus * 100) + "% damage, capitalizing on the vulnerability left by the first strike.")
-			}
-		}
+    Blank(expand=true)
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn BoomerangOption([ui]) {
+	SlotOption(WantBoomerang) {
+        BoomerangDescription
 	}
 }
 
-pub fn ability.BoomerangAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.BoomerangAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        BoomerangDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 
 		Spawn projectile {
-			.. parent=unit
-			.. lifetime=2s, dissipation=25
-			.. radius=0.16, speed=53.0
-			.. ownerColor=true, luminous=1.0, depth=Depth:Projectile
-			.. density=1, ccd=true
-			.. categories=Category:Projectile, durability=Durability:High
-			.. sense = Category:Hero | Category:Projectile, collideWith = Category:Shield | Category:Obstacle
-			.. noLavasteal=true // Not enough knockback to push others into lava
+			use parent=unit, body=projectile
+			use lifetime=2s, dissipate=25
+			use radius=0.16, speed=53.0
+			use ownerColor=true, luminous=1, layer=Layer:Projectile
+			use noLavasteal=true // Not enough knockback to push others into lava
 
-			LaunchBody
-			PrepareForCollision
-			DriftingMotion
-			RayEmitter(fade=0.5)
-			Sing(Boomerang:Sound)
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:High
+			DecayTurnRate
+			Sing(@boomerang.esfx)
 			ExpireAfterLifetime
 
-			once<redirect> Sleep(33) {
+			once Tick(33) {
 				Velocity:RedirectTowards(unit.Pos, speed=)
-				PropulsiveMotion
-				Homing(unit)
+				RecoverSpeed
+				Homing(unit, turnRate=0.05rev)
 			}
 
-			Collider(restitution=0) {
-				Shape:Circle
+			PolygonCollider(
+                Circle, density=1,
+                category = Category:Projectile,
+                sense = Category:Unit | Category:Projectile,
+                collideWith = Category:Shield | Category:Obstacle,
+			)
+
+			on Paint {
+				Streak(fade=0.5, bloom=3, bloomAlpha=1, glare=1, shadow=0.25)
 			}
 
 			on BeforeCollide that {
@@ -68,21 +77,29 @@ pub fn ability.BoomerangAbility(unit, owner, btn) {
 				}
 
 				if that.Team != owner.Team {
-					if that.Category & Category:Hero {
+					if that.Category.Overlaps(Category:Unit) {
 						Strobe(growth=2, shine=1.0)
-						that.StackBuff<boomerang>(cleansable=true, maxStacks=1) stacks {
-							ExpireWith(projectile)
-							Attack(that, damage * (1.0 + secondStrikeBonus * stacks))
-							Hear(Boomerang:HitSound)
-							BloomIndicator(that, audience=owner)
+						that.StackEffect<boomerang>(cleansable=true) stacks {
+							use body = that
+							DespawnBefore(projectile)
+							Attack(that, damage = damage * CalculateBoomerangBonus(stacks))
+							Hear(@boomerangHit.esfx)
+
+							with that.Vanished {
+							    if that.Vanished {
+							        delete PolygonSprite<boomerang>
+							    } else {
+                                    PolygonSprite<boomerang>(shape=Circle(0), audience=owner, bloom=4, bloomAlpha=0.5, layer=Layer:Bloom)
+                                }
+							}
 
 							that.Tombstone victim {
-								NameBlock(owner)
-								%(" sliced ")
+								PlayerNameDisplay(owner)
+								" sliced "
 								if stacks > 0 {
-									%("and diced ")
+									"and diced "
 								}
-								NameBlock(victim)
+								PlayerNameDisplay(victim)
 							}
 						}
 					} else {
@@ -90,7 +107,7 @@ pub fn ability.BoomerangAbility(unit, owner, btn) {
 					}
 				}
 
-				if (that.Category & Category:Projectile) && that.Durability >= this.Durability {
+				if that.Category.Overlaps(Category:Projectile) && that.Durability >= this.Durability {
 					Strobe(growth=2, shine=1.0)
 					Expire
 				}
@@ -99,32 +116,10 @@ pub fn ability.BoomerangAbility(unit, owner, btn) {
 	}
 }
 
-sound Boomerang:Sound(duration=1.5s) {
-	BrownNoise
-	BandPass(freq=1900)
-	Envelope(attack=0.25s, sustain=0s)
-	Gain(volume=0.25)
-	Output
-
-	Vibrato(freqModulation=300) {
-		Oscillator(freq=2000)
-	}
-	Oscillator(wave=$sine, freq=1900, harmonics=[1,1.5])
-	Tremolo(volumeModulation=1.0) {
-		Oscillator(freq=21)
-	}
-	LowPass(freq=400)
-	Envelope(attack=0.01s, sustain=0s)
-}
-
-sound Boomerang:HitSound(duration=0.3s) {
-	Vibrato(freqModulation=2400) {
-		Oscillator(freq=2000)
-	}
-	Oscillator(wave=$sine, freq=1900, harmonics=[1,1.5])
-	Tremolo(volumeModulation=1.0) {
-		Oscillator(freq=21)
-	}
-	LowPass(freq=125)
-	Envelope(attack=0.01s, sustain=0s)
+fn CalculateBoomerangBonus(stacks) -> proportion {
+    if stacks <= 1 {
+        return 1
+    } else {
+        return (1 - thirdPlusStrikePenalty) ** (stacks - 1)
+    }
 }

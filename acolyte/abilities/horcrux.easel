@@ -1,130 +1,139 @@
-.. glyph=BurningEye:Glyph, color=#22ee88, damage=30.0, duration=1.0s, lifesteal=1.0, cooldown=7.5s
+use glyph=@burningEye.svg, color=#22ee88, damage=30.0, duration=1.0s, lifesteal=1.0, cooldown=7.5s
 
 pub symbol WantHorcrux
 
-pub fn HorcruxOption(.. ui) {
-	SlotOption<WantHorcrux> {
-		H1 { %("Horcrux") }
+pub fn HorcruxDescription([ui]) {
+    H1 { "Horcrux" }
 
-		P {
-			%("Secure your existence on this mortal plane with this enigmatic relic which safeguards you from death. This fragile object also draws life from nearby foes but never kills them. Be cautious when placing your Horcrux as even the slightest touch of your enemy will shatter it, leaving you at the whims of fate.")
-		}
+    P {
+        "Secure your existence on this mortal plane with this enigmatic relic which safeguards you from death. This fragile object also draws life from nearby foes but never kills them. Be cautious when placing your Horcrux as even the slightest touch of your enemy will shatter it, leaving you at the whims of fate."
+    }
 
-		P {
-			SlotEffect("Unkillable", icon="fas fa-skull") {
-				%("As long as your Horcrux is alive, you cannot die.")
-			}
-		}
+    SlotEffect("Unkillable", icon="fas fa-skull") {
+        "As long as your Horcrux is alive, you cannot die."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn HorcruxOption([ui]) {
+	SlotOption(WantHorcrux) {
+        HorcruxDescription
 	}
 }
 
-pub fn ability.HorcruxAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.HorcruxAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility(utility=Utility:Low)
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        HorcruxDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 
 		Spawn projectile {
-			.. parent=unit
-			.. lifetime=3s, dissipation=15
-			.. interval=6, damagePerInterval = interval * damage / duration, maxHits = damage / damagePerInterval
-			.. radius=0.28, aoe=3.2, speed=28
-			.. luminous=1, depth=Depth:Projectile
-			.. density=1, ccd=true
-			.. categories=Category:Projectile | Category:Destructible | Category:Aoe, durability=Durability:Low
-			.. noLavasteal=true // Not enough knockback to push others into lava
+			use parent=unit, body=projectile
+			use lifetime=3s, dissipate=15
+			use interval=6, damagePerInterval = interval * damage / duration, maxHits = damage / damagePerInterval
+			use radius=0.28, aoe=3.2, speed=28
+			use luminous=1, layer=Layer:Projectile
+			use category=Category:Projectile | Category:Destructible | Category:Aoe
+            use density=1, restitution=1
+			use noLavasteal=true // Not enough knockback to push others into lava
+			use turningDecay=0 // Keep spinning
 
 			const birth = Tick
 
-			LaunchBody(turnRate=1rev)
-			PrepareForCollision
-			PropulsiveMotion
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), turnRate=0.2rev, bullet=true)
+			Durability = Durability:Low
+			RecoverSpeed
+			LimitSpeed(50)
+			DecayTurnRate
 			Unkillable(true)
-			CooldownRate(-1)
-			Aoe:Indicator(color=color.Fade(0.95))
-			Smoke(splatter=Splatter:Outwards(6.0,glide=0.3), dissipation=10)
-			Sing(Horcrux:Sound)
+			CooldownRate(0)
+			PolygonSprite(shape=Circle(aoe), color=color.Fade(0.95), crater=0.85, layer=Layer:Indicator)
+			Sing(@horcrux.esfx)
 			ExpireAfterLifetime
 
-			hook unit.Vanished {
+			with unit.Vanished {
 				if unit.Vanished {
-					delete Tether
+					delete Strand<lifeline>
 				} else {
-					Tether(ancestor=unit, color=#fff2, radius=0.1, taper=0.5, fade=0.25)
+					Strand<lifeline>(unit, projectile, color=#fff2, radius=0.1, taper=0.5, fade=0.25, dissipate=5, bloom=2, bloomAlpha=1, glare=1, shadow=0.25)
 				}
 			}
 
-			Collider(collideWith = Category:Solid ^ Category:Projectile) { // No collisions with projectiles while deploying
-				Shape:Circle
+			with Tick {
+				const cycle=13, proportion = ((Tick - birth) % cycle) / cycle
+
+				PolygonSprite(
+					Circle(radius=aoe * proportion),
+					crater=0.8, feather=0.3, bloom=1.5, shine=0.1,
+					color=color.Fade(0.95).Fade(proportion))
 			}
 
-			Sprite(bloom=4, bloomAlpha=0.5, luminous=1, shadow=0.25, depth=depth + 1) {
-				Shape:Equilateral(numPoints=5, radius=2.0 * radius)
+			PolygonSprite(
+				Equilateral(numPoints=5, radius=2.0 * radius),
+				bloom=4, bloomAlpha=0.5, luminous=1, shadow=0.25)
+			
+			on Paint {
+				Spark(splatter=0.3, feather=1, shine=0.5, speed=6, dissipate=10)
 			}
 
 			on AfterCollide that {
-				if (that.Category & Category:Hero) && that.Durability >= this.Durability {
+				if that.Category.Overlaps(Category:Unit) && that.Durability >= this.Durability {
 					Strobe(growth=0.5, shine=1.0)
-					Puff(count=10, splatter=1)
+					repeat 10 { Spark(splatter=1, feather=1, shine=0.5) }
 					Expire
 				}
 			}
 
-			once<deploy> Sleep(Min(lifetime, Velocity:TicksTo(Pointer))) {
-				DecayingMotion
+			PolygonCollider(
+                Circle,
+                collideWith = Category:Tangible ^ Category:Projectile,
+            ) // No collisions with projectiles while deploying
+			once Tick(Min(lifetime, Velocity:TicksTo(Pointer))) {
 				Speed = 0
+				DecaySpeed
+				PolygonCollider(
+                    Circle,
+                    collideWith = Category:Tangible,
+                ) // Restore collisions with projectiles after deployment
 			}
 
-			hook<aoe> Sleep(interval) {
-				.. damage = damage * interval / TicksPerSecond
+			with Tick(interval) {
+				use damage = damage * interval / TicksPerSecond
 
-				ColliderProps(collideWith=Category:Solid) // Restore collisions with projectiles after deployment
-
-				Aoe:ForEach(filter=Category:Hero) that {
-					if that.Team != owner.Team && TakeHitIfWithinLimit(that, maxHits=) {
-						Attack(that, damagePerInterval, noHurt=true, noInterrupt=true, minHealth=1)
-						Puff(that,
-							radius=1.0, depth=Depth:Particle,
+				for that in QueryWithinRadius(aoe, filter=Category:Unit) {
+					if that.Team != owner.Team && TakeHitIfWithinLimit(that) {
+						Attack(that, damage=damagePerInterval, noHurt=true, noInterrupt=true, minHealth=1)
+						Spark(body=that,
+							radius=1.0, layer=Layer:Spark,
 							color=color.Fade(0.7),
-							flutter=$perimeter, splatter=Splatter:Outwards(12))
+							feather=1, shine=0.5, glaze=1, speed=12)
 
 						that.Tombstone victim {
-							NameBlock(owner)
-							%(" stole ")
-							NameBlock(victim)
-							%("'s soul")
+							PlayerNameDisplay(owner)
+							" stole "
+							PlayerNameDisplay(victim)
+							"'s soul"
 						}
 					}
 				}
 			}
-
-			hook<pulse> Tick {
-				const cycle=13, proportion = ((Tick - birth) % cycle) / cycle
-				Sprite<radiation>(crater=0.8, feather=0.3, bloom=1.5, shine=0.1,
-					color=color.Fade(0.95).Fade(proportion)) {
-
-					Shape:Circle(radius=aoe * proportion)
-				}
-			}
 		}
 	}
-}
-
-sound Horcrux:Sound(duration=1s) {
-	Oscillator(wave=$sine, freq=150, harmonics=[1, 1.5])
-	Tremolo(volumeModulation=0.2) {
-		Oscillator(freq=8)
-	}
-	Envelope(attack=0.25s, sustain=0s)
-	Gain(volume=0.25)
 }

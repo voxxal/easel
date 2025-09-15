@@ -1,148 +1,278 @@
-meta Project(name="Acolyte Fight!", author="raysplaceinspace")
+pub game fn World.Main(maxHumanPlayers=8) {
+    use singleplayerMode = maxHumanPlayers <= 1
+    use maxPlayers = maxHumanPlayers.Max(8)
 
-meta PlayerNames(defaultPrefix="Acolyte")
-meta PlayerColors(
-	selfColor=#00ccff,
-	colors=[#f58c81, #b69cf6, #54c794, #e09f47, #e08747, #e58cc5, #a9b852, #6eb2fd],
-	teamHueRange=10.0, teamHueStep=7.0,
-)
+    Camera(@(0,0), radius=40, transitionSpeed=0.05)
+    TouchscreenVirtualPointer
 
-pub mode fn World.Main {
 	Introducer
-	Scoreboard<NumSessionOutlasts>("Most Outlasts", icon="fas fa-skull")
-	Scoreboard<NumSessionWins>("Most Wins", icon="fas fa-crown")
-	Scoreboard<NumSessionGames>("Most Games", icon="fas fa-hourglass-start")
 
-	Spawn scene {
-		RandomLayout
+	Toolbar {
+        FullscreenToggle
+        ResolutionToggle
+	    VolumeToggle
+	    PerformanceDialogToggle
+        ChatEnabledToggle
 	}
 
-	SpawnPlayer owner {
-		if owner.IsHuman {
-			QueryPlayers.WhereIsHuman(false).FindAny.DespawnBot // Replace a bot with a human
-		} else {
-			BotChooseSpells
-		}
+    SidebarContent {
+        H3 { "Most Outlasts" }
+        OnlinePlayerScoreboard(&NumSessionOutlasts)
+    }
 
-		SlotRandomizeTool(tooltip="Randomize your abilities", placement=$important) { RandomizeAllSlots }
-		SlotLoadoutTool(tooltip="Choose your abilities", placement=$important) {
-			H1 {%("Choose Your Abilities")}
-			SlotEditors
-		}
-
-		Spawn unit {
-			AudioCenter // spatial audio is calculated around this unit
-			PointerCenter // emulated pointers (e.g. touchscreen or gamepads) are relative to this unit
-			PointerLine(color=#0001, radius=0.5, depth=Depth:Aim)
-
-			Hero(owner=, pos=NextStartingPosition(radiusFraction=0.4))
-			SlotAbilities
-			AntiTeamingBonus
-
-			Tombstone { // add a backup Tombstone in case the user does not get hit by anything
-				NameBlock
-				%(" died")
-			}
-
-			on IncantationCast {
-				if IsReadyToBegin { break }
-				else { BeginCommenceCountdown }
-			}
-
-			once BeforePlayerLeave {
-				if IsReadyToBegin && !HasConcluded {
-					// During the game, no one leaves, instead wait until the game is complete
-					await Conclude
-					await Sleep(2s)
-				}
-				delete unit.Tombstone // Voluntary leaving should not count as a kill
-				unit.HeroExit
-			}
-
-			hook IsPresent {
-				if IsPresent {
-					delete Bot
-				} else {
-					Bot
-				}
-			}
-
-			once Expire {
-				Eliminate(owner)
-
-				// Spawn a ghost unit and attach abilities to it so the player can still edit their spells after they are dead
-				.. parent = unit
-				Spawn unit {
-					Ghost
-					SlotAbilities
-				}
-			}
-		}
-
-		once AfterCommence {
-			SlotsUneditable = true
-		}
-
-		once IsEliminated {
-			SlotsUneditable = false
-
-			EliminatedDialog { 
-				H1 { %("You Died") }
-				Button(tier=$primary, onPress=Main) { %("Play Again") }
-			}
-
-			if Outlast:IsGameComplete {
-				Victory = Outlast:CalculateRanking
-			}
-		}
-
-		once Conclude {
-			SlotsUneditable = false
-		}
+	Spawn layout {
+		RandomLayout // create the map
 	}
+
+    SpawnEachPlayer owner {
+        if owner.IsHuman {
+            QueryAnyPlayer(isHuman=false).DespawnBot // Replace a bot with a human
+            
+            ToolbarRight {
+                SlotRandomizeTool(tooltip="Randomize your abilities") { RandomizeAllSlots }
+                SlotLoadoutTool(tooltip="Choose your abilities") {
+                    H1 { "Choose Your Abilities" }
+                    SlotEditors
+                }
+            }
+
+            DisplayEditCommandsHint
+            CommandWheelUnderlay
+
+            HowToPlayDialog
+            SuggestRankedMode
+
+        } else {
+            // Choose random spells for the bot
+            owner.RandomizeAllSlots
+
+            // Uncomment the lines below if you want to choose specific spells for the bot
+            // owner.SlotChoice<DashSlot> = WantSwap
+            // owner.SlotChoice<PrimarySlot> = WantFireball
+            // owner.SlotChoice<SpecialSlot> = WantHoming
+            // owner.SlotChoice<DefenseSlot> = WantMeteor
+            // owner.SlotChoice<UltimateSlot> = WantSpiritBomb
+            // owner.SlotChoice<MeleeSlot> = WantEnergyMines
+        }
+
+        Spawn unit {
+            use body=unit, life=unit
+
+            // Assign controls
+            Camera(radius=35, freeRadius=20, priority=10, transitionSpeed=0.05, maxScreenSizePx=600)
+            Ears // spatial audio is calculated around this unit
+            PointerAimingLine(color=#0001, radius=0.5, layer=Layer:Aim)
+
+            // Create the unit
+            Hero(owner=, pos=NextStartingPosition(radiusFraction=0.4))
+            SlotAbilities
+            AntiTeamingBonus
+
+            // Trigger the start of the game when an incantation is cast
+            on IncantationCasted {
+                if GameCommenced {
+                    if !GameConcluded {
+                        // Cannot edit spells while playing, but only once the first spell has been cast
+                        give<noSpellEditing> SlotsUneditable(true)
+                    }
+                    break
+                } else {
+                    BeginCommenceCountdown
+                }
+            }
+
+            // Remove the unit
+            once owner.BeforeDespawn {
+                // If the player is despawning, the unit should despawn too
+                // This will happen if the player leaves before the game starts,
+                // or if the matchmaker moves the player to another game
+                unit.HeroExit
+            }
+            once AfterGameConcluded {
+                if IsPresent && IsHuman {
+                    await BeforePlayerLeave
+                } else {
+                    await Tick(1s + 1s * Random)
+                }
+                unit.HeroExit
+            }
+
+            // Activate/deactivate bot control of the unit
+            with IsPresent {
+                if IsPresent && IsHuman {
+                    delete Bot
+                } else {
+                    Bot
+                }
+            }
+
+            // If the hero dies, eliminate the player
+            once BeforeDespawn {
+                owner.Eliminate
+
+                // Spawn a ghost unit and attach abilities to it so the player can still edit their spells after they are dead
+                owner.Subspawn ghost {
+                    use body=ghost, life=ghost, parent=unit, unit=ghost
+                    Ghost
+                    SlotAbilities
+
+                    // Also the "You Died" dialog has to go on the ghost because the unit is about to despawn
+                    Content<youDied> {
+                        Panel {
+                            H1 { "You Died" }
+                            HStack {
+                                RaisedButton(Main, backgroundColor=Color:Primary) { "Play Again" }
+                            }
+                        }
+                    }
+                    once AfterGameConcluded {
+                        delete Content<youDied>
+                    }
+                }
+            }
+
+            once AfterGameConcluded {
+                delete give<noSpellEditing>
+            }
+
+            once BeforeDespawn, AfterGameConcluded {
+                Transmission {
+                    DisplayPlayerSummaryStats
+                }
+            }
+        }
+    }
 
 	PlayVsAiDialog {
-		const numBots=7
+		const numBots = (maxPlayers - CountPlayers).Min(7)
 		for i in Range(0, numBots) {
-			SpawnBot(name="AcolyteBot") player {
-				// Make the bot automatically leave when the game ends
-				await Conclude
-				await Sleep(2s)
-				player.DespawnBot
-			}
+			SpawnBot(name=TakeRandomBotName)
 		}
 	}
 
-	CommenceCountdownWhenEnoughPlayers numPlayers {
+	CommenceCountdownWhenEnoughPlayers(startupDuration=3s) numPlayers {
 		if numPlayers < 2 { return null }
 		else if numPlayers < 4 { return 12s }
 		else if numPlayers < 6 { return 3s }
-		else { return 0s }
+		else { return 2s }
 	}
 
-	once BeforeCommence {
+	once AfterGameLocked {
 		AssignTeams
 	}
 
-	once AfterCommence {
-		Transmission<announceStart>(duration=15s) {
+	once AfterGameCommenced {
+		Transmission(duration=15s) {
 			P {
-				%("Game started. ")
-				Span(bold=true) { %("Defeat your enemies!") }
+				"Game started. "
+				Span(bold=true) { "Defeat your enemies!" }
 			}
 		}
 	}
 
-	once Victory ranking {
-		Conclude(ranking)
-		VictoryDialog
-		DiscordAd
+	VictoryChecker winner ranking {
+		ConcludeGame
+        DisplayDiscordAd
+        DisplayReplayTool
 
-		if ranking.Where(p => p.IsHuman).Length >= 2 { // Single player games do not count towards stats
-			AccumulateNumGames
-			AccumulateNumOutlasts
-			AccumulateNumWins
-			AccumulateRating
+        let humanPlayers = ranking.Filter(|p| p.IsHuman)
+		if humanPlayers.Length >= 2 { // Single player games do not count towards stats
+			AccumulateStats(ranking)
+		}
+
+		DisplayVictoryDialog(ranking)
+        for use owner in humanPlayers {
+            DisplayAutoJoinCountdown
+        }
+	}
+}
+
+fn DisplayWinningPlayers([winner, ui]) {
+    let winningTeam = winner.Team
+    let winners = []
+    for player in QueryPlayers {
+        if player.Team == winningTeam {
+            winners.Push(player)
+        }
+    }
+
+    let len = Length(winners)
+    let last = len - 1
+    for i in Range(0, len) %%{
+        if i > 0 {
+            %(i == last ? " & " : ", ")
+        }
+        PlayerNameDisplay(winners[i])
+    }
+    %(len == 1 ? " wins!" : " win!")
+}
+
+fn DisplayPlayerSummaryStats([owner, ui]) {
+    P(fontSize=1.1) {
+        "You outlasted "
+        Span(bold=true, color=#ffcc00) {
+            %(OutlastScore)
+            %(OutlastScore == 1 ? " other" : " others")
+        }
+        ", "
+        Span(bold=true, color=#ffcc00) {
+            "killed "
+            %(KillScore)
+        }
+
+        " and dealt "
+        Span(bold=true, color=#ffcc00) {
+            %(DamageScore.FormatWithDecimals(0))
+            " damage!"
+        }
+
+    }
+}
+
+fn this.DisplayVictoryDialog(players, [winner]) {
+    let mostDamage = players.MaxBy(|p| p.DamageScore)
+    let mostKills = players.MaxBy(|p| p.KillScore)
+    Content {
+        Panel {
+            H2 { DisplayWinningPlayers }
+
+            P(fontSize=0.9) {
+                "Most damage: "
+                PlayerNameDisplay(mostDamage)
+                " (" + mostDamage.DamageScore.FormatWithDecimals(0) + ")"
+                %(LineBreak)
+                "Most kills: "
+                PlayerNameDisplay(mostKills)
+                " (" + mostKills.KillScore.FormatWithDecimals(0) + ")"
+            }
+
+            HStack {
+                RaisedButton(Main, backgroundColor=Color:Primary, minWidth=9) {
+                    "Play Again"
+                }
+            }
+        }
+    }
+}
+
+fn this.DisplayDiscordAd {
+	Content {
+		P(fontSize=0.8) {
+			"Like this game? "
+			Link("https://discord.gg/sZvgpZk") {
+				"Join our community on Discord! "
+				Icon("fab fa-discord")
+			}
 		}
 	}
+}
+
+fn this.DisplayReplayTool {
+    if CurrentReplayId {
+        Toolbar {
+            FlatButton(ReplayIntent(CurrentReplayId), tooltip="Watch Replay") {
+                Icon("fa-solid fa-film")
+            }
+        }
+    }
 }

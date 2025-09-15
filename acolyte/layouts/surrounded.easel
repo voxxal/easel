@@ -1,35 +1,28 @@
-pub fn scene.SurroundedLayout {
-	Lava
-	Shrink
+pub fn layout.SurroundedLayout {
 	SolidBackground(color=#2c211b)
 
 	Spawn turf {
-		Turf(color=#433832) {
-			hook ShrinkScale {
-				Shape:Circle(radius=32 * ShrinkScale)
-			}
+		Turf(color=#433832)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Circle(radius=32 * scale)
 		}
 	}
 
 	ArrangeRing(orbit=28, numObstacles=15, angleOffset=0.1rev, headingOffset=0.5rev, pattern=[1,1,1,1,0]) {
 		Spawn obstacle {
-			Boulder {
-				Shape:Equilateral(numPoints=3, radius=1.04)
-			}
+			Boulder(shape=Equilateral(numPoints=3, radius=0.7))
 		}
 	}
 
 	ArrangeRing(orbit=12, numObstacles=6, angleOffset=0.5rev / numObstacles, headingOffset=0.5rev) {
 		Spawn obstacle {
-			Bumper {
-				Shape:Equilateral(numPoints=4, radius=0.72)
-			}
+			Bumper(shape=Equilateral(numPoints=4, radius=0.63))
 		}
 	}
 
 	Spawn obstacle {
-		Boulder(pos=@(0,0), heading=0.5rev) {
-			Shape:Equilateral(numPoints=4, radius=0.8)
-		}
+		Boulder(shape=Equilateral(numPoints=4, radius=0.7), pos=@(0,0), heading=0.5rev)
 	}
 }

@@ -1,43 +1,35 @@
-.. owner=null
+use owner=null
 
-pub fn obstacle.Boulder(pos, heading?=0, maxHp=50.0, radius=1.0, density=50, turningDecay=0.05) .. shape {
-	.. color=#bbb, fade=#822,
-	.. bloom=0, luminous=0,
-	.. shading=0.25, depth=Depth:Obstacle,
-	.. categories=(Category:Obstacle | Category:CanGrab | Category:HurtByLava | Category:Aoe),
-	.. collideWith=Category:Solid,
-	.. durability=Durability:Maximum,
-	.. ccd=false
+pub fn obstacle.Boulder(shape, pos=@(0,0), heading=0, maxHp=50.0, radius=1.0, density=50, turningDecay=0.05, [posOffset?, headingOffset?]) {
+    use body=obstacle, life=obstacle
+	use color=#bbb, fade=#822,
+	use layer=Layer:Obstacle
 
-	Body(pos, heading=)
-	PrepareForCollision
-	DecayingMotion(turningDecay=)
+	Body(pos = pos + posOffset, heading = heading + headingOffset)
+	Durability = Durability:Maximum
+	DecaySpeed
+	DecayTurnRate
 
 	Health(maxHp)
+	LavaBehavior
 
-	Collider {
-		Sprite {
-			Perimeter {
-				delve()
-			}
-		}
-	}
+	PolygonCollider(
+        category = Category:Obstacle | Category:Grabbable | Category:Aoe,
+	)
+	PolygonPerimeter
 
-	Anchored(pos, heading)
-	once AfterCommence { delete Anchored }
+	Anchored
+	once AfterGameCommenced { delete Anchored }
 
-	hook Hp {
-		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
-		.. color = HpProportion.Mix(fade, color)
-
-		SpriteProps(shadow=0.5)
+	with Hp {
+		await Paint // coalesce multiple changes to HP into a single paint at the end of tick
+		use color = HpProportion.Mix(fade, color)
+		PolygonSprite(shading=0.25, shadow=0.5)
 	}
 
 	once BeforeOutOfHealth {
-		Puff(
-			count=10, shadow=0,
-			luminous=1.0, shine=1.0, bloom=1.0,
-			dissipation=30, splatter=Splatter:Outwards(10.0),
-			flutter=$area)
+		repeat 10 {
+			Spark(shadow=0, luminous=1, feather=1, shine=1, bloom=1, dissipate=30, speed=10, splatter=1, glaze=true)
+		}
 	}
 }

@@ -1,31 +1,26 @@
-pub fn scene.SquareLayout {
-	.. orientation = 0.5rev / 4
+pub fn layout.SquareLayout {
+	use orientation = 0.5rev / 4
 
-	Lava
-	Shrink
 	SolidBackground(color=#2a1b2c)
 
 	Spawn turf {
-		Turf(color=#413243, heading=orientation) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=4)
-			}
+		Turf(color=#413243, heading=orientation)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=32 * scale, numPoints=4)
 		}
 	}
 
 	ArrangeRing(orbit=16, numObstacles=2, angleOffset=orientation) {
 		Spawn obstacle {
-			Boost(maxHp=200) {
-				Shape:Arc(radius=0.16, arc=0.25rev, cap=true)
-			}
+			Boost(shape=Arc(radius=0.16, arc=0.25rev, cap=true), maxHp=200)
 		}
 	}
 
 	ArrangeRing(orbit=26.4, numObstacles=2, angleOffset=orientation) {
 		Spawn obstacle {
-			Boulder {
-				Shape:Equilateral(numPoints=4, radius=0.72)
-			}
+			Boulder(shape=Equilateral(numPoints=4, radius=0.63))
 		}
 	}
 }

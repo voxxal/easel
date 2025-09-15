@@ -1,26 +1,34 @@
-.. glyph=Divert:Glyph, color=#00ff44, damage=12, maxHits=8, lifesteal=0.3, cooldown=7.5s
+use glyph=@divert.svg, color=#00ff44, damage=12, maxHits=8, lifesteal=0.3, cooldown=7.5s
 
 
 pub symbol WantBouncer
 
-pub fn BouncerOption(.. ui) {
-	SlotOption<WantBouncer> {
-		H1 { %("Bouncer") }
+pub fn BouncerDescription([ui]) {
+    H1 { "Bouncer" }
 
-		P {
-			%("Release a pulsing energy orb that oscillates relentlessly between you and your foe, inflicting damage with each successive impact. ")
-			%("Stay close to sustain the perilous waltz that balances the risk of exposure with the promise of persistent punishment. ")
-		}
+    P {
+        "Release a pulsing energy orb that oscillates relentlessly between you and your foe, inflicting damage with each successive impact. "
+        "Stay close to sustain the perilous waltz that balances the risk of exposure with the promise of persistent punishment. "
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn BouncerOption([ui]) {
+	SlotOption(WantBouncer) {
+        BouncerDescription
 	}
 }
 
-pub fn ability.BouncerAbility(unit, owner, btn) {
+pub fn ability.BouncerAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
 	on BotAttacking target {
 		const triggerDistance=5
 		if Cooldown == 0 && Distance(unit.Pos, target) <= triggerDistance {
@@ -28,17 +36,18 @@ pub fn ability.BouncerAbility(unit, owner, btn) {
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        BouncerDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 
 		Spawn projectile {
-			.. parent=unit 
-			.. lifetime=3.0s, dissipation=20
-			.. radius=0.08, speed=50.0
-			.. ownerColor=Alliance:Self, luminous=1.0, depth=Depth:Projectile
-			.. density=15, ccd=true
-			.. categories=Category:Projectile, durability=Durability:High
-			.. collideWith = Category:Solid ^ Category:Projectile
+			use parent=unit, body=projectile
+			use lifetime=3.0s, dissipate=20
+			use radius=0.08, speed=50.0
+			use ownerColor=Alliance:Self, luminous=1, layer=Layer:Projectile
 
 			on BotChannelling target {
 				const chaseDistance=10
@@ -47,76 +56,62 @@ pub fn ability.BouncerAbility(unit, owner, btn) {
 				}
 			}
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			Sing(Bouncer:Sound)
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:High
+			RecoverSpeed
+			LimitSpeed(1.2*speed)
+			DecayTurnRate
+			Sing(@bouncer.esfx)
 			ExpireAfterLifetime
 
-			Proximity:OnRetreat(unit, range=50) {
+			once Retreated(unit, range=50) {
 				Expire
 			}
 
-			Collider {
-				Shape:Circle
-			}
-			Sprite(shadow=0.5, glare=1, bloom=1.5, bloomAlpha=1) {
-				Shape:Circle(radius=5.0 * radius)
-			}
+			PolygonCollider(
+                Circle,
+                category = Category:Projectile,
+                collideWith = Category:Tangible ^ Category:Projectile,
+                density=15, restitution=1,
+            )
+
+			PolygonSprite(Circle(5*radius), shadow=0.5, glare=1, bloom=1.5, bloomAlpha=1)
 
 			let numHits = 0
-			let canHurtSelf = false
 			on BeforeCollide that {
-				Hear(Bouncer:BounceSound)
-				Strobe(dissipation=10, growth=1.0)
+				Hear(@bouncerBounce.esfx)
+				Strobe(dissipate=10, growth=1.0)
 
-				if canHurtSelf || that.Team != owner.Team {
+				if CanHurtSelf || that.Team != owner.Team {
 					Attack(that)
 
 					that.Tombstone victim {
-						NameBlock(owner)
-						%(" bounced ")
-						NameBlock(victim)
-						%(" out of existence ")
+						PlayerNameDisplay(owner)
+						" bounced "
+						PlayerNameDisplay(victim)
+						" out of existence "
 					}
 				}
 			}
 			on AfterCollide that {
-				if that == unit {
-					Velocity:RedirectTowards(QueryUnits.WhereAlliance(unit, Alliance:Enemy).FindNearest(this.Pos))
-				} else if Alliance(that, unit) & Alliance:Enemy {
-					numHits += 1
-					Velocity:RedirectTowards(unit)
-				}
+                if that == unit {
+                    Velocity:RedirectTowards(QueryNearest(filter=Category:Unit, against=Alliance:Enemy))
+                } else if that.Team != unit.Team {
+                    numHits += 1
+                    Velocity:RedirectTowards(unit)
+                }
 
-				if that.Category & Category:Shield {
-					canHurtSelf = true // Can bounce off shield to hurt self
+				if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team {
+					CanHurtSelf = true // Can bounce off shield to hurt self
 				}
-				if (that.Category & Category:Projectile) && that.Durability >= this.Durability || numHits >= maxHits {
+				if that.Category.Overlaps(Category:Projectile) && that.Durability >= this.Durability || numHits >= maxHits {
 					Expire
 				}
 			}
 
-			once Expire {
-				Puff(radius=5.0 * radius, count=10, splatter=1, feather=1)
+			once BeforeDespawn {
+				repeat 10 { Spark(radius=5*radius, shine=0.5, splatter=1, feather=1) }
 			}
 		}
 	}
-}
-
-sound Bouncer:Sound(duration=0.75s) {
-	Oscillator(wave=$square, freq=70)
-	LowPass(freq=120)
-	HighPass(freq=40)
-	Tremolo(volumeModulation=0.5) {
-		Oscillator(freq=6)
-	}
-	Envelope(attack=0.1s, sustain=0s)
-}
-
-sound Bouncer:BounceSound(duration=0.25s) {
-	Oscillator(wave=$square, freq=[70,140])
-	LowPass(freq=120)
-	HighPass(freq=40)
-	Envelope(attack=0.001s, sustain=0s)
 }

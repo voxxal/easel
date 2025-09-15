@@ -1,9 +1,16 @@
-.. btn="KeyW", slotDefault=WantHoming
+use keycode=KeyW, slotDefault=WantHoming
 
-pub preference owner.SpecialSlot
+pub symbol SpecialSlot
 
-pub fn unit.SpecialSlotAbility(.. owner, btnIndex?, btnSize=1) {
-	SlotAbility<SpecialSlot> choice {
+pub fn unit.SpecialSlotAbility([owner, btnOrder?, btnSize?]) {
+    use btnEdit = ShowIntent<SpecialSlot>
+    if owner.IsHuman {
+        BottomModal<SpecialSlot>(dismissed=true) {
+            SpecialSlotEditor
+        }
+    }
+
+	SpawnEachAbility<SpecialSlot> choice ability {
 		if choice == WantHoming { HomingAbility }
 		else if choice == WantDrain { DrainAbility }
 		else if choice == WantArcaneAgility { ArcaneAgilityAbility }
@@ -13,13 +20,10 @@ pub fn unit.SpecialSlotAbility(.. owner, btnIndex?, btnSize=1) {
 		else if choice == WantLink1 { LinkAbility }
 		else if choice == WantGrapple { GrappleAbility }
 		else if choice == WantWhirlwind { WhirlwindAbility }
-		else { SlotWithoutAbility }
-
-		SlotPopup<SpecialSlot> { SpecialSlotEditor }
 	}
 }
 
-pub fn this.SpecialSlotEditor(.. owner, ui) {
+pub fn this.SpecialSlotEditor([dismiss?, owner, ui]) {
 	SlotEditor<SpecialSlot> {
 		HomingOption
 		OrbiterOption
@@ -34,7 +38,7 @@ pub fn this.SpecialSlotEditor(.. owner, ui) {
 }
 
 pub fn owner.RandomizeSpecialSlot {
-	SpecialSlot = PickRandom([
+	SlotChoice<SpecialSlot> = PickRandom([
 		WantHoming,
 		WantOrbiter,
 		WantDrain,

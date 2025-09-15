@@ -1,38 +1,51 @@
-.. glyph=WaveStrike:Glyph, color=#ff0000, damage=0, cooldown=7.5s, lifetime=1.5s, length=5.5
+use glyph=@waveStrike.svg, color=#ff0000, damage=0, cooldown=7.5s, lifetime=1.5s, length=5.5
 
 pub symbol WantDualSaber
 
-pub fn DualSaberOption(.. ui) {
-	SlotOption<WantDualSaber> {
-		H1 { %("Dualsaber") }
+pub fn DualSaberDescription([ui]) {
+    H1 { "Dualsaber" }
 
-		P {
-			%("Wield formidable twin sabers forged from pure light. The incandescent blades can expertly parry incoming projectiles and forcefully knock back your enemies with each swift and decisive strike. ")
-		}
+    P {
+        "Wield formidable twin sabers forged from pure light. The incandescent blades can expertly parry incoming projectiles and forcefully knock back your enemies with each swift and decisive strike. "
+    }
 
-		P {
-			SlotEffect("Dual Wield", icon="fas fa-swords") {
-				%("Though each saber may be shorter than a solitary counterpart, their combined presence doubles the odds of delivering a decisive strike against your adversaries.")
-			}
-		}
+    SlotEffect("Dual Wield", icon="fas fa-shuffle") {
+        "Though each saber may be shorter than a solitary counterpart, their combined presence doubles the odds of delivering a decisive strike against your adversaries."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn DualSaberOption([ui]) {
+	SlotOption(WantDualSaber) {
+        DualSaberDescription
 	}
 }
 
-pub fn ability.DualSaberAbility(unit, owner, btn) {
+pub fn ability.DualSaberAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
 	on BotAttacking target {
 		if Cooldown == 0 && Distance(target, unit.Pos) <= length {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
+    AbilityCommandBtn {
+        DualSaberDescription
+    }
+
+	SpawnEachIncantation incantation {
+        UngrabMe
+        UngrabThem
+
 		on Interrupt interruptor {
-			if interruptor & Interruptor:Self {
-				StopIncantation
+			if interruptor.Overlaps(Interruptor:Self) {
+				incantation.Expire
 			}
 		}
 
@@ -43,91 +56,63 @@ pub fn ability.DualSaberAbility(unit, owner, btn) {
 		}
 
 		Subspawn saber {
-			.. parent=unit
-			.. dissipation=10, luminous=1.0
-			.. radius=0.25, angleOffset=0.25rev
-			.. ccd=true
-			.. categories=Category:Shield, durability=Durability:Shield
-			.. depth=Depth:Saber
-			.. fade=1, shadow=0.25, luminous=1, glare=1, glareAlpha=1, bloom=4, bloomAlpha=1
+			use parent=unit, body=saber
+			use dissipate=10, luminous=1
+			use radius=0.25, angleOffset=0.25rev
+			use restitution=1
+			use category=Category:Shield
+			use layer=Layer:Saber
+			use fade=1, shadow=0.25, luminous=1, glare=1, glareAlpha=1, bloom=4, bloomAlpha=1
+			use shape = Capsule(extent=length, pos=@(0,0), angle=angleOffset)
 
-			PrepareForCollision
-			SynchronizeBody
-			Sing(DualSaber:Sound)
-			SpeedModifier(-0.25)
-			TurnRateModifier(-0.95)
+			Durability = Durability:Reflector
+			Movement:SynchronizedBody(unit, bullet=true)
+			Sing(@dualSaber.esfx)
+			SpeedModifier(0.75)
+			TurnRateModifier(0.05)
 
 			// Main saber collider is actually attached to the unit's body, which means it will transmit forces back onto the unit (e.g. recoil)
-			Collider(unit, collideWith=Category:Hero, density=2.5) {
-				// Deflector is attached to the saber's independent body so projectiles cannot knock the unit back through the saber
-				Collider<deflector>(collideWith=Category:Projectile, density=5.0) {
-					// Sprite is attached to the unit (not the independent deflector body) so it does not visually lag behind
-					Sprite(unit, shadow=) {
-						Shape:Capsule(extent=length, posOffset=@(0,0), angleOffset=)
-					}
-				}
-			}
-			
-			SwoopEmitter(radius=length, depth=depth+1, angleOffset=)
-			SwoopEmitter<back>(radius=length, depth=depth+1, angleOffset = -angleOffset)
+			PolygonCollider(body=unit, collideWith=Category:Unit, density=1.25)
 
-			on Movement:Turned step {
-				// A strong swing will detach any tethers
-				if Abs(step) > 0.05rev {
-					SeverTethers
-				}
+			// Deflector is attached to the saber's independent body so projectiles cannot knock the unit back through the saber
+			PolygonCollider<deflector>(collideWith=Category:Projectile, density=5.0, isolate=true)
+			
+			// Sprite is attached to the unit (not the independent deflector body) so it does not visually lag behind
+			PolygonSprite(body=unit, shadow=)
+
+			on Paint {
+				Swoop(length=, layer=Layer:Bloom, angleOffset=)
+				Swoop(length=, layer=Layer:Bloom, angleOffset = -angleOffset)
 			}
 
 			on Hurt {
-				Strobe(dissipation=10, shine=1.0)
+				Strobe(dissipate=10, shine=1.0)
 			}
 
 			on BeforeCollide that { // Main collider hits units
-				Hear(DualSaber:HitSound)
+				Hear(@dualSaberHit.esfx)
 
 				if that.Team != owner.Team {
 					Attack(that)
 
 					that.Tombstone victim {
-						NameBlock(owner)
-						%(" slashed ")
-						NameBlock(victim)
-						%(" into bite-sized pieces ")
+						PlayerNameDisplay(owner)
+						" slashed "
+						PlayerNameDisplay(victim)
+						" into bite-sized pieces "
 					}
 
-					await Sleep(0.25s)
-					StopIncantation
+					await Tick(0.25s)
+					incantation.Expire
 				}
 			}
 
 			on BeforeCollide<deflector> that { // Secondary collider hits projectiles only
-				Hear(DualSaber:HitSound)
-				if that.Category & Category:Destructible { that.Expire }
+				Hear(@dualSaberHit.esfx)
+				if that.Category.Overlaps(Category:Destructible) { that.Expire }
 			}
 		}
 
-		await Sleep(lifetime)
+		await Tick(lifetime)
 	}
-}
-
-sound DualSaber:Sound(duration=5s) {
-	Vibrato(freqModulation=1) {
-		Oscillator(freq=[5,4])
-	}
-	Oscillator(wave=$square, freq=15.3, harmonics=[1,2,4,8,16])
-	LowPass(freq=100)
-	Tremolo(volumeModulation=0.4) {
-		Oscillator(freq=7)
-	}
-	Envelope(attack=0.15s, sustain=0s)
-	Gain(volume=0.25s)
-}
-
-sound DualSaber:HitSound(duration=0.5s) {
-	Vibrato(freqModulation=100) {
-		Oscillator(freq=200)
-	}
-	Oscillator(wave=$sine, freq=100)
-	LowPass(freq=100)
-	Envelope(attack=0.01s, sustain=0s)
 }

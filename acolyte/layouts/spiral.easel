@@ -1,33 +1,28 @@
-pub fn scene.SpiralLayout {
-	Lava
-	Shrink
+pub fn layout.SpiralLayout {
 	SolidBackground(color=#2b211d)
 
 	Spawn turf {
-		Turf(color=#413530) {
-			hook ShrinkScale {
-				Shape:Circle(radius=32 * ShrinkScale)
-			}
+		Turf(color=#413530)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Circle(radius=32 * scale)
 		}
 	}
 
 	ArrangeRing(orbit=14, numObstacles=5, headingOffset=-0.15rev) {
 		Spawn obstacle {
-			Conveyor(convey=@(0,-5)) {
-				Shape:Arc(radius=0.12, arc=0.24rev)
-			}
+			Conveyor(shape=Arc(radius=0.12, arc=0.24rev), convey=@(0,-5))
 		}
 	}
 
 	Spawn obstacle {
-		Bumper(pos=@(0,0)) {
-			Shape:Equilateral(numPoints=4, radius=1.2)
-		}
+		Bumper(shape=Equilateral(numPoints=4, radius=1.05), pos=@(0,0))
 	}
 
 	ArrangeRing(orbit=28, numObstacles=5, angleOffset=0.2rev, headingOffset=1rev / 6) {
 		Spawn obstacle {
-			Explosive(radius=0.4)
+			Explosive
 		}
 	}
 }

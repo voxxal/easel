@@ -1,5 +1,0 @@
-// While vanished, some things are still visible (e.g. buffs)
-pub meld this.Vanished(invisibility, @body) = (modifiers) => modifiers.Any
-
-// While invisible, everything is invisible
-pub meld this.Invisibility(invisibility, @body) = (modifiers) => modifiers.Any

@@ -1,29 +1,24 @@
-pub fn scene.PepperLayout {
-	Lava
-	Shrink
+pub fn layout.PepperLayout {
 	SolidBackground(color=#2b261d)
 
 	Spawn turf {
-		Turf(color=#413a30) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=5)
-			}
+		Turf(color=#413a30)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=32 * scale, numPoints=5)
 		}
 	}
 
 	ArrangeRing(orbit=25.6, numObstacles=5, headingOffset=1rev / 6) {
 		Spawn obstacle {
-			Boulder {
-				Shape:Equilateral(numPoints=3, radius=1.36)
-			}
+			Boulder(shape=Equilateral(numPoints=3, radius=0.9))
 		}
 	}
 
 	ArrangeRing(orbit=9.6, numObstacles=5, angleOffset=0.5rev / numObstacles) {
 		Spawn obstacle {
-			Bumper {
-				Shape:Trapezoid(radius=0.8, arc=0.04rev)
-			}
+			Bumper(shape=Trapezoid(radius=0.8, arc=0.04rev))
 		}
 	}
 }

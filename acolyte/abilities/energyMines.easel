@@ -1,70 +1,80 @@
-.. glyph=MineExplosion:Glyph, color=#ff009c, damage=12.0, lifesteal=0.3, cooldown=5.0s, armDelay=7, retreatDelay=1s
+use glyph=@mineExplosion.svg, color=#ff009c, damage=16.0, damageReductionPerHit=0.5, lifesteal=0.3, cooldown=5.0s, armDelay=6, retreatDelay=1s
 
 pub symbol WantEnergyMines
 
-pub fn EnergyMinesOption(.. ui) {
-	SlotOption<WantEnergyMines> {
-		H1 { %("Energy Mines") }
+pub fn EnergyMinesDescription([ui]) {
+    H1 { "Energy Mines" }
 
-		P {
-			%("Mark your territory with solid ingots of volatile energy, protecting you from all who dare come too close.")
-		}
+    P {
+        "Mark your territory with solid ingots of volatile energy, protecting you from all who dare come too close."
+    }
 
-		P {
-			SlotEffect("Stabilizing Presence", icon="fas fa-anchor") {
-				%("Your sustained presence stabilizes the mines' volatile energy. Stray too far and they will expire.")
-			}
-			SlotEffect("Arming Delay", icon="fas fa-stopwatch") {
-				%("Energy mines take a moment to activate and only do damage after " + (armDelay / TicksPerSecond) + "s.")
-			}
-		}
+    SlotEffect("Stabilizing Presence", icon="fas fa-anchor") {
+        "Your sustained presence stabilizes the mines' volatile energy. Stray too far and they will expire."
+    }
+    SlotEffect("Arming Delay", icon="fas fa-stopwatch") {
+        "Energy mines take a moment to activate and only do damage after " + (armDelay / TicksPerSecond) + "s."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn EnergyMinesOption([ui]) {
+	SlotOption(WantEnergyMines) {
+        EnergyMinesDescription
 	}
 }
 
-pub fn ability.EnergyMinesAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.EnergyMinesAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        EnergyMinesDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 	
-		TurnRateModifier(-1)
-		SpeedModifier(-1)
+		TurnRateModifier(0)
+		SpeedModifier(0)
 
-		Hear(Mines:LaunchSound)
-		await Spray(duration=5, count=5, spray=0.28revs) {
+		Hear(@minesLaunch.esfx)
+		await Spray(duration=5, count=5, spray=0.28revs) headingOffset {
 			Spawn projectile {
-				.. parent=unit
-				.. lifetime=4.5s, dissipation=15
-				.. radius=0.32, speed=40.0, impulse=75, aoe=1.2
-				.. density=1.5, ccd=true
-				.. ownerColor=Alliance:Self, bloom=1.5, bloomAlpha=0.3, luminous=1.0, depth=Depth:Projectile
-				.. categories = Category:Projectile | Category:Aoe | Category:Destructible | Category:AlwaysBlow, durability=Durability:None
-				.. sense=Category:Projectile
+				use parent=unit, body=projectile
+				use lifetime=4.5s, dissipate=15
+				use radius=0.32, speed=40.0, impulse=75, aoe=1.2
+				use ownerColor=Alliance:Self, bloom=1.5, bloomAlpha=0.3, luminous=1, layer=Layer:Projectile
 
-				LaunchBody
-				PrepareForCollision
-				DriftingMotion
+				Body(pos=parent.Pos, heading=parent.Heading+headingOffset, velocity=speed*Direction(heading), bullet=true)
+				Durability = Durability:None
+				DecayTurnRate
 				ExpireAfterLifetime
+                LimitSpeed(1.2*speed)
 
-				Sprite(shadow=0.5) {
-					Collider {
-						Shape:Circle
-					}
-				}
+				PolygonSprite(Circle, shadow=0.5)
+				PolygonCollider(
+                    Circle,
+                    category = Category:Projectile | Category:Aoe | Category:Destructible | Category:AlwaysBlow,
+                    sense=Category:Projectile,
+                    density=1.5, restitution=0,
+                )
 
 				let armed = false
 				on BeforeCollide that {
-					if that.Durability >= this.Durability && !(that.Owner == this.Owner && !(that.Category & Category:Hero)) {
+					if that.Durability >= this.Durability && !(that.Owner == this.Owner && !that.Category.Overlaps(Category:Unit)) {
 						// Expire on everything unless it is an entity owned by the same player but not the hero.
 						// This lets us push mines around with meteors, for example.
 						Strobe(shine=1.0)
@@ -72,55 +82,42 @@ pub fn ability.EnergyMinesAbility(unit, owner, btn) {
 					}
 				}
 
-				once Expire {
-					Explosion(1.2, shine=1.0)
-					Hear(Mines:HitSound)
+				once BeforeDespawn {
+					Spark(radius=1.2, bloom=3, bloomAlpha=0.5, feather=1, glare=0.3, shine=1)
+					Hear(@minesHit.esfx)
 
-					Aoe:ForEach that {
+					for that in QueryWithinRadius(aoe, filter=Category:Aoe) {
 						if that.Team != owner.Team {
-							Attack(that, armed ? damage : 1)
-							Aoe:Impulse
+                            that.StackEffect<mines> stacks {
+                                once Tick(2s) { Expire }
 
-							that.Tombstone victim {
-								NameBlock(owner)
-								%(" blew ")
-								NameBlock(victim)
-								%("'s mined")
+                                Attack(that, damage = armed ? (damage * (1-damageReductionPerHit)**stacks) : 0)
+                                ImpulseAway(that)
+                                ExpireIfDestructible(that)
+
+                                that.Tombstone victim {
+                                    PlayerNameDisplay(owner)
+                                    " blew "
+                                    PlayerNameDisplay(victim)
+                                    "'s mined"
+                                }
 							}
 						}
 					}
 				}
 
-				once<arm> Sleep(armDelay) {
+				once Tick(armDelay) {
 					armed = true
 					Speed = 0
-					DecayingMotion
+					DecaySpeed
 				}
 
-				once<retreat> Sleep(retreatDelay) {
-					Proximity:OnRetreat(unit, range=12) {
+				once Tick(retreatDelay) {
+					once Retreated(unit, range=12) {
 						Expire
 					}
 				}
 			}
 		}
 	}
-}
-
-sound Mines:LaunchSound(duration=0.17s) {
-	Vibrato(freqModulation=[3000,12588]) {
-		Oscillator(freq=30)
-	}
-	Oscillator(wave=$triangle, freq=[6000,6400], harmonics=[1, 1.33, 1.5])
-	Tremolo(volumeModulation=0.2) {
-		Oscillator(freq=30)
-	}
-	Envelope(attack=0.05s, release=0.05s)
-	Gain(volume=0.1)
-}
-
-sound Mines:HitSound(duration=1s) {
-	Oscillator(wave=$triangle, freq=[50,0], harmonics=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2])
-	LowPass(freq=[300,0])
-	Envelope(attack=0.01s, sustain=0s)
 }

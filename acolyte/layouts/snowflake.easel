@@ -1,39 +1,32 @@
-pub fn scene.SnowflakeLayout {
-	.. orientation = 0.5rev / 6
+pub fn layout.SnowflakeLayout {
+	use orientation = 0.5rev / 6
 
-	Lava
-	Shrink
 	SolidBackground(color=#2c1e1b)
 
 	Spawn turf {
-		Turf(color=#493936, heading=orientation) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=6)
-			}
+		Turf(color=#493936, heading=orientation)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=32 * scale, numPoints=6)
 		}
 	}
 
 	ArrangeRing(orbit=6.8, numObstacles=2) {
 		Spawn obstacle {
-			Boost {
-				Shape:Trapezoid(radius=0.24, arc=0.24rev)
-			}
+			Boost(shape=Trapezoid(radius=0.24, arc=0.24rev))
 		}
 	}
 
 	ArrangeRing(orbit=9.6, numObstacles=4, angleOffset=0.5rev / numObstacles) {
 		Spawn obstacle {
-			Boulder {
-				Shape:Equilateral(numPoints=4, radius=1.36)
-			}
+			Boulder(shape=Equilateral(numPoints=4, radius=1.2))
 		}
 	}
 
 	ArrangeRing(orbit=28, numObstacles=6, angleOffset=orientation) {
 		Spawn obstacle {
-			Boulder {
-				Shape:Equilateral(numPoints=4, radius=0.6)
-			}
+			Boulder(shape=Equilateral(numPoints=4, radius=0.52))
 		}
 	}
 }

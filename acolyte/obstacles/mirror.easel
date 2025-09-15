@@ -1,43 +1,37 @@
-.. owner=null
+use owner=null
 
-pub fn obstacle.Mirror(pos, heading?=0, maxHp=50, radius=1.0, density=100) .. shape {
-	.. color=#0cf, fade=#48f,
-	.. bloom=0.5, luminous=1,
-	.. shading=0.25, depth=Depth:Obstacle,
-	.. categories=(Category:Obstacle | Category:Shield | Category:CanGrab | Category:HurtByLava | Category:Aoe),
-	.. collideWith=Category:Solid,
-	.. durability=Durability:Shield,
-	.. ccd=false
+pub fn obstacle.Mirror(shape, pos=@(0,0), heading=0, maxHp=50, radius=1.0, density=100, [posOffset?, headingOffset?]) {
+    use body=obstacle, life=obstacle
+	use color=#0cf, fade=#48f,
+	use bloom=0.5, luminous=1,
+	use shading=0.25, layer=Layer:Obstacle,
 
-	Body(pos, heading=)
-	PrepareForCollision
-	DecayingMotion(turningDecay=0.05)
+	Body(pos = pos + posOffset, heading = heading + headingOffset)
+	Durability = Durability:Reflector
+	DecaySpeed
+	DecayTurnRate(turningDecay=0.05)
 
-	Anchored(pos, heading)
-	once AfterCommence { delete Anchored }
+	Anchored
+	once AfterGameCommenced { delete Anchored }
 
 	Health
+	LavaBehavior
 
-	Collider {
-		Sprite {
-			Perimeter shape {
-				delve()
-			}
-		}
-	}
+	PolygonCollider(
+        category = Category:Obstacle | Category:Shield | Category:Grabbable | Category:Aoe,
+        collideWith=Category:Tangible,
+	)
+	PolygonPerimeter
 
-	hook Hp {
-		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
-		.. color = HpProportion.Mix(fade, color)
-
-		SpriteProps(shadow=0.5)
+	with Hp {
+		await Paint // coalesce multiple changes to HP into a single paint at the end of tick
+		use color = HpProportion.Mix(fade, color)
+		PolygonSprite(shadow=0.5)
 	}
 
 	once BeforeOutOfHealth {
-		Puff(
-			count=10, shadow=0,
-			luminous=1.0, shine=1.0, bloom=1.0,
-			dissipation=30, splatter=Splatter:Outwards(10.0),
-			flutter=$area)
+		repeat 10 {
+			Spark(shadow=0, feather=1, luminous=1, shine=1, bloom=1, dissipate=30, speed=10, splatter=1, glaze=true)
+		}
 	}
 }

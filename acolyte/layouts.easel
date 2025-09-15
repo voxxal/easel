@@ -1,25 +1,24 @@
-pub fn scene.RandomLayout() {
-    const layout = PickRandom([
-        () => CircleLayout
-        () => ColdLayout
-        () => OctogonLayout
-        () => ReturnLayout
-        () => DoubleLayout
-        () => RingLayout
-        () => ExitLayout
-        () => HealLayout
-        () => SnowflakeLayout
-        () => Inside5Layout
-        () => SingleLayout
-        () => PepperLayout
-        () => MirrorsLayout
-        () => InnerStarLayout
-        () => MirrorhengeLayout
-        () => SpiralLayout
-        () => TripletLayout
-        () => SquareLayout
-        () => SurroundedLayout
-        () => TripletSwirlLayout
-    ])
-    layout()
+pub fn layout.RandomLayout() {
+    surprise {
+        CircleLayout,
+        ColdLayout,
+        OctogonLayout,
+        ReturnLayout,
+        DoubleLayout,
+        RingLayout,
+        ExitLayout,
+        HealLayout,
+        SnowflakeLayout,
+        Inside5Layout,
+        SingleLayout,
+        PepperLayout,
+        MirrorsLayout,
+        InnerStarLayout,
+        MirrorhengeLayout,
+        SpiralLayout,
+        TripletLayout,
+        SquareLayout,
+        SurroundedLayout,
+        TripletSwirlLayout,
+    }
 }

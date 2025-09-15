@@ -1,1 +1,0 @@
-pub meld this.LavaDamageModifier(modifier, @unit) = (modifiers) => BuffMultiplier(modifiers)

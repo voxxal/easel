@@ -1,51 +1,62 @@
-.. owner = null
+use owner = null
 
-pub fn obstacle.Ice(pos, heading?=0, maxHp=50, radius=0.25) .. shape {
-	.. density=1.0,
-	.. color=#4ffc, fade=#4ff4,
-	.. bloom=2, bloomAlpha=0.3, luminous=1,
-	.. shading=0, shadow=0, depth=Depth:Zone,
-	.. categories=(Category:Zone | Category:HurtByLava),
-	.. collideWith=Category:None, sense=Category:Hero,
-	.. durability=Durability:Maximum,
-	.. isSensor=true, immovable=true, ccd=false
+pub fn obstacle.Ice(shape, pos=@(0,0), heading=0, maxHp=50, radius=0.25, [posOffset?, headingOffset?]) {
+    use body=obstacle, life=obstacle
+	use color=#4ffc, fade=#4ff4,
+	use bloom=2, bloomAlpha=0.3, luminous=1,
+	use shading=0, shadow=0, layer=Layer:Zone,
 
-	Body(pos, heading=)
-	PrepareForCollision
+	Body(pos = pos + posOffset, heading = heading + headingOffset, immovable=true)
+	Durability = Durability:Maximum
 	Health
+	LavaBehavior
 
-	BuffOnContact<ice>(filter=Category:Hero) that {
-		SpeedModifier(-0.5, that)
-		Smoke(that,
-			radius=1.0, dissipation=20, depth=Depth:Particle,
-			color=#4ff4, fade=1, feather=0.5, bloom=0,
-			splatter=Splatter:Outwards(12), flutter=$perimeter)
-	}
+	PolygonCollider(
+        category = Category:Zone,
+        collideWith = Category:None, sense=Category:Unit,
+        isSensor=true,
+	)
+	PolygonPerimeter
 
-	Collider {
-		Sprite {
-			Perimeter shape {
-				delve()
-			}
+	SpawnContact<ice>(filter=Category:Unit) unit {
+		use body = unit
+
+		SpeedModifier(0.5)
+
+        on Paint {
+            if Invisibility {
+                await Invisibility
+            } else {
+                Spark(
+                    radius=1.0, dissipate=20, layer=Layer:Spark,
+                    color=#4ff4, fade=1, feather=0.5, shine=0.5, bloom=0,
+                    speed=12, glaze=1)
+            }
 		}
 	}
 
-	hook Hp {
-		await TickEnd // coalesce multiple changes to HP into a single paint at the end of tick
-		.. color = HpProportion.Mix(fade, color)
+	with Hp {
+		await Paint // coalesce multiple changes to HP into a single paint at the end of tick
 
-		SpriteProps
-		Smoke(
-			radius=, luminous=1.0, shine=0.2, bloom=0, shadow=0,
-			dissipation=15, splatter=Splatter:Outwards(4.0),
-			flutter=$area)
+		use color = HpProportion.Mix(fade, color)
+
+		PolygonSprite
+
+		on Paint {
+			Spark(
+				radius=, luminous=1, feather=1, shine=0.2, bloom=0, shadow=0,
+				dissipate=15, speed=4,
+				glaze=true)
+		}
 	}
 
 	once BeforeOutOfHealth {
-		Puff(
-			count=10, shadow=0,
-			luminous=1.0, shine=1.0, bloom=2.0,
-			dissipation=30, splatter=Splatter:Outwards(10.0),
-			flutter=$area)
+		repeat 10 {
+			Spark(
+				shadow=0, feather=1,
+				luminous=1, shine=1, bloom=2,
+				dissipate=30, speed=10,
+				glaze=true)
+		}
 	}
 }

@@ -1,40 +1,50 @@
-.. glyph=Resonance:Glyph, color=#ff00dd, maxDuration=0.75s, cooldown=5s
+use glyph=@resonance.svg, color=#ff00dd, maxDuration=0.75s, cooldown=5s
 
 pub symbol WantPhaseShift
 
-pub fn PhaseShiftOption(.. ui) {
-	SlotOption<WantPhaseShift> {
-		H1 { %("Phase Shift") }
+pub fn PhaseShiftDescription([ui]) {
+    H1 { "Phase Shift" }
 
-		P {
-			%("Press and hold to momentarily vanish from the world, becoming impervious to harm as you transcend the mortal plane.")
-		}
+    P {
+        "Press and hold to momentarily vanish from the world, becoming impervious to harm as you transcend the mortal plane."
+    }
 
-		P {
-			SlotEffect("Ethereal Exhaustion", icon="fas fa-hourglass-half") {
-				%("Cooldown increases the longer you stay in Phase Shift.")
-			}
-		}
+    SlotEffect("Ethereal Exhaustion", icon="fas fa-hourglass-half") {
+        "Cooldown increases the longer you stay in Phase Shift."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn PhaseShiftOption([ui]) {
+	SlotOption(WantPhaseShift) {
+        PhaseShiftDescription
 	}
 }
 
-pub fn ability.PhaseShiftAbility(unit, owner, btn) {
-	on BotDeflecting {
+pub fn ability.PhaseShiftAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotDeflecting target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. radius=1.0, dissipation=15, shine=1, luminous=1, depth=Depth:Projectile
+    AbilityCommandBtn {
+        PhaseShiftDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use radius=1.0, dissipate=15, shine=1, luminous=1, layer=Layer:Projectile
 
 		const birth = Tick
 
-		on BotChannelling {
+		on BotChannelling target {
 			const channelDuration=0.5s
 
 			let age = Tick - birth
@@ -43,38 +53,35 @@ pub fn ability.PhaseShiftAbility(unit, owner, btn) {
 			}
 		}
 
-		CooldownRate(-1)
-		SpeedModifier(-1)
-		Vulnerability(-1)
+		CooldownRate(0)
+		SpeedModifier(0)
+		Vulnerability(0)
 		Tangibility(Category:None)
-		FilterCategoriesModifier(Category:All ^ Category:Aoe)
 		Vanished(true)
+		Untrackable(true)
 		Invisibility(true)
-		SeverTethers
+
+        ClearHalos
+		UngrabMe
+		UngrabThem
 		Speed = 0
 
-		Puff(count=10, color=#111111, fade=1, flicker=1, splatter=Splatter:Outwards(12.0), feather=1)
-		Hear(PhaseShift:Sound)
+		repeat 10 { Spark(color=#111111, fade=1, flicker=1, speed=12, feather=1, shine=0.5) }
+		Hear(@phaseShift.esfx)
 
-		once Expire {
-			Puff(count=10, color=#111111, fade=1, flicker=1, splatter=Splatter:Outwards(12.0), feather=1)
-			Hear(PhaseShift:Sound)
+		once BeforeDespawn {
+			repeat 10 { Spark(color=#111111, fade=1, flicker=1, speed=12, feather=1, shine=0.5) }
+			Hear(@phaseShift.esfx)
 		}
 
-		on<coolup> Tick {
+		on Tick {
 			Cooldown += 5
 		}
 
-		once Sleep(maxDuration) {
-			StopIncantation
+		once Tick(maxDuration) {
+			incantation.Expire
 		}
 
-		await ability.ReleaseCommand
+		await ButtonUp
 	}
-}
-
-sound PhaseShift:Sound(duration=0.25s) {
-	Oscillator(wave=$sine, freq=[60,40], harmonics=[1,1.5])
-	Envelope(attack=0.01s, sustain=0s)
-	Gain(volume=0.25)
 }

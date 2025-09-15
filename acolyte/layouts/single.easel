@@ -1,19 +1,16 @@
-pub fn scene.SingleLayout {
-	Lava
-	Shrink
+pub fn layout.SingleLayout {
 	SolidBackground(color=#2b1d27)
 
 	Spawn turf {
-		Turf(color=#463441) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=3)
-			}
+		Turf(color=#463441)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=22 * scale, numPoints=3)
 		}
 	}
 
 	Spawn obstacle {
-		Boulder(pos=@(0,0), turningDecay=0.001) {
-			Shape:Equilateral(numPoints=3, radius=1.36)
-		}
+		Boulder(shape=Equilateral(numPoints=3, radius=0.9), pos=@(0,0), turningDecay=0.001)
 	}
 }

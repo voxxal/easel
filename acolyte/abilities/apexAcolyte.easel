@@ -1,26 +1,34 @@
-.. glyph=Dna1:Glyph, color=#4400ff, amplifyProportion=0.15
+use glyph=@dna1.svg, color=#4400ff, amplifyProportion=0.15
 
 pub symbol WantApexAcolyte
 
-pub fn ApexAcolyteOption(.. ui) {
-	SlotOption<WantApexAcolyte> {
-		H1 { %("Apex Acolyte") }
+pub fn ApexAcolyteDescription([ui]) {
+    H1 { "Apex Acolyte" }
 
-		P {
-			Span(italic=true) { %("Passive ability. ") }
-			%("Your exceptional talents enable you to discern even the smallest frailties and vulnerabilities in your enemies. With surgical precision, you exploit these weaknesses, striking with unparalleled effectiveness, causing your enemies tremble in fear at your mere presence. ")
-		}
+    P {
+        Span(italic=true) { "Passive ability. " }
+        "Your exceptional talents enable you to discern even the smallest frailties and vulnerabilities in your enemies. With surgical precision, you exploit these weaknesses, striking with unparalleled effectiveness, causing your enemies tremble in fear at your mere presence. "
+    }
 
-		P {
-			SlotEffect("Unparalleled Effectiveness", icon="fas fa-sword") {
-				%("Permanently increase damage dealt by " + (amplifyProportion * 100) + "%.")
-			}
-		}
+    SlotEffect("Unparalleled Effectiveness", icon="fas fa-fire") {
+        "Permanently increase damage dealt by " + (amplifyProportion * 100) + "%."
+    }
+}
+
+pub fn ApexAcolyteOption([ui]) {
+	SlotOption(WantApexAcolyte) {
+        ApexAcolyteDescription
 	}
 }
 
-pub fn ability.ApexAcolyteAbility(unit, owner, btn) {
+pub fn ability.ApexAcolyteAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+    AbilityCommandBtn(passive=true) {
+        ApexAcolyteDescription
+    }
+
 	NoIncantation {
-		DamageModifier(amplifyProportion)
+		DamageModifier(1 + amplifyProportion)
 	}
 }

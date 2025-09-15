@@ -1,79 +1,103 @@
-.. glyph=Snowflake1:Glyph, color=#44ffff, cooldown=7.5s, slowProportion=0.5, buffDuration=2.0s
+use glyph=@snowflake1.svg, color=#44ffff, cooldown=7.5s, slowProportion=0.5, buffDuration=2.0s
 
 pub symbol WantWhirlwind
 
-pub fn WhirlwindOption(.. ui) {
-	SlotOption<WantWhirlwind> {
-		H1 { %("Whirlwind") }
+pub fn WhirlwindDescription([ui]) {
+    H1 { "Whirlwind" }
 
-		P {
-			%("Summon a bone-chilling vortex that engulfs your enemies, impeding their movements with its icy grip while blowing away incoming attacks with the might of the winds.")
-		}
+    P {
+        "Summon a bone-chilling vortex that engulfs your enemies, impeding their movements with its icy grip while blowing away incoming attacks with the might of the winds."
+    }
 
-		P {
-			SlotEffect("Chilling Blow", icon="fas fa-snowflake") {
-				%("Enemies caught in your whirlwind will be slowed " + (slowProportion * 100) + "% for " + (buffDuration / TicksPerSecond) + " seconds.")
-			}
-		}
+    SlotEffect("Chilling Blow", icon="fas fa-snowflake") {
+        "Enemies caught in your whirlwind will be slowed " + (slowProportion * 100) + "% for " + (buffDuration / TicksPerSecond) + " seconds."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn WhirlwindOption([ui]) {
+	SlotOption(WantWhirlwind) {
+        WhirlwindDescription
 	}
 }
 
-pub fn ability.WhirlwindAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.WhirlwindAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		TurnRateModifier(-1.0)
+    AbilityCommandBtn {
+        WhirlwindDescription
+    }
+
+	SpawnEachIncantation incantation {
+		TurnRateModifier(0)
 
 		await ChargeForDuration(6) {
-			ChargingIndicator
 		}
 
 		Spawn projectile {
-			.. parent=unit
-			.. lifetime=2s, dissipation=20 
-			.. radius=2.4, density=1, speed=12.0
-			.. luminous=0, glare=0.7, glareAlpha=0.4, bloom=0, feather=0.5, depth=Depth:Projectile
-			.. categories=Category:Projectile, collideWith=Category:None, sense=Category:Hero
+			use parent=unit, body=projectile
+			use lifetime=2s, dissipate=20
+			use radius=2.4, speed=12.0
+			use luminous=0, glare=0.7, glareAlpha=0.4, bloom=0, feather=0.5, layer=Layer:Projectile
 
 			ExpireAfterLifetime
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			Sing(Whirlwind:Sound)
-			Bloom(bloom=4, luminous=0.5)
-			Smoke(
-				count=2, radius=1.2, splatter=1.3,
-				color=#4ff4, fade=1,
-				flutter=Flutter:Swirl(radius=0.8, period=13))
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading))
+			RecoverSpeed
+			DecayTurnRate
+			Sing(@whirlwind.esfx)
+			PolygonSprite(shape=Circle(0), bloom=4, bloomAlpha=0.5, luminous=0.5, layer=Layer:Bloom)
 
-			Collider {
-				Shape:Circle
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile, collideWith=Category:None, sense=Category:Unit,
+            )
+			
+			on Paint {
+				const numSparks = 2
+				for i in Range(0, numSparks) {
+					Spark(
+						radius=1.2, splatter=1.3, shine=0.5,
+						color=#4ff4, fade=1,
+						screenOffset=SwirlOffset(radius=0.8, period=13, phase=i/numSparks))
+				}
 			}
 
 			on BeforeCollide that {
-				if (that.Category & Category:Hero) && that.Team != owner.Team {
+				if that.Category.Overlaps(Category:Unit) && that.Team != owner.Team {
 					// spawn buff with separate lifetime from projectile
-					that.ReplaceBuff<cold>(cleansable=true) {
-						ExpireAfterLifetime(buffDuration)
-						SpeedModifier(-slowProportion, that)
-						Smoke(that,
-							color=#4ff4, fade=1, feather=0.5,
-							radius=1.0, dissipation=20, depth=Depth:Particle,
-							flutter=$perimeter)
+					that.ReplaceEffect<cold>(cleansable=true) {
+						use body = that
+
+						ExpireAfterLifetime(lifetime=buffDuration)
+						give that.SpeedModifier(1 - slowProportion)
+
+                        on Paint {
+                            if that.Invisibility {
+                                await that.Invisibility
+                            } else {
+                                Spark(
+                                    color=#4ff4, fade=1, shine=0.5,
+                                    radius=1.0, dissipate=20, layer=Layer:Spark,
+                                    glaze=1)
+                            }
+                        }
 
 						that.Tombstone victim {
-							NameBlock(owner)
-							%(" took ")
-							NameBlock(victim)
-							%("'s breath away")
+							PlayerNameDisplay(owner)
+							" took "
+							PlayerNameDisplay(victim)
+							"'s breath away"
 						}
 					}
 
@@ -81,15 +105,7 @@ pub fn ability.WhirlwindAbility(unit, owner, btn) {
 				}
 			}
 
-			Wind(0.3, radius=)
+			Wind(0.3)
 		}
 	}
-}
-
-sound Whirlwind:Sound(duration=5s, cutoff=0.25s) {
-	BrownNoise
-	BandPass(freq=240, q=0.7)
-	LowShelf(freq=80, db=12)
-	Envelope(attack=0.5s, sustain=0s)
-	Gain(volume=0.25)
 }

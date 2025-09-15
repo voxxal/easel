@@ -1,111 +1,136 @@
-.. glyph=SonicLightning:Glyph, color=#00ff00
-.. damage=12, lifesteal=0.3, cooldown=9s
-.. rangedBonus=1, rangedDuration=0.4s
-.. secondHitBonus=0.33, buffDuration=5s
+use glyph=@sonicLightning.svg, color=#00ff00
+use damage=12, lifesteal=0.3, cooldown=9s
+use rangedBonus=1, rangedDuration=0.4s
+use secondHitBonus=0.33, buffDuration=5s
 
 pub symbol WantRepeater
 
 signal ability.RepeaterMiss // signal this on the ability, not the projectile, because repeater projectile will have expired by the time this is sent
 
-pub fn RepeaterOption(.. ui) {
-	SlotOption<WantRepeater> {
-		H1 { %("Repeater") }
+pub fn RepeaterDescription([ui]) {
+    H1 { "Repeater" }
 
-		P {
-			%("Upon striking an enemy's soul with the harmonious energy of Repeater, the resulting symphony allows you to immediately unleash another blow, weaving an unyielding chain of attacks.")
-		}
+    P {
+        "Upon striking an enemy's soul with the harmonious energy of Repeater, the resulting symphony allows you to immediately unleash another blow, weaving an unyielding chain of attacks."
+    }
 
-		P {
-			SlotEffect("Harmonic Resonance", icon="fas fa-undo") {
-				%("Each time Repeater hits, its cooldown resets, allowing you to fire it again immediately. ")
-				%("Hitting the same enemy a second time grants " + (secondHitBonus * 100.0) + "% bonus damage. ")
-			}
-			SlotEffect("Soaring Crescendo", icon="fas fa-star-exclamation") {
-				%("Damage increases with range, building up to " + (rangedBonus+1) + "x bonus damage after " + (rangedDuration / TicksPerSecond) + " seconds.")
-			}
-		}
+    SlotEffect("Harmonic Resonance", icon="fas fa-undo") {
+        "Each time Repeater hits, its cooldown resets, allowing you to fire it again immediately. "
+        "Hitting the same enemy a second time grants " + (secondHitBonus * 100.0) + "% bonus damage. "
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    SlotEffect("Soaring Crescendo", icon="fas fa-chart-line") {
+        "Damage increases with range, building up to " + (rangedBonus+1) + "x bonus damage after " + (rangedDuration / TicksPerSecond) + " seconds."
+    }
+
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn RepeaterOption([ui]) {
+	SlotOption(WantRepeater) {
+        RepeaterDescription
 	}
 }
 
-pub fn ability.RepeaterAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.RepeaterAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        RepeaterDescription
+    }
 
-		TurnRateModifier(-1.0)
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
+
+		TurnRateModifier(0)
 		await ChargeForDuration(3) {
 			ChargingIndicator
 		}
 
 		Spawn projectile {
-			.. parent=unit
-			.. lifetime=1s, dissipation=18
-			.. maxStacks=2
-			.. radius=0.16, speed=64
-			.. luminous=1.0, depth=Depth:Projectile
-			.. density=14, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Medium
-			.. collideWith = Category:Solid ^ Category:Projectile
+			use parent=unit, body=projectile
+			use lifetime=1s, dissipate=18
+			use maxStacks=2
+			use radius=0.16, speed=64
+			use luminous=1, layer=Layer:Projectile
 
 			const birth = Tick
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			Smoke(shadow=0.5, radius=4.0*radius, interval=2)
-			RayEmitter(0.5*radius, dissipation=12)
-			Sing(Repeater:Sound)
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:Medium
+			RecoverSpeed
+			DecayTurnRate
+			Sing(@repeater.esfx)
 			ExpireAfterLifetime
 
-			Collider {
-				Shape:Circle
-			}
+			PolygonCollider(
+                Circle,
+                category = Category:Projectile,
+                collideWith = Category:Tangible ^ Category:Projectile,
+                density=14, restitution=1,
+            )
 
 			let hit = false
-			once Expire {
+			once BeforeDespawn {
 				if !hit {
 					RepeaterMiss
 				}
 			}
 
-			let canHurtSelf = false
+		   	on Paint {
+				Streak(radius=0.5*radius, dissipate=12, bloom=3, bloomAlpha=1, glare=1, shadow=0.25)
+
+				if Tick % 2 == 0 { // every second tick
+					Spark(shadow=0.5, radius=4.0*radius, feather=1, shine=0.5)
+				}
+			}
+
 			on BeforeCollide that {
-				if canHurtSelf || that.Team != owner.Team {
+				if CanHurtSelf || that.Team != owner.Team {
 					// Only reset on units that are owned by a owner, not neutrals
-					if (that.Category & Category:Hero) && that.Team && (that.Team != owner.Team) {
+					if that.Category.Overlaps(Category:Unit) && that.Team && (that.Team != owner.Team) {
 						hit = true
 						Cooldown = 0
-						Hear(Repeater:SuccessSound)
-						that.StackBuff<repeater>(cleansable=true, maxStacks=1) stacks {
-							ExpireAfterLifetime(buffDuration)
-							BloomIndicator(that, audience=owner)
+						Hear(@repeaterSuccess.esfx)
+						that.StackEffect<repeater>(cleansable=true, maxStacks=1) stacks {
+							use body = that
+							ExpireAfterLifetime(lifetime=buffDuration)
 
 							const secondHitMultiplier = 1 + stacks * secondHitBonus
 							const rangedMultiplier = 1 + rangedBonus * ((Tick - birth) / rangedDuration).Min(1.0)
-							Attack(that, damage * rangedMultiplier * secondHitMultiplier)
+							Attack(that, damage = damage * rangedMultiplier * secondHitMultiplier)
 
 							once RepeaterMiss { // miss once and the buff expires too
 								Expire
 							}
 
+							with that.Vanished {
+                                if that.Vanished {
+                                    delete PolygonSprite<mark>
+                                } else {
+                                    PolygonSprite<mark>(shape=Circle(0), audience=owner, bloom=4, bloomAlpha=0.5, layer=Layer:Bloom)
+                                }
+							}
+
 							that.Tombstone victim {
-								NameBlock(owner)
-								%(" orchestrated ")
-								NameBlock(victim)
-								%("'s final refrain")
+								PlayerNameDisplay(owner)
+								" orchestrated "
+								PlayerNameDisplay(victim)
+								"'s final refrain"
 								if stacks > 0 {
-									%(" again and again")
+									" again and again"
 								}
 							}
 						}
@@ -115,40 +140,15 @@ pub fn ability.RepeaterAbility(unit, owner, btn) {
 				}
 			}
 			on AfterCollide that {
-				if that.Category & Category:Shield {
-					canHurtSelf = true // Can bounce off shield to hurt self
+				if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team {
+					CanHurtSelf = true // Can bounce off shield to hurt self
 				}
 				if that.Durability >= this.Durability {
 					Strobe(growth=1, shine=1.0)
-					Puff(count=5, splatter=1)
+					repeat 5 { Spark(splatter=1, feather=1, shine=0.5) }
 					Expire
 				}
 			}
 		}
 	}
-}
-
-sound Repeater:Sound(duration=1s) {
-	BrownNoise
-	BandPass(freq=2000, q=3)
-	Envelope(attack=0.25s, sustain=0s)
-	Gain(volume=0.5)
-	Output
-
-	Oscillator(wave=$triangle, freq=2000, harmonics=[1,1.5])
-	LowPass(freq=1000)
-	Tremolo(volumeModulation=0.8) {
-		Oscillator(freq=15)
-	}
-	Envelope(attack=0.1s, sustain=0s)
-	Gain(volume=0.5)
-}
-
-sound Repeater:SuccessSound(duration=0.25s) {
-	Oscillator(wave=$square, freq=4000, harmonics=[1,1.5])
-	Tremolo(volumeModulation=0.8) {
-		Oscillator(freq=15)
-	}
-	Envelope(attack=0.01s, sustain=0s)
-	Gain(volume=0.1)
 }

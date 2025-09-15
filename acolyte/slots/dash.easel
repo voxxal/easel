@@ -1,21 +1,25 @@
-.. btn="KeyA", slotDefault=WantCharge
+use keycode=KeyA, slotDefault=WantCharge
 
-pub preference owner.DashSlot
+pub symbol DashSlot
 
-pub fn unit.DashSlotAbility(.. owner, btnIndex?, btnSize=1) {
-	SlotAbility<DashSlot> choice {
+pub fn unit.DashSlotAbility([owner, btnOrder?, btnSize?]) {
+    use btnEdit = ShowIntent<DashSlot>
+    if owner.IsHuman {
+        BottomModal<DashSlot>(dismissed=true) {
+            DashSlotEditor
+        }
+    }
+
+	SpawnEachAbility<DashSlot> choice ability {
 		if choice == WantCharge { ChargeAbility }
 		else if choice == WantTeleport { TeleportAbility }
 		else if choice == WantVoidRush { VoidRushAbility }
 		else if choice == WantSwap { SwapAbility }
 		else if choice == WantVanish { VanishAbility }
-		else { SlotWithoutAbility }
-
-		SlotPopup<DashSlot> { DashSlotEditor }
 	}
 }
 
-pub fn this.DashSlotEditor(.. owner, ui) {
+pub fn this.DashSlotEditor([dismiss?, owner, ui]) {
 	SlotEditor<DashSlot> {
 		ChargeOption
 		TeleportOption
@@ -26,7 +30,7 @@ pub fn this.DashSlotEditor(.. owner, ui) {
 }
 
 pub fn owner.RandomizeDashSlot {
-	DashSlot = PickRandom([
+	SlotChoice<DashSlot> = PickRandom([
 		WantCharge,
 		WantTeleport,
 		WantVoidRush,

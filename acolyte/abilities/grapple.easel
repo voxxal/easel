@@ -1,133 +1,156 @@
-.. glyph=Grapple:Glyph, color=#ff0066, damage=0, cooldown=5s
+use glyph=@grapple.svg, color=#ff0066, damage=0, cooldown=5s
 
 pub symbol WantGrapple
 
-pub fn GrappleOption(.. ui) {
-	SlotOption<WantGrapple> {
-		H1 { %("Grapple") }
+pub fn GrappleDescription([ui]) {
+    H1 { "Grapple" }
 
-		P {
-			%("With a grapple of mystical energy, capture your adversary and swing them straight into the jaws of peril. ")
-		}
+    P {
+        "With a grapple of mystical energy, capture your adversary and swing them straight into the jaws of peril. "
+    }
 
-		P {
-			SlotEffect("Forceful Fling", icon="fas fa-arrows") {
-				%("Hold down the button to capture your enemy, move your cursor to swing and then release the button to throw your enemy. ")
-			}
-		}
+    SlotEffect("Forceful Fling", icon="fas fa-arrows") {
+        "Hold down the button to capture your enemy, move your cursor to swing and then release the button to throw your enemy. "
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn GrappleOption([ui]) {
+	SlotOption(WantGrapple) {
+        GrappleDescription
 	}
 }
 
-pub fn ability.GrappleAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.GrappleAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		Spawn projectile {
-			.. parent=unit
-			.. lifetime=50, dissipation=5
-			.. radius=0.2, speed=72
-			.. depth=Depth:Tether
-			.. luminous=0, taper=0.3, shadow=0.5
-			.. density=1.5, restitution=0, ccd=true
-			.. categories = Category:Projectile | Category:Grabber, durability=Durability:Low
-			.. sense = Category:Hero | Category:Obstacle
+    AbilityCommandBtn {
+        GrappleDescription
+    }
 
-			on BotChannelling {
+	SpawnEachIncantation incantation {
+		Spawn projectile {
+			use parent=unit, body=projectile
+			use lifetime=50, dissipate=5
+			use radius=0.2, speed=72
+			use layer=Layer:Strand
+			use luminous=0, bloomAlpha=0.5, taper=0.3, shadow=0.5, retract=true
+
+			on BotChannelling target {
 				BotKeepChannelling
 			}
 
-			LaunchBody(turnRate=3rev)
-			PrepareForCollision
-			DecayingMotion
-			CooldownRate(-1)
-			Sing(Grapple:Sound)
-			ExpireWith(unit)
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), turnRate=3rev, bullet=true)
+			Durability = Durability:Low
+			DecaySpeed
+			CooldownRate(0)
+			Sing(@grapple.esfx)
+			DespawnBefore(unit)
 			ExpireAfterLifetime
 			Movement:WalkWith(unit)
 			
-			hook<followCursor> Pointer {
+			behavior<followPointer> with Pointer {
 				Homing(Pointer, turnRate=0.002rev)
 			}
 
-			once<redirect> Sleep(35) {
+			once Tick(35) {
 				Velocity:RedirectTowards(unit.Pos, speed=4)
-				delete hook<followCursor>
+				delete behavior<followPointer>
 				Homing(unit)
-				await Sleep(5)
+
+				await Tick(5)
 				Velocity:RedirectTowards(unit.Pos, speed=96)
-				PropulsiveMotion
+				RecoverSpeed
 			}
 
-			once ability.ReleaseCommand {
-				Expire
+			once ButtonUp { Expire }
+			once UngrabThem { Expire }
+			once Interrupt interruptor {
+			    if interruptor.Overlaps(Interruptor:Self) {
+			        Expire
+			    }
 			}
 
-			Sprite {
-				Shape:Equilateral(radius=4.0 * radius, numPoints=3)
-			}
+			PolygonSprite(Equilateral(radius=2.67 * radius, numPoints=3))
 			
 			// passthroughSiblings=false so the Grapple can immediately collide with a sibling like a Meteor even when it is spawned inside of the Meteor
-			Collider(passthroughSiblings=false) {
-				Shape:Circle
-			}
+			PolygonCollider(
+                Circle,
+                category = Category:Projectile | Category:Grapple,
+                sense = Category:Unit | Category:Obstacle,
+                passthroughSiblings=false, density=1.5,
+            )
 
+
+			Strand<grapple>(unit, projectile, radius=2.0 * radius, crater=0.4, glare=0, shine=0.5, dissipate=5, shadow=0.25)
 			on BeforeCollide that {
-				if that == unit { Expire } // The grapple has returned, expire it
-				if that.Team != owner.Team {
-					Attack(that)
+				if that == unit {
+					Expire // The grapple has returned, expire it
+				} else if that.Category.Overlaps(Category:Grabbable) {
+                    if that.Team != owner.Team {
+                        Attack(that)
 
-					that.Tombstone victim {
-						NameBlock(owner)
-						%(" threw ")
-						NameBlock(victim)
-						%(" a goodbye party ")
+                        that.Tombstone victim {
+                            PlayerNameDisplay(owner)
+                            " threw "
+                            PlayerNameDisplay(victim)
+                            " a goodbye party "
+                        }
 					}
-				}
-			}
 
-			once SeverTethers { Expire }
+					delete Strand<grapple> // delete old strand so we can replace it with the new one connected to `that`
+					unit.SpawnGrab(that, severable=true) {
+						Strand<grapple>(unit, that, radius=2.0 * radius, crater=0.4, glare=0, shine=0.5, dissipate=5, shadow=0.25)
 
-			TetherBuffOnHit(radius=2.0 * radius, crater=0.4, bloomAlpha=0.5, shadow=0.5, glare=0, shine=0.5) that {
-				// Throw the enemy into the void. Let go if we grabbed an ally by mistake.
-				if that.Team != owner.Team {
-					on BotChannelling {
-						if !that.IsInLava {
-							BotKeepChannelling(spin=true, utility=Utility:Maximum)
+						// Throw the enemy into the void. Let go if we grabbed an ally by mistake.
+						if that.Team != owner.Team {
+							on BotChannelling target {
+								if !that.IsInLava {
+									BotKeepChannelling(spin=true, utility=Utility:Maximum)
+								}
+							}
 						}
+
+						// If we've grappled onto a meteor/meteorite, slightly different settings
+						const isProjectile = that.Category.Overlaps(Category:Projectile)
+						ExpireAfterLifetime(lifetime = isProjectile ? 2s : 1s)
+						CooldownRate(0)
+						SpeedModifier(0) // Stop the unit moving because otherwise they keep shortening the grapple as they move towards the target, reducing control
+						TurnRateModifier(0.01)
+
+						Grab:Tow(that, unit, minDistance = isProjectile ? 4 : 10)
+
+                        if isProjectile {
+                            Grab:Swing(unit, that, turnProportion=0.05, momentumFactor=1)
+                        } else {
+                            Tween(duration=0.5s, initial=0.1, final=1.0) factor {
+                                Grab:Swing(unit, that, turnProportion = factor * 0.05, momentumFactor=1)
+                            }
+                        }
+
+						once ButtonUp { Expire }
+                        once Interrupt interruptor {
+                            if interruptor.Overlaps(Interruptor:Self) {
+                                Expire
+                            }
+                        }
 					}
+
+					Expire
+					break // break so we only grab one thing
 				}
-
-				// If we've grappled onto a meteor/meteorite, slightly different settings
-				const isProjectile = that.Category & Category:Projectile
-				ExpireAfterLifetime(isProjectile ? 2s : 1s)
-				CooldownRate(-1)
-				SpeedModifier(-1) // Stop the unit moving because otherwise they keep shortening the grapple as they move towards the target, reducing control
-				TurnRateModifier(-0.99)
-
-				TowTether(unit, attractor=that)
-				Tween(duration=0.5s, initial=0.0, final=1.0) factor {
-					SwingTether(that, unit=, turnProportion=factor * (isProjectile ? 0.01 : 0.05), momentumFactor=isProjectile ? 1.0 : 0.9)
-				}
-
-				once ability.ReleaseCommand { Expire }
 			}
 		}
 	}
-}
-
-sound Grapple:Sound(duration=1.25s) {
-	Oscillator(wave=$square, freq=200, harmonics=[1,2,4,8,16])
-	LowPass(freq=200)
-	Tremolo(volumeModulation=0.4) {
-		Oscillator(freq=16)
-	}
-	Envelope(attack=1s, sustain=0s)
 }

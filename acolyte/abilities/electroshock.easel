@@ -1,146 +1,156 @@
-.. glyph=ElectricWhip:Glyph, color=#ffaa00
-.. damage=32.0, lifesteal=1.0, cooldown=1.5s, lifetime=4, speed=80.0, fastProportion=0.2, buffDuration=3s
+use glyph=@electricWhip.svg, color=#ffaa00
+use damage=20, bonusChargeDuration=0.75s, bonusDamageProportion=0.75, lifesteal=1.0, cooldown=1.5s, lifetime=4, speed=80.0, fastProportion=0.3
+
+const botChaseDistance = speed * lifetime / 1s
+
 
 pub symbol WantElectroshock
 
-pub fn ElectroshockOption(.. ui) {
-	SlotOption<WantElectroshock> {
-		H1 { %("Electroshock") }
+pub fn ElectroshockDescription([ui]) {
+    H1 { "Electroshock" }
 
-		P {
-			%("Shock your enemies at short-range, siphoning away their vitality through the conduit of crackling electricity. ")
-			%("The surge of lightning through your veins also quickens your movement. ")
-		}
+    P {
+        "Shock your enemies at short-range, siphoning away their vitality through the conduit of crackling electricity. "
+        "The surge of lightning through your veins also quickens your movement. "
+    }
 
-		P {
-			SlotEffect("Surging Swiftness", icon="fas fa-running") {
-				%("Move " + (fastProportion * 100) + "% faster for " + (buffDuration / TicksPerSecond) + " seconds, even if you miss.")
-			}
-		}
+    SlotEffect("Electrostatic Charge", icon="fas fa-bolt") {
+        "Hold the button down for up to " + (bonusChargeDuration / 1s) + "s for up to " + (100 * bonusDamageProportion) + "% bonus damage."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    SlotEffect("Surging Swiftness", icon="fas fa-running") {
+        "While charging up, you will move " + (fastProportion * 100) + "% faster."
+    }
+
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn ElectroshockOption([ui]) {
+	SlotOption(WantElectroshock) {
+        ElectroshockDescription
 	}
 }
 
-pub fn ability.ElectroshockAbility(unit, owner, btn) {
-	on BotAttacking target {
-		const chaseDistance = speed * lifetime / TicksPerSecond
+pub fn ability.ElectroshockAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
 
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 
 		} else {
 			// Chase down our enemies
-			let chase = target + chaseDistance * Direction(unit.Pos - target)
-			BotMoveTo(chase, utility=Utility:Minimum)
+			BotMoveTo(
+				target = target + botChaseDistance * Direction(unit.Pos - target),
+				utility = Utility:Minimum)
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        ElectroshockDescription
+    }
 
-		SpeedModifier(-1)
-		TurnRateModifier(-1)
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
+		let birth = Tick
 
-		await ChargeForDuration(3) {
-			ChargingIndicator
+		await ChargeUntilReleased(1s, minProportion=0) charger {
+			ChargingIndicator(flicker=0.3, color=#fffcb1)
+			CooldownRate(0)
+            SpeedModifier(1 + fastProportion)
+
+            behavior<interruptible> once Interrupt {
+                charger.Expire
+            }
+
+            behavior<speedBuff> on Paint {
+                if Vanished {
+                    await Vanished // no sparks when invisible
+                } else {
+                    Spark(
+                        color=color.Fade(0.8), ownerColor=true, luminous=1, shine=0.5,
+                        radius=1.0, layer=Layer:Buff,
+                        feather=0, fade=1, dissipate=30,
+                        speed=5, splatter=1)
+                }
+            }
+
+            on BotChannelling target {
+                // Must aim at our enemy in order to hit them.
+                // The bot likes to turn around otherwise and then it misses.
+                BotMoveTo(target=)
+            }
 		}
 
-		unit.ReplaceBuff<electroshock:fast> {
-			SpeedModifier(fastProportion)
-			ExpireAfterLifetime(buffDuration)
+		// Must capture ChargeProportion here because we are about to overwrite it
+		use damage = damage * (1 + bonusDamageProportion * ChargeProportion)
 
-			hook Vanished {
-				if Vanished {
-					delete Smoke
-				} else {
-					Smoke(
-						color=color.Fade(0.8), ownerColor=true, luminous=1,
-						radius=1.0, depth=Depth:Buff,
-						splatter=Splatter:Outwards(5.0),
-						feather=0, fade=1, dissipation=30)
-				}
-			}
-		}
+		// Small delay before electroshock gets released
+		SpeedModifier(0)
+        TurnRateModifier(0)
+        await ChargeForDuration(3) {
+            ChargingIndicator(color=#fffcb1)
+        }
 
-		Hear(Electroshock:Sound)
+        // Perform the attack
+		Hear(@electroshock.esfx)
 		Spawn projectile {
-			.. parent=unit
-			.. dissipation=30 
-			.. radius=0.4, aoe=1.0, impulse=142
-			.. color=#fffcb1, luminous=1.0, depth=Depth:Projectile
-			.. density=2.8, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Medium
-			.. collideWith = Category:Shield | Category:Obstacle
+			use parent=unit, body=projectile
+			use dissipate=30
+			use radius=0.4, aoe=1.0, impulse=142
+			use color=#fffcb1, luminous=1, layer=Layer:Projectile
 
-			LaunchBody
-			PrepareForCollision
-			DriftingMotion
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:Medium
+			DecayTurnRate
 			Movement:WalkWith(unit)
-			Smoke(splatter=0.15, feather=1)
-			Tether(ancestor=unit, taper=1)
+			Strand(unit, projectile, radius=0.5*radius, bloom=2, bloomAlpha=1, glare=1, taper=1, dissipate=5, shadow=0.25)
 			ExpireAfterLifetime
 
-			Collider {
-				Shape:Circle
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile,
+                collideWith = Category:Shield | Category:Obstacle | Category:Disintegrator,
+                density=2.8, restitution=1,
+            )
+
+			on Paint {
+				Spark(feather=1, shine=0.5, splatter=0.15)
 			}
 
-			let canHurtSelf = false
 			on AfterCollide that {
-				if that.Category & Category:Shield {
-					canHurtSelf = true // Can bounce off shield to hurt self
+				if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team {
+					CanHurtSelf = true // Can bounce off shield to hurt self
 				}
 				if that.Durability >= this.Durability {
 					Expire
 				}
 			}
-			once Expire {
-				Explosion(aoe)
-				Puff(count=7, feather=1, splatter=0.2, flicker=0.25)
-				Hear(Electroshock:HitSound)
+			once BeforeDespawn {
+				Spark(radius=aoe, bloom=3, bloomAlpha=0.5, feather=1, glare=0.3, shine=0.2)
+				repeat 7 { Spark(feather=1, shine=0.5, splatter=0.2, flicker=0.25) }
+				Hear(@electroshockHit.esfx)
 
-				Aoe:ForEach that {
-					if canHurtSelf || that.Team != owner.Team {
+				for that in QueryWithinRadius(aoe, filter=Category:Aoe) {
+					if CanHurtSelf || that.Team != owner.Team {
 						Attack(that)
-						Aoe:Impulse(that)
-						Aoe:Destroy(that)
+						ImpulseAway(that)
+						ExpireIfDestructible(that)
 
 						that.Tombstone victim {
-							NameBlock(owner)
-							%(" zapped ")
-							NameBlock(victim)
+							PlayerNameDisplay(owner)
+							" zapped "
+							PlayerNameDisplay(victim)
 						}
 					}
 				}
 			}
 		}
 	}
-}
-
-sound Electroshock:Sound(duration=0.25s) {
-	Vibrato(freqModulation=3600) {
-		Oscillator(freq=30)
-	}
-	Oscillator(wave=$triangle, freq=[4800,7200], harmonics=[1,1.33,1.5])
-	Tremolo(volumeModulation=[0.2,0]) {
-		Oscillator(freq=30)
-	}
-	Envelope(attack=0.05s, sustain=0s)
-	Gain(volume=0.1)
-}
-
-sound Electroshock:HitSound(duration=0.15s) {
-	Vibrato(freqModulation=[6000,300]) {
-		Oscillator(freq=[20,10])
-	}
-	Oscillator(wave=$triangle, freq=3000, harmonics=[1,1.2,1.4,1.6,1.8,2.4,2.8,3.2,3.6])
-	Tremolo(volumeModulation=0.2) {
-		Oscillator(freq=3)
-	}
-	Envelope(attack=0.01s, sustain=0s)
-	Gain(volume=0.2)
 }

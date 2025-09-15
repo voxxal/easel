@@ -1,29 +1,24 @@
-pub fn scene.OctogonLayout {
-	Lava
-	Shrink
+pub fn layout.OctogonLayout {
 	SolidBackground(color=#241d2b)
 
 	Spawn turf {
-		Turf(color=#41344b) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=8)
-			}
+		Turf(color=#41344b)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=32 * scale, numPoints=8)
 		}
 	}
 
 	ArrangeRing(orbit=6, numObstacles=3, angleOffset=0.125rev) {
 		Spawn obstacle {
-			Ice {
-				Shape:Trapezoid(radius=0.2, arc=1rev / numObstacles)
-			}
+			Ice(shape=Trapezoid(radius=0.2, arc=1rev / numObstacles))
 		}
 	}
 
 	ArrangeRing(orbit=20, numObstacles=20, pattern=[1,1,1,0,0]) {
 		Spawn obstacle {
-			Boulder(density=5) {
-				Shape:Trapezoid(radius=0.72, arc=0.015rev)
-			}
+			Boulder(shape=Trapezoid(radius=0.72, arc=0.015rev), density=5)
 		}
 	}
 }

@@ -1,39 +1,46 @@
-.. btn="KeyF", slotDefault=WantOverload
+use keycode=KeyF, slotDefault=WantOverload
 
-pub preference owner.MeleeSlot
+pub symbol MeleeSlot
 
-pub fn unit.MeleeSlotAbility(.. owner, btnIndex?, btnSize=1) {
-	SlotAbility<MeleeSlot> choice {
+pub fn unit.MeleeSlotAbility([owner, btnOrder?, btnSize?]) {
+    use btnEdit = ShowIntent<MeleeSlot>
+    if owner.IsHuman {
+        BottomModal<MeleeSlot>(dismissed=true) {
+            MeleeSlotEditor
+        }
+    }
+
+	SpawnEachAbility<MeleeSlot> choice ability {
 		if choice == WantOverload { OverloadAbility }
 		else if choice == WantFiresplatter { FiresplatterAbility }
 		else if choice == WantFrostsplatter { FrostsplatterAbility }
 		else if choice == WantEnergyMines { EnergyMinesAbility }
 		else if choice == WantHalo { HaloAbility }
+        else if choice == WantSmite { SmiteAbility }
 		else if choice == WantReverberate { ReverberateAbility }
-		else { SlotWithoutAbility }
-
-		SlotPopup<MeleeSlot> { MeleeSlotEditor }
 	}
 }
 
-pub fn this.MeleeSlotEditor(.. owner, ui) {
+pub fn this.MeleeSlotEditor([dismiss?, owner, ui]) {
 	SlotEditor<MeleeSlot> {
 		OverloadOption
 		FiresplatterOption
 		FrostsplatterOption
 		EnergyMinesOption
 		HaloOption
+        SmiteOption
 		ReverberateOption
 	}
 }
 
 pub fn owner.RandomizeMeleeSlot {
-	MeleeSlot = PickRandom([
+	SlotChoice<MeleeSlot> = PickRandom([
 		WantOverload,
 		WantFiresplatter,
 		WantFrostsplatter,
 		WantEnergyMines,
 		WantHalo,
+		WantSmite,
 		WantReverberate,
 	])
 }

@@ -1,2 +1,0 @@
-pub meld this.Relay(surrogate, @unit) = (surrogates) => surrogates[0]
-pub meld this.RelayProportion(proportion, @unit) = (proportions) => proportions.Min ?? 1.0

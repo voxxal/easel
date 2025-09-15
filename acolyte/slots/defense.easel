@@ -1,9 +1,16 @@
-.. btn="KeyE", slotDefault=WantReflect
+use keycode=KeyE, slotDefault=WantReflect
 
-pub preference owner.DefenseSlot
+pub symbol DefenseSlot
 
-pub fn unit.DefenseSlotAbility(.. owner, btnIndex, btnSize=1) {
-	SlotAbility<DefenseSlot> choice {
+pub fn unit.DefenseSlotAbility([owner, btnOrder?, btnSize?]) {
+    use btnEdit = ShowIntent<DefenseSlot>
+    if owner.IsHuman {
+        BottomModal<DefenseSlot>(dismissed=true) {
+            DefenseSlotEditor
+        }
+    }
+
+	SpawnEachAbility<DefenseSlot> choice ability {
 		if choice == WantReflect { ReflectAbility }
 		else if choice == WantSpiritArmor { SpiritArmorAbility }
 		else if choice == WantForcefield { ForcefieldAbility }
@@ -14,13 +21,10 @@ pub fn unit.DefenseSlotAbility(.. owner, btnIndex, btnSize=1) {
 		else if choice == WantHorcrux { HorcruxAbility }
 		else if choice == WantPhaseShift { PhaseShiftAbility }
 		else if choice == WantBlaze { BlazeAbility }
-		else { SlotWithoutAbility }
-
-		SlotPopup<DefenseSlot> { DefenseSlotEditor }
 	}
 }
 
-pub fn this.DefenseSlotEditor(.. owner, ui) {
+pub fn this.DefenseSlotEditor([dismiss?, owner, ui]) {
 	SlotEditor<DefenseSlot> {
 		ReflectOption
 		ForcefieldOption
@@ -36,7 +40,7 @@ pub fn this.DefenseSlotEditor(.. owner, ui) {
 }
 
 pub fn owner.RandomizeDefenseSlot {
-	DefenseSlot = PickRandom([
+	SlotChoice<DefenseSlot> = PickRandom([
 		WantReflect,
 		WantForcefield,
 		WantSaber,

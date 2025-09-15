@@ -1,37 +1,30 @@
-pub fn scene.RingLayout {
-	.. orientation = 0.5rev / 6
+pub fn layout.RingLayout {
+	use orientation = 0.5rev / 6
 
-	Lava
-	Shrink
 	SolidBackground(color=#2b1d1d)
 
 	Spawn turf {
-		Turf(color=#463434, heading=orientation) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=4)
-			}
+		Turf(color=#463434, heading=orientation)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=32 * scale, numPoints=4)
 		}
 	}
 
 	ArrangeRing(orbit=10.6, numObstacles=10) {
 		Spawn obstacle {
-			Boost {
-				Shape:Arc(radius=0.2, arc=1rev / numObstacles)
-			}
+			Boost(shape=Arc(radius=0.2, arc=1rev / numObstacles))
 		}
 	}
 
 	Spawn obstacle {
-		Mirror(pos=@(0,0), heading=orientation / 2) {
-			Shape:Equilateral(numPoints=6, radius=1.2)
-		}
+		Mirror(shape=Equilateral(numPoints=6, radius=1.2), pos=@(0,0), heading=orientation / 2)
 	}
 
 	ArrangeRing(orbit=25.6, numObstacles=4, angleOffset=orientation) {
 		Spawn obstacle {
-			Boulder {
-				Shape:Equilateral(numPoints=4, radius=0.8)
-			}
+			Boulder(shape=Equilateral(numPoints=4, radius=0.7))
 		}
 	}
 }

@@ -1,110 +1,111 @@
-.. glyph=BoltSaw:Glyph, color=#44ffcc, damage=16, lifesteal=0.3, cooldown=9.0s
+use glyph=@boltSaw.svg, color=#44ffcc, damage=16, lifesteal=0.3, cooldown=9.0s
 
 pub symbol WantHoming
 
 prop projectile.Repossessor
 
-pub fn HomingOption(.. ui) {
-	SlotOption<WantHoming> {
-		H1 { %("Homing") }
+pub fn HomingDescription([ui]) {
+    H1 { "Homing" }
 
-		P {
-			%("Summon a tenacious, enchanted sphere that ceaselessly pursues your enemy. While they are preoccupied, seize the opportunity to unleash a barrage of your most potent abilities upon them.")
-		}
+    P {
+        "Summon a tenacious, enchanted sphere that ceaselessly pursues your enemy. While they are preoccupied, seize the opportunity to unleash a barrage of your most potent abilities upon them."
+    }
 
-		P {
-			SlotEffect("Ceaseless Pursuit", icon="fas fa-crosshairs") {
-				%("Homing seeks the enemy that was nearest to your cursor when launched.")
-			}
-		}
+    SlotEffect("Ceaseless Pursuit", icon="fas fa-crosshairs") {
+        "Homing seeks the enemy that was nearest to your cursor when launched."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn HomingOption([ui]) {
+	SlotOption(WantHoming) {
+        HomingDescription
 	}
 }
 
-pub fn ability.HomingAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.HomingAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility(utility=Utility:High)
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        HomingDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 
 		Spawn projectile {
-			.. parent=unit
-			.. lifetime=3.5s, dissipation=30, ownerColor=Alliance:Self
-			.. radius=0.24, speed=12, alignHeadingToVelocity=true
-			.. density=35, ccd=true
-			.. luminous=1.0, depth=Depth:Projectile
-			.. categories=Category:Projectile | Category:Aoe, durability=Durability:High
+			use parent=unit, body=projectile
+			use lifetime=3.5s, dissipate=30, ownerColor=Alliance:Self
+			use radius=0.24, speed=12
+			use luminous=1, layer=Layer:Projectile
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:High
+			RecoverSpeed
+			DecayTurnRate
 			ExpireAfterLifetime
-			Sing(Homing:Sound)
+			Sing(@homing.esfx)
 
-			Sprite {
-				Collider {
-					Shape:Circle
+			PolygonSprite(Circle)
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile | Category:Aoe,
+                density=35, restitution=1,
+            )
+
+			with Repossessor {
+				use owner = Repossessor ?? owner
+				Homing(Pointer.QueryNearest(filter=Category:Unit, against=Alliance:Enemy), turnProportion=0.05)
+
+				on Paint {
+					Streak(
+                        radius=, fade=0,
+                        bloom=3, bloomAlpha=1, glare=1, shadow=0.25,
+                        screenOffset=HelixOffset(radius * 0.5, period=18)
+                    )
+					Streak(
+                        radius=0.5*radius, fade=1, bloom=0, glare=0,
+                        bloomAlpha=1, glare=1, shadow=0.25,
+                        screenOffset=HelixOffset(radius * 2.0, period=18, angleOffset=0.4rev))
 				}
 			}
 
-			hook Repossessor {
-				.. owner = Repossessor ?? owner
-				RayEmitter<helix1>(radius, fade=0, flutter=Flutter:Helix(radius * 0.5, period=18))
-				RayEmitter<helix2>(radius * 0.5, fade=1, flutter=Flutter:Helix(radius * 2.0, period=18, angleOffset=0.4rev), bloom=0, glare=0)
-				Homing(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(Pointer), turnProportion=0.05)
-			}
-
-			let canHurtSelf = false
 			on BeforeCollide that {
-				if canHurtSelf || owner.Team != that.Team {
+				if CanHurtSelf || owner.Team != that.Team {
 					Attack(that)
 
-					if that.Category & Category:Shield {
-						canHurtSelf = true // Can bounce off shield to hurt self
+					if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team {
+						CanHurtSelf = true // Can bounce off shield to hurt self
 						this.Repossessor = that.Owner // Change the owner
 					}
 
 					that.Tombstone victim {
-						NameBlock(owner)
-						%("'s endless pursuit ended ")
-						NameBlock(victim)
+						PlayerNameDisplay(owner)
+						"'s endless pursuit ended "
+						PlayerNameDisplay(victim)
 					}
 				}
 			}
 			on AfterCollide that {
 				if that.Durability >= this.Durability {
 					Strobe(growth=0.25, shine=1.0)
-					Puff(count=10, splatter=1)
+					repeat 10 { Spark(splatter=1, feather=1, shine=0.5) }
 					Expire
 				}
 			}
 		}
 	}
-}
-
-sound Homing:Sound(duration=5s, cutoff=0.5s) {
-	BrownNoise
-	HighPass(freq=1800)
-	LowPass(freq=1803)
-	Gain(volume=0.25)
-	Output(into=$final)
-
-	Oscillator(freq=800, harmonics=[1,1.5])
-	LowPass(freq=200)
-	Tremolo(volumeModulation=0.4) {
-		Oscillator(freq=6.67)
-	}
-	Output(into=$final)
-
-	Input(key=$final)
-	Envelope(attack=0.5s, sustain=0s)
 }

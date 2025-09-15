@@ -1,21 +1,18 @@
-pub fn scene.TripletLayout {
-	Lava
-	Shrink
+pub fn layout.TripletLayout {
 	SolidBackground(color=#2b192e)
 
 	Spawn turf {
-		Turf(color=#422f46, heading=0.5rev / 3) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=3)
-			}
+		Turf(color=#422f46, heading=0.5rev / 3)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=22 * scale, numPoints=3)
 		}
 	}
 
 	ArrangeRing(orbit=22.4, numObstacles=3, angleOffset=0.5rev, headingOffset=0.5rev) {
 		Spawn obstacle {
-			Boulder(turningDecay=0.003) {
-				Shape:Equilateral(numPoints=3, radius=1.8)
-			}
+			Boulder(shape=Equilateral(numPoints=3, radius=1.2), turningDecay=0.003)
 		}
 	}
 }

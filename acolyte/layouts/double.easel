@@ -1,29 +1,24 @@
-pub fn scene.DoubleLayout {
-	Lava
-	Shrink
+pub fn layout.DoubleLayout {
 	SolidBackground(color=#2e2619)
 
 	Spawn turf {
-		Turf(color=#453b2a) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=4)
-			}
+		Turf(color=#453b2a)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=28 * scale, numPoints=4)
 		}
 	}
 
 	ArrangeRing(orbit=5.6, numObstacles=2, angleOffset=0.125rev, headingOffset=0.125rev) {
 		Spawn obstacle {
-			Bumper {
-				Shape:Equilateral(numPoints=4, radius=1.36)
-			}
+			Bumper(shape=Equilateral(numPoints=4, radius=1.2))
 		}
 	}
 
 	ArrangeRing(orbit=26.4, numObstacles=4) {
 		Spawn obstacle {
-			Boulder {
-				Shape:Equilateral(numPoints=4, radius=0.72)
-			}
+			Boulder(shape=Equilateral(numPoints=4, radius=0.63))
 		}
 	}
 }

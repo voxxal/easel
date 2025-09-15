@@ -1,21 +1,18 @@
-pub fn scene.MirrorsLayout {
-	Lava
-	Shrink
+pub fn layout.MirrorsLayout {
 	SolidBackground(color=#25192e)
 
 	Spawn turf {
-		Turf(color=#41334d) {
-			hook ShrinkScale {
-				Shape:Equilateral(radius=32 * ShrinkScale, numPoints=7)
-			}
+		Turf(color=#41334d)
+        StartingTurf(turf)
+        FlashTurfOnVictory
+		ShrinkOverTime scale {
+			TurfShape = Equilateral(radius=32 * scale, numPoints=7)
 		}
 	}
 
 	ArrangeRing(orbit=17.6, numObstacles=7) {
 		Spawn obstacle {
-			Mirror {
-				Shape:Trapezoid(radius=0.4, arc=0.05rev)
-			}
+			Mirror(shape=Trapezoid(radius=0.4, arc=0.05rev))
 		}
 	}
 }

@@ -1,92 +1,80 @@
-pub preference owner.LeftClickSlot
-pub preference owner.RightClickSlot
+pub symbol LeftClickSlot
+pub symbol RightClickSlot
 
 pub symbol WantNoBinding
 pub symbol WantMoveBinding
-pub symbol WantQBinding
-pub symbol WantABinding
 
-const LeftClickDefault=WantQBinding
-const RightClickDefault=WantABinding
+const LeftClickDefault=KeyQ
+const RightClickDefault=KeyA
 
-field unit.PreviousBinding(ability)
+field unit.PreviousBinding
 
-pub fn unit.ClickBinding(owner) {
+pub fn unit.ClickBinding([owner]) {
     // Need to hook to both click slots because click-to-move could be on either
-    hook LeftClickSlot, RightClickSlot {
+    with SlotChoice<LeftClickSlot>, SlotChoice<RightClickSlot> {
         // Destroy previous ability
 		unit.PreviousBinding?.Despawn
 
         // Create new ability
 		unit.PreviousBinding = Subspawn ability {
-            const left = LeftClickSlot ?? LeftClickDefault
-            const right = RightClickSlot ?? RightClickDefault
-            if left == WantMoveBinding || right == WantMoveBinding {
-                ClickToMoveAbility
+            const left = SlotChoice<LeftClickSlot> ?? LeftClickDefault
+            const right = SlotChoice<RightClickSlot> ?? RightClickDefault
+
+            if left == WantMoveBinding {
+                ClickToMoveAbility(keycode=Click)
+            } else if right == WantMoveBinding {
+                ClickToMoveAbility(keycode=SecondaryClick)
             } else {
                 FollowCursorAbility
             }
 
-            const leftBinding = ChoiceToBinding(left)
-            AlternateBinding("Click", leftBinding)
-            AlternateBinding("Tap", leftBinding)
+            if IsKeycode(left) {
+                ButtonRemap<left>(Click, left)
+            } else {
+                delete ButtonRemap<left>
+            }
 
-            const rightBinding = ChoiceToBinding(right)
-            AlternateBinding("SecondaryClick", rightBinding)
-            AlternateBinding("DoubleTap", rightBinding)
+            if IsKeycode(right) {
+                ButtonRemap<right>([SecondaryClick, DoubleTap], right)
+            } else {
+                delete ButtonRemap<right>
+            }
 		}
     }
 }
 
-fn ChoiceToBinding(choice) {
-    if choice == WantMoveBinding { return "ClickToMove" }
-    else if choice == WantQBinding { return "KeyQ" }
-    else if choice == WantABinding { return "KeyA" }
-    else { return null }
-}
-
-pub fn this.LeftClickEditor(.. owner, ui) {
+pub fn this.LeftClickEditor([owner, ui]) {
     SlotDropdown<LeftClickSlot>(slotDefault=LeftClickDefault) {
         ClickEditor
 	}
 }
-pub fn this.RightClickEditor(.. owner, ui) {
+pub fn this.RightClickEditor([owner, ui]) {
 	SlotDropdown<RightClickSlot>(slotDefault=RightClickDefault) {
         ClickEditor
 	}
 }
 
-fn ClickEditor(.. ui) {
-    DropdownOption<WantNoBinding>("Do Nothing")
-    DropdownOption<WantMoveBinding>("Move")
-    DropdownOption<WantQBinding>("Primary Attack")
-    DropdownOption<WantABinding>("Dash")
+fn ClickEditor([ui]) {
+    DropdownOption(WantNoBinding, "Do Nothing")
+    DropdownOption(WantMoveBinding, "Move")
+    DropdownOption(KeyQ, "Primary Attack")
+    DropdownOption(KeyW, "Special Ability")
+    DropdownOption(KeyE, "Defensive Ability")
+    DropdownOption(KeyR, "Ultimate Ability")
+    DropdownOption(KeyF, "Melee Ability")
+    DropdownOption(KeyA, "Dash")
 }
 
-fn ability.FollowCursorAbility(unit, owner) {
-	TouchscreenPointer // make the touchscreen act like a mouse when using FollowCursorAbility
+fn ability.ClickToMoveAbility([unit, owner, keycode]) {
+    use body=unit
 
-	hook Pointer, IsPointerActive {
-		if IsPointerActive {
-			Movement:WalkTo(Pointer)
-		} else {
-			Movement:Stop
-		}
+	on ButtonDown {
+        behavior<followCursor> with Pointer {
+            Movement:WalkTo(Pointer)
+        }
 	}
-}
 
-fn ability.ClickToMoveAbility(unit, owner) {
-	CommandBinding("ClickToMove") // Bind to a virtual key which can never be pressed except through AlternateBindings
-
-	on ability.InvokeCommand {
-		await Subscope {
-			// While holding down the button, follow cursor
-			hook Pointer {
-				Movement:WalkTo(Pointer)
-			}
-
-			// Delay the button is released, stop
-			await ability.ReleaseCommand
-		}
+	on ButtonUp {
+	    delete behavior<followCursor>
 	}
 }

@@ -1,10 +1,14 @@
-pub fn unit.SlotAbilities(owner) {
-    DashSlotAbility(btnIndex=0, btnSize=0.75)
-    PrimarySlotAbility(btnIndex=1, btnSize=1)
-    DefenseSlotAbility(btnIndex=3, btnSize=0.9)
-    SpecialSlotAbility(btnIndex=2, btnSize=0.9)
-    UltimateSlotAbility(btnIndex=4, btnSize=0.9)
-    MeleeSlotAbility(btnIndex=5, btnSize=0.75)
+pub fn unit.SlotAbilities([owner]) {
+	use btnSize=4
+
+	NumCommandBtns = 6
+
+    DashSlotAbility(btnOrder=0, btnSize=0.75*btnSize)
+    PrimarySlotAbility(btnOrder=1, btnSize=1*btnSize)
+    DefenseSlotAbility(btnOrder=3, btnSize=0.9*btnSize)
+    SpecialSlotAbility(btnOrder=2, btnSize=0.9*btnSize)
+    UltimateSlotAbility(btnOrder=4, btnSize=0.9*btnSize)
+    MeleeSlotAbility(btnOrder=5, btnSize=0.75*btnSize)
 
     ClickBinding
 }
@@ -18,11 +22,15 @@ pub fn owner.RandomizeAllSlots {
 	RandomizeDashSlot
 }
 
-pub fn this.SlotEditors(.. ui, owner) {
-	PrimarySlotEditor
-	SpecialSlotEditor
-	DefenseSlotEditor
-	UltimateSlotEditor
-	MeleeSlotEditor
-	DashSlotEditor
+pub fn this.SlotEditors([ui, owner]) {
+    use dismiss = false // keep the dialog open even after selecting something
+
+	VStack(gap=4) {
+		PrimarySlotEditor
+		SpecialSlotEditor
+		DefenseSlotEditor
+		UltimateSlotEditor
+		MeleeSlotEditor
+		DashSlotEditor
+	}
 }

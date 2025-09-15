@@ -1,63 +1,73 @@
-.. glyph=BurningDot:Glyph, color=#ff4400
-.. damage=10.0, lifesteal=0.3, cooldown=1.5s, maxScale=3, growthDuration=1.0s
+use glyph=@burningDot.svg, color=#ff4400
+use damage=10.0, lifesteal=0.3, cooldown=1.5s, maxScale=3, growthDuration=1s
 
 pub symbol WantFireboom
 
-pub fn FireboomOption(.. ui) {
-	SlotOption<WantFireboom> {
-		H1 { %("Fireboom") }
+pub fn FireboomDescription([ui]) {
+    H1 { "Fireboom" }
 
-		P {
-			%("Conjure a searing ball of flame that detonates upon impact, engulfing enemies within its fiery radius. Fireboom may be slow, but its wide blast zone leaves few places for your enemies to hide. ")
-		}
+    P {
+        "Conjure a searing ball of flame that detonates upon impact, engulfing enemies within its fiery radius. Fireboom may be slow, but its wide blast zone leaves few places for your enemies to hide. "
+    }
 
-		P {
-			SlotEffect("Intensifying Inhalation", icon="fas fa-flame") {
-				%("Fireboom begins life as a tiny ember, then grows to " + maxScale + "x damage over " + (growthDuration / TicksPerSecond) + " second. Cultivate Fireboom's full potential by launching it from afar and giving time for the fiery orb to breathe.")
-			}
-		}
+    SlotEffect("Intensifying Inhalation", icon="fas fa-fire") {
+        "Fireboom begins life as a tiny ember, then grows to " + maxScale + "x damage over " + (growthDuration / TicksPerSecond) + " second. Cultivate Fireboom's full potential by launching it from afar and giving time for the fiery orb to breathe."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn FireboomOption([ui]) {
+	SlotOption(WantFireboom) {
+        FireboomDescription
 	}
 }
 
-pub fn ability.FireboomAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.FireboomAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        FireboomDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 
 		Spawn projectile {
-			.. parent=unit 
-			.. aoe = 2.88 / maxScale, radius = 0.4 / maxScale
-			.. impulse=107, speed=18.4
-			.. lifetime=2s, dissipation=18
-			.. luminous=1.0, depth=Depth:Projectile
-			.. density=7.0, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Medium
+			use parent=unit, body=projectile
+			use aoe = 4 / maxScale, radius = 0.4 / maxScale
+			use impulse=107, speed=18.4
+			use lifetime=2s, dissipate=18
+			use luminous=1, layer=Layer:Projectile
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			Sing(Fireboom:Sound)
-			ExpireAfterLifetime(Velocity:TicksTo(Pointer).Min(lifetime))
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:Medium
+			RecoverSpeed
+			DecayTurnRate
+			Sing(@fireboom.esfx)
+			ExpireAfterLifetime(lifetime=Velocity:TicksTo(Pointer).Min(lifetime))
 
-			Collider {
-				Shape:Circle
-			}
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile,
+                density=7, restitution=1,
+            )
 
-			let canHurtSelf = false
 			on AfterCollide that {
-				if that.Category & Category:Shield {
-					canHurtSelf = true // Can bounce off shield to hurt self
+				if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team {
+					CanHurtSelf = true // Can bounce off shield to hurt self
 				}
 				if that.Durability >= this.Durability {
 					Strobe(shine=1.0)
@@ -66,29 +76,32 @@ pub fn ability.FireboomAbility(unit, owner, btn) {
 			}
 
 			await Tween(duration=growthDuration, initial=1, final=maxScale) factor {
-				.. aoe = aoe * factor, radius = radius * factor, damage = damage * factor
+				use aoe = aoe * factor, radius = radius * factor, damage = damage * factor
 
-				RayEmitter
-				Smoke(splatter=0.4)
-				Aoe:Indicator(aoe, color=Fade(color, 0.95))
+				PolygonSprite(shape=Circle(aoe), color=color.Fade(0.95), crater=0.85, layer=Layer:Indicator)
 
-				once Expire {
-					Puff(count=10, splatter=Splatter:Outwards(10))
-					Explosion(aoe)
-					Hear(Fireboom:ExplodeSound)
+				on Paint {
+					Streak(bloom=3, bloomAlpha=1, glare=1, shadow=0.25)
+					Spark(splatter=0.4, feather=1, shine=0.5)
+				}
 
-					Aoe:ForEach that {
-						if canHurtSelf || that.Team != owner.Team {
+				once BeforeDespawn {
+					repeat 10 { Spark(speed=10, feather=1, shine=0.5) }
+					Spark(radius=aoe, bloom=3, bloomAlpha=0.5, feather=1, glare=0.3, shine=0.2)
+					Hear(@fireboomExplode.esfx)
+
+					for that in QueryWithinRadius(aoe, filter=Category:Aoe) {
+						if CanHurtSelf || that.Team != owner.Team {
 							Attack(that)
-							Aoe:Impulse(that)
-							Aoe:Destroy(that)
+							ImpulseAway(that)
+							ExpireIfDestructible(that)
 
 							that.Tombstone victim {
-								NameBlock(owner)
-								%(" combusted ")
-								NameBlock(victim)
+								PlayerNameDisplay(owner)
+								" combusted "
+								PlayerNameDisplay(victim)
 								if factor >= 1.0 {
-									%(" from afar ")
+									" from afar "
 								}
 							}
 						}
@@ -97,32 +110,4 @@ pub fn ability.FireboomAbility(unit, owner, btn) {
 			}
 		}
 	}
-}
-
-
-sound Fireboom:Sound(duration=1.5s, cutoff=0.5s) {
-	BrownNoise
-	BandPass(freq=[140,280], q=[1,5])
-	Gain(volume=0.67)
-	Output(into=$mix)
-
-	BrownNoise
-	BandPass(freq=[280,560], q=[1,5])
-	Gain(volume=0.33)
-	Output(into=$mix)
-
-	Input(key=$mix)
-	Envelope(attack=0.25s, release=0.5s)
-}
-
-sound Fireboom:ExplodeSound(duration=1s) {
-	Vibrato(freqModulation=2500) {
-		WhiteNoise
-	}
-	Oscillator(wave=$triangle, freq=160)
-	LowPass(freq=[280,0])
-	HighShelf(freq=[140,0], db=-6)
-	Peaking(freq=70, q=1, db=6)
-	Envelope(attack=0.03s, decay=0.1s, sustain=0s, sustainVolume=0.2)
-	Gain(volume=0.67)
 }

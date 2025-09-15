@@ -1,69 +1,75 @@
-.. glyph=Sprint:Glyph, color=#8800ff, lifetime=3.0s, cooldown=10.0s, fastProportion=0.8
+use glyph=@sprint.svg, color=#8800ff, lifetime=3.0s, cooldown=10.0s, fastProportion=0.8
 
 pub symbol WantVoidRush
 
-pub fn VoidRushOption(.. ui) {
-	SlotOption<WantVoidRush> {
-		H1 { %("Void Rush") }
+pub fn VoidRushDescription([ui]) {
+    H1 { "Void Rush" }
 
-		P {
-			%("Tap into the dark energies of the void to quicken your movements while also rendering yourself immune to its malevolent effects.")
-		}
+    P {
+        "Tap into the dark energies of the void to quicken your movements while also rendering yourself immune to its malevolent effects."
+    }
 
-		P {
-			SlotEffect("Void Surge", icon="fas fa-running") {
-				%("Move " + (fastProportion * 100) + "% faster for " + (lifetime / TicksPerSecond) + " seconds. ")
-			}
-			SlotEffect("Void Immunity", icon="fas fa-stars") {
-				%("For the duration of this spell, you are immune to damage from the void. ")
-			}
-		}
+    SlotEffect("Void Surge", icon="fas fa-running") {
+        "Move " + (fastProportion * 100) + "% faster for " + (lifetime / TicksPerSecond) + " seconds. "
+    }
+    SlotEffect("Void Immunity", icon="fas fa-shield-heart") {
+        "For the duration of this spell, you are immune to damage from the void. "
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn VoidRushOption([ui]) {
+	SlotOption(WantVoidRush) {
+        VoidRushDescription
 	}
 }
 
-pub fn ability.VoidRushAbility(unit, owner, btn) {
-	hook IsInLava {
-		CooldownRate(IsInLava ? 1.0 : 0.0)
+pub fn ability.VoidRushAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	with IsInLava {
+		CooldownRate(IsInLava ? 2 : 1)
 	}
 
-	on BotRecovering {
+	on BotRecovering target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. dissipation=60, ownerColor=true, depth=Depth:Projectile
-		.. shine=0.3, bloom=1.5, luminous=1.0
+    AbilityCommandBtn {
+        VoidRushDescription
+    }
 
-		CleanseBuffs
-		SeverTethers
+	SpawnEachIncantation incantation {
+		use dissipate=60, ownerColor=true, layer=Layer:Projectile
+		use shine=0.3, bloom=1.5, luminous=1
 
-		unit.SpawnBuff {
-			LavaDamageModifier(-1.0)
-			Sing(VoidRush:Sound)
-			CooldownRate(-1)
-			SpeedModifier(fastProportion)
+		CleanseEffects
+		UngrabMe
+
+		unit.SpawnEffect {
+			LavaDamageModifier(0)
+			Sing(@voidRush.esfx)
+			CooldownRate(0)
+			SpeedModifier(1 + fastProportion)
 
 			await Tween(duration=lifetime, initial=1.0, final=0.0) factor {
-				unit.Smoke(
-					radius=1.0, depth=Depth:Buff,
-					color=color.WithOpacity(factor), fade=1,
-					feather=0.0, shadow=0.25,
-					splatter=Splatter:Outwards(5.0))
+				on Paint {
+					Spark(
+						radius=1.0, layer=Layer:Buff,
+						color=color.WithOpacity(factor), fade=1,
+						feather=0, shine=0.5, shadow=0.25,
+						speed=5, splatter=1)
+				}
 			}
 
 			Expire
 		}
 	}
-}
-
-sound VoidRush:Sound(duration=3s) {
-	BrownNoise
-	BandPass(freq=[960,850], q=10)
-	Envelope(attack=0.25s, sustain=0s)
 }

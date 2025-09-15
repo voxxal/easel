@@ -1,74 +1,134 @@
-.. glyph=Hidden:Glyph, color=#00ff88, lifetime=4s, cooldown=10s, fastProportion=0.8
+use glyph=@hidden.svg, color=#00ff88, lifetime=4s, cooldown=10s, fastProportion=0.8, aoe=10.0
 
 pub symbol WantVanish
 
-pub fn VanishOption(.. ui) {
-	SlotOption<WantVanish> {
-		H1 { %("Vanish") }
+pub fn VanishDescription([ui]) {
+    H1 { "Vanish" }
 
-		P {
-			%("With a whisper to the shadows, you vanish from sight, your movements becoming as swift as the night. Seize the element of surprise and confront your foe from an unanticipated direction. ")
-		}
+    P {
+        "Gaining ghostly powers, you vanish from sight, your movements becoming as swift as the night. Seize the element of surprise and confront your foe from an unanticipated direction while haunting nearby players. "
+    }
 
-		P {
-			SlotEffect("Shrouded Surge", icon="fas fa-running") {
-				%("Move " + (fastProportion * 100) + "% faster for " + (lifetime / TicksPerSecond) + " seconds. ")
-			}
-			SlotEffect("Invisibility", icon="fas fa-eye") {
-				%("For the duration of this spell, you are invisible.")
-			}
-		}
+    SlotEffect("Shrouded Surge", icon="fas fa-running") {
+        "Move " + (fastProportion * 100) + "% faster for " + (lifetime / TicksPerSecond) + " seconds. "
+    }
+    SlotEffect("Invisibility", icon="fas fa-eye") {
+        "For the duration of this spell, you are invisible."
+    }
+    SlotEffect("Haunt", icon="fas fa-ghost") {
+        "While invisible, nearby players have their cooldowns frozen."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn VanishOption([ui]) {
+	SlotOption(WantVanish) {
+        VanishDescription
 	}
 }
 
-pub fn ability.VanishAbility(unit, owner, btn) {
-	hook IsInLava {
-		CooldownRate(IsInLava ? 1.0 : 0.0)
+pub fn ability.VanishAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	with IsInLava {
+		CooldownRate(IsInLava ? 2 : 1)
 	}
 
-	on BotRecovering {
+	on BotRecovering target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. radius=1.0
-		.. dissipation=60, shine=0, bloom=0, luminous=0, depth=Depth:Buff
+    AbilityCommandBtn {
+        VanishDescription
+    }
 
-		on BotChannelling {
+	SpawnEachIncantation incantation {
+		use radius=1.0
+        use interval=10
+		use dissipate=60, luminous=0, layer=Layer:Buff
+
+        const start = Tick
+        
+		on BotChannelling target {
 			if unit.IsInLava {
 				BotKeepChannelling
 			}
 		}
 
-		CooldownRate(-1)
-		CleanseBuffs
-		SeverTethers
-		SpeedModifier(fastProportion)
+		CooldownRate(0)
+		CleanseEffects
+		ClearHalos
+		UngrabMe
+		UngrabThem
+		SpeedModifier(1 + fastProportion)
 		Vanished(true)
-		Sing(Vanish:Sound)
+		Untrackable(true)
+		Sing(@vanish.esfx)
+        
+		repeat 10 {
+			Spark(color=#111111, fade=1, feather=0.2, speed=5, splatter=1)
+		}
 
-		Puff(count=10, color=#111111, fade=1, feather=0.2, splatter=Splatter:Outwards(5.0))
-		Smoke(color=#181818, fade=1, feather=0.2, splatter=Splatter:Outwards(5.0), audience=unit.Team)
-		once Expire {
-			Puff(count=10, color=#111111, fade=1, feather=0.2, splatter=Splatter:Outwards(5.0))
+		on Paint {
+			Spark(color=#181818, fade=1, feather=0.2, speed=5, splatter=1, audience=unit.Team)
+		}
+
+        PolygonSprite(shape=Circle(aoe), 
+            color=#111111, luminous=1, crater=0.95, 
+            layer=Layer:Indicator, audience=unit.Team)
+        
+        with Tick {
+            const cycle=15, proportion = ((Tick - start) % cycle) / cycle
+
+            PolygonSprite(
+                Circle(radius=aoe * proportion),
+                crater=0.8, feather=0.3, bloom=1.5, luminous=1,
+                color=#111111.Fade(0.1).Fade(proportion), audience=unit.Team)
+        }
+        
+
+		once BeforeDespawn {
+			repeat 10 {
+				Spark(color=#111111, fade=1, feather=0.2, speed=5, splatter=1)
+			}
 		}
 
 		once Interrupt {
-			StopIncantation
+			incantation.Expire
 		}
 
-		await Sleep(lifetime)
+        for i in Range(0, lifetime / interval) {
+            for that in QueryWithinRadius(aoe, filter=Category:Unit) {
+                if that.Team != owner.Team {
+                    that.ReplaceEffect<haunt>(cleansable=true) {
+                        use body = that
+        
+                        ExpireAfterLifetime(lifetime=interval)
+                        give that.UnitCooldownRate(0)
+                        
+                        on Paint {
+                            Spark(
+                                color=#111111.Fade(0.5), fade=1, feather=0.2,
+                                radius=1.0, dissipate=dissipate / 2, layer=Layer:Spark,
+                                glaze=0.8)
+                        }
+        
+                        that.Tombstone victim {
+                            PlayerNameDisplay(owner)
+                            " haunted "
+                            PlayerNameDisplay(victim)
+                        }
+                    }
+                }
+            }
+            await Tick(interval)
+        }
 	}
-}
-
-sound Vanish:Sound(duration=4s) {
-	BrownNoise
-	BandPass(freq=[400,100], q=10)
-	Envelope(attack=0.5s, sustain=0s)
 }

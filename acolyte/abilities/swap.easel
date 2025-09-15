@@ -1,65 +1,80 @@
-.. glyph=BodySwapping:Glyph, color=#ffaa33, damage=0, cooldown=10s
+use glyph=@bodySwapping.svg, color=#ffaa33, damage=0, cooldown=10s
 
 pub symbol WantSwap
 
-pub fn SwapOption(.. ui) {
-	SlotOption<WantSwap> {
-		H1 { %("Swap") }
+pub fn SwapDescription([ui]) {
+    H1 { "Swap" }
 
-		P {
-			%("By weaving an ethereal grapple that bridges the distance between you and your enemy, you can trade places, putting them in the danger you were previously in while you take their place on stable ground. ")
-		}
+    P {
+        "By weaving an ethereal grapple that bridges the distance between you and your enemy, you can trade places, putting them in the danger you were previously in while you take their place on stable ground. "
+    }
 
-		P {
-			SlotEffect("Ethereal Interchange", icon="fas fa-exchange") {
-				%("Swap places with enemies, obstacles or meteors. If you miss, you will be teleported instead.")
-			}
-		}
+    SlotEffect("Ethereal Interchange", icon="fas fa-exchange") {
+        "Swap places with enemies, obstacles or meteors. If you miss, you will be teleported instead."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn SwapOption([ui]) {
+	SlotOption(WantSwap) {
+        SwapDescription
 	}
 }
 
-pub fn ability.SwapAbility(unit, owner, btn, btnIndex?, btnSize) {
-	hook IsInLava {
-		CooldownRate(IsInLava ? 1.0 : 0.0)
+pub fn ability.SwapAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	with IsInLava {
+		CooldownRate(IsInLava ? 2 : 1)
 	}
 
-	on BotRecovering {
+	on BotRecovering target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
+    AbilityCommandBtn {
+        SwapDescription
+    }
+
+	SpawnEachIncantation incantation {
 		Spawn projectile {
-			.. parent=unit
-			.. lifetime=45, dissipation=12
-			.. radius=0.5, aoe=3.2, speed=64.0
-			.. feather=0.5, shine=0.2, glare=0.7, luminous=1.0, depth=Depth:Projectile
-			.. density=100, durability=Durability:None, ccd=true
-			.. categories=Category:Projectile
-			.. collideWith = Category:None
-			.. sense = Category:Hero | Category:Shield | Category:Obstacle | Category:Massive
+			use parent=unit, body=projectile
+			use lifetime=45, dissipate=12
+			use radius=0.5, aoe=3.2, speed=64.0
+			use feather=0.5, shine=0.2, glare=0.7, luminous=1, layer=Layer:Projectile
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			ExpireWith(unit)
-			Sing(Swap:Sound)
-			ExpireAfterLifetime(Velocity:TicksTo(Pointer).Min(lifetime))
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:None
+			RecoverSpeed
+			DecayTurnRate
+			DespawnBefore(unit)
+			Sing(@swap.esfx)
+			ExpireAfterLifetime(lifetime=Velocity:TicksTo(Pointer).Min(lifetime))
 
-			Collider {
-				Shape:Circle(radius=1.0)
+			Strand(unit, projectile, taper=0.7, shadow=0.5, dissipate=, bloom=2, bloomAlpha=1)
+
+			PolygonCollider(
+                Circle(1),
+                category = Category:Projectile,
+                collideWith = Category:None,
+                // Category:Grabbable so we swap with Meteor and Meteorites
+                sense = Category:Unit | Category:Shield | Category:Obstacle | Category:Grabbable,
+                density=100,
+            )
+
+			on Paint {
+				Spark(
+					color=#75e7ff, dissipate=30, splatter=0.2, feather=0.3, shine=0.5,
+					radius=radius*0.5,
+					screenOffset=HelixOffset(radius=0.5, period=20))
 			}
-
-			Smoke(
-				color=#75e7ff, dissipation=30, splatter=0.2, feather=0.3,
-				radius=radius*0.5,
-				flutter=Flutter:Helix(radius=0.5, period=20))
-			Tether(ancestor=unit, taper=0.7, shadow=0.5)
 
 			on BeforeCollide that {
 				if that.Durability >= this.Durability {
@@ -68,46 +83,37 @@ pub fn ability.SwapAbility(unit, owner, btn, btnIndex?, btnSize) {
 				}
 			}
 
-			await Expire
+			once BeforeDespawn {
+				const home = unit?.Pos
+				const away = projectile?.Pos
+				if !(home && away) { return }
 
-			let home = unit?.Pos
-			let away = projectile?.Pos
-			if !(home && away) { return }
+				Spark(radius=aoe, bloom=3, bloomAlpha=0.5, feather=1, glare=0.3, shine=0.2)
+				repeat 10 {
+					Spark(body=projectile, speed=20, feather=1, shine=0.5)
+					Spark(body=unit, speed=20, feather=1, shine=0.5)
+				}
 
-			projectile.Puff(count=10, splatter=Splatter:Outwards(20))
-			unit.Puff(count=10, splatter=Splatter:Outwards(20))
-			Explosion(aoe)
+				for that in QueryWithinRadius(aoe, filter = Category:Aoe | Category:Projectile) {
+					if that.Team != owner.Team {
+						let delta = that.Pos - away
+						that.Pos = home + delta
+						Attack(that)
 
-			Aoe:ForEach(filter = Category:Aoe | Category:Projectile) that {
-				if that.Team != owner.Team {
-					let delta = that.Pos - away
-					that.Pos = home + delta
-					Attack(that)
-
-					that.Tombstone victim {
-						NameBlock(owner)
-						%(" translocated ")
-						NameBlock(victim)
-						%(" to their final resting place ")
+						that.Tombstone victim {
+							PlayerNameDisplay(owner)
+							" translocated "
+							PlayerNameDisplay(victim)
+							" to their final resting place "
+						}
 					}
 				}
-			}
 
-			unit.Pos = away
-			CleanseBuffs
-			SeverTethers
+				unit.Pos = away
+				CleanseEffects
+				UngrabMe
+				UngrabThem
+			}
 		}
 	}
-}
-
-sound Swap:Sound(duration=0.75s, cutoff=0.25s) {
-	Vibrato(freqModulation=[3600,4200]) {
-		Oscillator(freq=30)
-	}
-	Oscillator(wave=$triangle, freq=[4800,7200], harmonics=[1, 1.33, 1.5])
-	Tremolo(volumeModulation=0.1) {
-		Oscillator(freq=5)
-	}
-	Envelope(attack=0.05s, sustain=0s)
-	Gain(volume=0.1)
 }

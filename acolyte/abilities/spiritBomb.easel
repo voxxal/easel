@@ -1,4 +1,4 @@
-.. glyph=MightyForce:Glyph, color=#ff0099, damage=0, cooldown=5s, slowDuration=1.5s, slowProportion=0.9
+use glyph=@mightyForce.svg, color=#ff0099, damage=0, cooldown=5s
 
 pub symbol WantSpiritBomb
 
@@ -6,48 +6,57 @@ pub symbol WantSpiritBomb
 const LeashRange = 12
 const LeashSlack = 4
 
-pub fn SpiritBombOption(.. ui) {
-	SlotOption<WantSpiritBomb> {
-		H1 { %("Spirit Bomb") }
+pub fn SpiritBombDescription([ui]) {
+    H1 { "Spirit Bomb" }
 
-		P {
-			%("Summon forth a malleable speck of energy, bending it to your will as you steer it relentlessly towards your adversaries. ")
-		}
+    P {
+        "Summon forth a malleable speck of energy, bending it to your will as you steer it relentlessly towards your adversaries. "
+    }
 
-		P {
-			SlotEffect("Purposeful Path", icon="fas fa-arrows") {
-				%("Move your cursor to guide the path of Spirit Bomb. You are unable to move while channelling Spirit Bomb.")
-			}
-			SlotEffect("Mindful Ignition", icon="fas fa-bullseye") {
-				%("Cast Spirit Bomb again to detonate at exactly the right moment. ")
-			}
-		}
+    SlotEffect("Purposeful Path", icon="fas fa-arrows") {
+        "Move your cursor to guide the path of Spirit Bomb. You are unable to move while channelling Spirit Bomb."
+    }
+    SlotEffect("Mindful Ignition", icon="fas fa-bullseye") {
+        "Cast Spirit Bomb again to detonate at exactly the right moment. "
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn SpiritBombOption([ui]) {
+	SlotOption(WantSpiritBomb) {
+        SpiritBombDescription
 	}
 }
 
-pub fn ability.SpiritBombAbility(unit, owner, btn) {
+pub fn ability.SpiritBombAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
 	on BotAttacking target {
 		if Cooldown == 0 && Distance(target, unit.Pos) <= LeashRange {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. lifetime=2.25s
+    AbilityCommandBtn {
+        SpiritBombDescription
+    }
 
-		SpeedModifier(-0.95)
+	SpawnEachIncantation incantation {
+		use lifetime=2.25s
 
-		Spawn projectile {
-			.. parent=unit
-			.. dissipation=20, impulse=570, radius=0.4, aoe=2.25, speed=17.5, turnProportion=0.012
-			.. ownerColor=true, luminous=1.0, depth=Depth:Projectile
-			.. density=1.5, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Medium
+		SpeedModifier(0.05)
+		CooldownRate(0)
+
+		Subspawn projectile {
+			use parent=unit, body=projectile
+			use dissipate=20, impulse=570, radius=0.4, aoe=2.25, speed=17.5, turnProportion=0.012
+			use ownerColor=true, luminous=1, layer=Layer:Projectile
 
 			let leash = LeashRange
 			on BotChannelling target {
@@ -58,26 +67,31 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 				}
 			}
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			Bloom(bloom=4, bloomAlpha=1.0)
-			Smoke(dissipation=5, splatter=0.5, feather=1, glare=0.2)
-			Sing(SpiritBomb:Sound)
-			ExpireAfterLifetime
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:Medium
+			RecoverSpeed
+			DecayTurnRate
+			PolygonSprite(shape=Circle(0), bloom=4, bloomAlpha=1, layer=Layer:Bloom)
+			Sing(@spiritBomb.esfx)
 
-			hook Pointer {
+			with Pointer {
 				Homing(Pointer, turnRate=0.006rev)
 			}
 
-			Collider {
-				Shape:Circle
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile,
+                density=1.5, restitution=1,
+            )
+
+			on Paint {
+				Spark(dissipate=5, splatter=0.5, feather=1, glare=0.2, shine=0.5)
 			}
 
 			on AfterCollide that {
 				if that.Durability >= this.Durability {
 					Strobe(growth=0.5, shine=1.0)
-					Puff(count=10, splatter=1)
+					repeat 10 { Spark(splatter=1, feather=1, shine=0.5) }
 					Expire
 				}
 			}
@@ -87,85 +101,34 @@ pub fn ability.SpiritBombAbility(unit, owner, btn) {
 			}
 
 			await Tween(duration=1.0s, initial=0.5, final=1.0) factor {
-				.. aoe = aoe * factor
+				use aoe = aoe * factor
 
-				Aoe:Indicator(color=Fade(color, 0.95))
-				once Expire {
-					Puff(count=10, splatter=Splatter:Outwards(10))
-					Explosion(aoe)
-					Hear(SpiritBomb:ExplodeSound)
+				PolygonSprite(shape=Circle(aoe), color=color.Fade(0.95), crater=0.85, layer=Layer:Indicator)
+				once BeforeDespawn {
+					repeat 10 { Spark(speed=10, feather=1, shine=0.5) }
+					Spark(radius=aoe, bloom=3, bloomAlpha=0.5, feather=1, glare=0.3, shine=0.2)
+					Hear(@spiritBombExplode.esfx)
 
-					Aoe:ForEach that {
+					for that in QueryWithinRadius(aoe, filter=Category:Aoe) {
 						if that.Team != owner.Team {
 							Attack(that)
-							Aoe:ImpulseAttenuated(that, impulse=, attenuate=0.75)
-							Aoe:Destroy(that)
-
-							if that.Category & Category:Hero {
-								that.ReplaceBuff<stun>(cleansable=true) {
-									ExpireAfterLifetime(slowDuration)
-									SpeedModifier(-slowProportion, that)
-									Smoke(that,
-										color=#4ff4, fade=1, feather=0.5,
-										radius=1.0, dissipation=20, depth=Depth:Particle,
-										flutter=$perimeter)
-								}
-							}
+							ImpulseAwayAttenuated(that, impulse=, attenuate=0.75)
+							ExpireIfDestructible(that)
 
 							that.Tombstone victim {
-								NameBlock(owner)
-								%(" banished ")
-								NameBlock(victim)
-								%(" to the spirit world ")
+								PlayerNameDisplay(owner)
+								" banished "
+								PlayerNameDisplay(victim)
+								" to the spirit world "
 							}
 						}
 					}
 
-					StopIncantation
+					incantation.Expire
 				}
 			}
 		}
 
-		await Sleep(lifetime)
+		await Tick(lifetime)
 	}
-}
-
-sound SpiritBomb:Sound(duration=2s) {
-	BrownNoise
-	BandPass(freq=1800, q=1)
-	Envelope(attack=0.25s, sustain=0s)
-	Gain(volume=0.25)
-	Output
-
-	Vibrato(freqModulation=100) {
-		Oscillator(freq=2100)
-	}
-	Oscillator(freq=900, harmonics=[1,1.5])
-	LowPass(freq=225)
-	Tremolo(volumeModulation=0.3) {
-		Oscillator(freq=11)
-	}
-	Envelope(attack=0.5s, sustain=0s)
-}
-
-sound SpiritBomb:ExplodeSound(duration=0.75s) {
-	Vibrato(freqModulation=2000) {
-		WhiteNoise
-	}
-	Oscillator(wave=$triangle, freq=40)
-	LowPass(freq=[450,0])
-	HighShelf(freq=[112,0], db=-6)
-	Peaking(freq=[56,225], q=0.5, db=12)
-	Envelope(attack=0.01s, decay=0.07s, sustain=0s, sustainVolume=0.2)
-	Output
-
-	Vibrato(freqModulation=100) {
-		Oscillator(freq=2100)
-	}
-	Oscillator(freq=900, harmonics=[1,1.5])
-	LowPass(freq=200)
-	Tremolo(volumeModulation=0.3) {
-		Oscillator(freq=[11,0])
-	}
-	Envelope(attack=0.01s, sustain=0s)
 }

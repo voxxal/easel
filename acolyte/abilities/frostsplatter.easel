@@ -1,94 +1,110 @@
-.. glyph=Frostfire:Glyph, color=#44ffff, cooldown=5s, damage=0, slowProportion=0.5, buffDuration=1.25s
+use glyph=@frostfire.svg, color=#44ffff, cooldown=5s, damage=0, slowProportion=0.5, buffDuration=1.25s
 
 pub symbol WantFrostsplatter
 
-pub fn FrostsplatterOption(.. ui) {
-	SlotOption<WantFrostsplatter> {
-		H1 { %("Frostsplatter") }
+pub fn FrostsplatterDescription([ui]) {
+    H1 { "Frostsplatter" }
 
-		P {
-			%("Summon a fierce blast of frigid winds that slows nearby enemies to a crawl and blows away incoming attacks.")
-		}
+    P {
+        "Summon a fierce blast of frigid winds that slows nearby enemies to a crawl and blows away incoming attacks."
+    }
 
-		P {
-			SlotEffect("Frigid Stagger", icon="fas fa-snowflake") {
-				%("Slows nearby enemies by " + (slowProportion * 100.0) + "% for " + (buffDuration / TicksPerSecond) + "s.")
-			}
-		}
+    SlotEffect("Frigid Stagger", icon="fas fa-snowflake") {
+        "Slows nearby enemies by " + (slowProportion * 100.0) + "% for " + (buffDuration / TicksPerSecond) + "s."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn FrostsplatterOption([ui]) {
+	SlotOption(WantFrostsplatter) {
+        FrostsplatterDescription
 	}
 }
 
-pub fn ability.FrostsplatterAbility(unit, owner, btn) {
-	on BotDeflecting {
+pub fn ability.FrostsplatterAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotDeflecting target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		TurnRateModifier(-1)
+    AbilityCommandBtn {
+        FrostsplatterDescription
+    }
 
-		Hear(Frostsplatter:Sound)
-		await Spray(duration=3, count=6, spray=0.25revs) {
+	SpawnEachIncantation incantation {
+		TurnRateModifier(0)
+
+		Hear(@frostsplatter.esfx)
+		await Spray(duration=3, count=6, spray=0.25revs) headingOffset {
 			Spawn projectile {
-				.. parent=unit
-				.. lifetime=25, dissipation=10
-				.. radius=0.8, speed=16
-				.. density=12.0, restitution=0, durability=Durability:High, ccd=true
-				.. feather=0.7, glare=0.7, glareAlpha=0.4, bloom=0, luminous=0, depth=Depth:Projectile
-				.. categories=Category:Projectile, sense = Category:Projectile | Category:Hero
+				use parent=unit, body=projectile
+				use lifetime=25, dissipate=10
+				use radius=0.8, speed=16
+				use feather=0.7, glare=0.7, glareAlpha=0.4, bloom=0, luminous=0, layer=Layer:Projectile
 
-				LaunchBody
-				PrepareForCollision
-				PropulsiveMotion
-				Bloom(bloom=0.8, luminous=1)
-				Smoke(radius=1.2, dissipation=30, splatter=0.8, color=#4ff4, fade=1)
+				Body(pos=parent.Pos, heading=parent.Heading+headingOffset, velocity=speed*Direction(heading), bullet=true)
+				Durability = Durability:High
+                RecoverSpeed
+                DecayTurnRate
+				PolygonSprite(shape=Circle(0), bloom=0.8, luminous=1, layer=Layer:Bloom)
 				ExpireAfterLifetime
 
-				Collider {
-					Shape:Circle
+				PolygonCollider(
+                    Circle,
+                    category=Category:Projectile, sense = Category:Projectile | Category:Unit,
+                    density=48, restitution=1,
+                )
+
+				on Paint {
+					Spark(radius=1.2, dissipate=30, splatter=0.8, color=#4ff4, feather=1, shine=0.5, fade=1)
 				}
 
 				on BeforeCollide that {
-					if (that.Category & Category:Hero) && that.Team != owner.Team {
+					if that.Category.Overlaps(Category:Unit) && that.Team != owner.Team {
 						Attack(that)
 
 						that.Tombstone victim {
-							NameBlock(owner)
-							%(" chilled ")
-							NameBlock(victim)
-							%(" with dis-gust")
+							PlayerNameDisplay(owner)
+							" chilled "
+							PlayerNameDisplay(victim)
+							" with dis-gust"
 						}
 
-						that.ReplaceBuff<cold>(cleansable=true) {
-							ExpireAfterLifetime(buffDuration)
-							SpeedModifier(-slowProportion, that)
-							Smoke(that,
-								color=#4ff4, fade=1, feather=0.5,
-								radius=1.0, dissipation=20, depth=Depth:Particle,
-								flutter=$perimeter)
+						that.ReplaceEffect<cold>(cleansable=true) {
+							use body = that
+
+							ExpireAfterLifetime(lifetime=buffDuration)
+							give that.SpeedModifier(1 - slowProportion)
+							
+							on Paint {
+							    if that.Invisibility {
+							        await that.Invisibility
+							    } else {
+                                    Spark(
+                                        color=#4ff4, fade=1, feather=0.5, shine=0.5,
+                                        radius=1.0, dissipate=20, layer=Layer:Spark,
+                                        glaze=1)
+							    }
+							}
 						}
 					}
 				}
 				on AfterCollide that {
 					if that.Durability >= this.Durability {
-						Strobe(shine=1)
-						Expire
+						Strobe(shine=0.5)
 					}
 				}
 
-				Wind(1.0, radius=)
+				Wind(1.0)
 			}
 		}
 	}
-}
-
-sound Frostsplatter:Sound(duration=0.6s, cutoff=0.5s) {
-	BrownNoise
-	BandPass(freq=125, q=1)
-	Envelope(attack=0.07s, sustain=0s)
 }

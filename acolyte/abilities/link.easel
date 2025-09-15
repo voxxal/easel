@@ -1,101 +1,115 @@
-.. glyph=AndromedaChain:Glyph, color=#4444ff, cooldown=7.5s, relayProportion=1.0, damage=0
+use glyph=@andromedaChain.svg, color=#4444ff, cooldown=7.5s, relayProportion=1.0, damage=0
 
 pub symbol WantLink1
 
-pub fn LinkOption(.. ui) {
-	SlotOption<WantLink1> {
-		H1 { %("Link") }
+pub fn LinkDescription([ui]) {
+    H1 { "Link" }
 
-		P {
-			%("Forge an ethereal grapple that binds your foe to you, irresistably drawing them towards you. With your souls entwined, all incoming damage will be transferred from you to them, turning their aggression into their own undoing.")
-		}
+    P {
+        "Forge an ethereal grapple that binds your foe to you, irresistably drawing them towards you. With your souls entwined, all incoming damage will be transferred from you to them, turning their aggression into their own undoing."
+    }
 
-		P {
-			SlotEffect("Ethereal Relay", icon="fas fa-exchange") {
-				%("While linked, " + (relayProportion * 100) + "% of received damage is instead applied to your enemy.")
-			}
-		}
+    SlotEffect("Ethereal Relay", icon="fas fa-exchange") {
+        "While linked, " + (relayProportion * 100) + "% of received damage is instead applied to your enemy."
+    }
 
-		SlotStats {
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn LinkOption([ui]) {
+	SlotOption(WantLink1) {
+        LinkDescription
 	}
 }
 
-pub fn ability.LinkAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.LinkAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		Spawn projectile {
-			.. parent=unit 
-			.. lifetime=94, dissipation=5
-			.. radius=0.4, speed=40.0
-			.. ownerColor=true, color=#fff, depth=Depth:Tether
-			.. luminous=1.0, taper=0.3, flicker=0.4
-			.. density=10, restitution=0, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Low
-			.. sense = Category:Hero | Category:Obstacle
+    AbilityCommandBtn {
+        LinkDescription
+    }
 
-			LaunchBody(turnRate=2rev)
-			PrepareForCollision
-			DriftingMotion
-			ExpireWith(unit)
+	SpawnEachIncantation incantation {
+		Spawn projectile {
+			use parent=unit, body=projectile
+			use lifetime=94, dissipate=5
+			use radius=0.4, speed=40.0
+			use ownerColor=true, color=#fff, layer=Layer:Strand
+			use luminous=1, taper=0.3, flicker=0.4, bloomAlpha=0.5, shadow=0.5, retract=true
+
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), turnRate=2rev, bullet=true)
+			Durability = Durability:Low
+			LimitSpeed(maxSpeed=100)
+			DespawnBefore(unit)
 			ExpireAfterLifetime
-			Sing(Link:Sound)
-			CooldownRate(-1)
+			Sing(@link.esfx)
+			CooldownRate(0)
 			Movement:WalkWith(unit)
 
-			Sprite(bloom=2) {
-				Shape:Equilateral(radius=, numPoints=3)
-			}
-			Collider {
-				Shape:Circle
-			}
+			PolygonSprite(Equilateral(numPoints=3), bloom=2)
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile,
+                sense = Category:Unit | Category:Obstacle,
+                density=10, restitution=0,
+            )
 
-			once<redirect> Sleep(40) {
+			once Tick(40) {
 				Velocity:RedirectTowards(unit.Pos, speed=4)
-				await Sleep(20)
+				await Tick(20)
 				Velocity:RedirectTowards(unit.Pos, speed=48)
 			}
 
+			Strand<link>(unit, projectile, radius=0.2, dissipate=5, bloom=2, glare=1, shadow=0.25)
 			on BeforeCollide that {
-				if that.Team != owner.Team {
-					Attack(that)
+				if that == unit {
+					Expire // The link has returned, expire it
+				} else if that.Category.Overlaps(Category:Grabbable) {
+                    if that.Team != owner.Team {
+                        Attack(that)
 
-					that.Tombstone victim {
-						NameBlock(owner)
-						%(" transmuted their demise to ")
-						NameBlock(victim)
+                        that.Tombstone victim {
+                            PlayerNameDisplay(owner)
+                            " transmuted their demise to "
+                            PlayerNameDisplay(victim)
+                        }
 					}
+
+					delete Strand<link> // delete old strand so we can replace it with the new one connected to `that`
+					unit.SpawnGrab(that, severable=true) {
+						Strand<link>(unit, that, radius=0.2, dissipate=5, bloom=2, glare=1, shadow=0.25)
+						ExpireAfterLifetime(lifetime=1.75s)
+
+						CooldownRate(0)
+						Grab:Pull(unit, that, impulse=5, minDistance=2, maxDistance=10)
+						Grab:Tow(unit, that)
+
+						if (that.Category.Overlaps(Category:Unit | Category:Obstacle)) {
+							Relay(that)
+							RelayProportion(relayProportion)
+						}
+
+						on unit.Hurt {
+							Strobe(dissipate=10, shine=0.5, growth=0.5)
+						}
+					}
+
+					Expire
+					break
 				}
 			}
 
-			once SeverTethers { Expire }
-
-			TetherBuffOnHit(radius=0.2, bloomAlpha=0.5, shadow=0.5) that {
-				ExpireAfterLifetime(1.75s)
-				CooldownRate(-1)
-				PullTether(that, attractor=unit, impulse=5, minDistance=2, maxDistance=10)
-				TowTether(that, attractor=unit)
-
-				if (that.Category & (Category:Hero | Category:Obstacle)) && that.Team != owner.Team {
-					Relay(that)
-					RelayProportion(relayProportion)
-				}
-			}
+			once UngrabThem { Expire }
 		}
 	}
-}
-
-sound Link:Sound(duration=2s) {
-	Oscillator(wave=$square, freq=150, harmonics=[1,2,4,8,16])
-	LowPass(freq=150)
-	Tremolo(volumeModulation=0.4) {
-		Oscillator(freq=10)
-	}
-	Envelope(attack=1s, sustain=0s)
 }

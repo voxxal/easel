@@ -1,98 +1,101 @@
-.. glyph=EnergyBreath:Glyph, color=#22ee88, damage=15, lifesteal=1.0, cooldown=5.0s
+use glyph=@energyBreath.svg, color=#22ee88, damage=15, lifesteal=1.0, cooldown=5.0s
 
 pub symbol WantDrain
 
 prop projectile.Repossessor
 
-pub fn DrainOption(.. ui) {
-	SlotOption<WantDrain> {
-		H1 { %("Drain") }
+pub fn DrainDescription([ui]) {
+    H1 { "Drain" }
 
-		P {
-			%("From the depths of your soul, release a spectral wisp of energy which hungrily seeks out the life force of your foes, rejuvenating your own being with each stolen spark.")
-		}
+    P {
+        "From the depths of your soul, release a spectral wisp of energy which hungrily seeks out the life force of your foes, rejuvenating your own being with each stolen spark."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn DrainOption([ui]) {
+	SlotOption(WantDrain) {
+        DrainDescription
 	}
 }
 
-pub fn ability.DrainAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.DrainAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        DrainDescription
+    }
+
+	SpawnEachIncantation incantation {
+		use damage = damage * unit.DamageModifier
 
 		Spawn projectile {
-			.. parent=unit
-			.. radius=0.16, speed=16
-			.. lifetime=2s, dissipation=15
-			.. luminous=1.0, depth=Depth:Projectile
-			.. density=2.8, ccd=true
-			.. categories=Category:Projectile, durability=Durability:Low
+			use parent=unit, body=projectile
+			use radius=0.16, speed=16
+			use lifetime=2s, dissipate=15
+			use luminous=1, layer=Layer:Projectile
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			RayEmitter(radius * 1.5, shadow=0.5)
-			Sing(Drain:Sound)
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:High
+			RecoverSpeed
+			DecayTurnRate
+			Sing(@drain.esfx)
 			ExpireAfterLifetime
 
-			Collider {
-				Shape:Circle
+			PolygonCollider(
+                Circle,
+                category=Category:Projectile,
+                density=2.8, restitution=1,
+            )
+
+			once Tick(Velocity:TicksTo(Pointer)) {
+				use owner = Repossessor ?? owner // lookup latest owner in case of repossession
+				let enemy = QueryNearest(filter=Category:Unit, against=Alliance:Enemy)
+				if enemy {
+				    Velocity = speed * Direction(enemy.Pos - Pos)
+				}
 			}
 
-			once<redirect> Sleep(Velocity:TicksTo(Pointer)) {
-				.. owner = Repossessor ?? owner // lookup latest owner in case of repossession
-				Velocity:RedirectTowards(QueryUnits.WhereAlliance(owner, Alliance:Enemy).FindNearest(this.Pos))
+			on Paint {
+				Streak(radius=1.5*radius, bloom=3, bloomAlpha=1, glare=1, shadow=0.5)
 			}
 
-			let canHurtSelf = false
 			on BeforeCollide that {
-				.. owner = Repossessor ?? owner // lookup latest owner in case of repossession
-				if canHurtSelf || that.Team != owner.Team {
+				use owner = Repossessor ?? owner // lookup latest owner in case of repossession
+				if CanHurtSelf || that.Team != owner.Team {
 					Attack(that)
 
 					that.Tombstone victim {
-						NameBlock(owner)
-						%(" sapped the life from ")
-						NameBlock(victim)
+						PlayerNameDisplay(owner)
+						" sapped the life from "
+						PlayerNameDisplay(victim)
 					}
 				}
 			}
 			on AfterCollide that {
-				if that.Category & Category:Shield {
-					canHurtSelf = true // Can bounce off shield to hurt self
-					this.Repossessor = that.Owner // Now the new owner can receive the lifesteal
+				if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team {
+					CanHurtSelf = true // Can bounce off shield to hurt self
+					Repossessor = that.Owner // Now the new owner can receive the lifesteal
 				}
 				if that.Durability >= this.Durability {
 					Strobe(growth=1.0, shine=1.0)
-					Puff(count=4, splatter=1)
+					repeat 4 { Spark(splatter=1, feather=1, shine=0.5) }
 					Expire
 				}
 			}
 		}
 	}
-}
-
-sound Drain:Sound(duration=2s) {
-	BrownNoise
-	BandPass(freq=2500, q=10)
-	Envelope(attack=0.25s, sustain=0s)
-	Output
-
-	Oscillator(wave=$square, freq=275, harmonics=[1, 1.33, 1.5])
-	BandPass(freq=[600,800], q=15)
-	Tremolo(volumeModulation=0.4) {
-		Oscillator(freq=10)
-	}
-	Envelope(attack=0.25s, sustain=0s)
-	Gain(volume=0.5)
 }

@@ -1,151 +1,134 @@
-.. glyph=FireRay:Glyph, color=#00ffff, damage=40.0, lifesteal=0.3, cooldown=5.0s
+use glyph=@fireRay.svg, color=#00ffff, damage=40.0, lifesteal=0.3, cooldown=5.0s
 
 pub symbol WantBlast
 
-pub fn BlastOption(.. ui) {
-	SlotOption<WantBlast> {
-		H1 { %("Blast") }
+pub fn BlastDescription([ui]) {
+    H1 { "Acolyte Blast" }
 
-		P {
-			%("Concentrate your inner reserves, unleashing a cataclysmic force proportional to the time spent in focused meditation. ")
-		}
+    P {
+        "Concentrate your inner reserves, unleashing a cataclysmic force proportional to the time spent in focused meditation. "
+    }
 
-		P {
-			SlotEffect("Luminous Convergence", icon="fas fa-hand-paper") {
-				%("Hold the button to charge up your blast, and feel the pulsating layers of energy coalesce with each moment of pure concentration.")
-			}
-			SlotEffect("Interruptible", icon="fas fa-hand-paper") {
-				%("A single blow can shatter your concentration, dissipating the accumulated energy and leaving your devastating assault unfulfilled.")
-			}
-		}
+    SlotEffect("Luminous Convergence", icon="fas fa-sun") {
+        "Hold the button to charge up your blast, and feel the pulsating layers of energy coalesce with each moment of pure concentration."
+    }
+    SlotEffect("Interruptible", icon="fas fa-hand-paper") {
+        "A single blow can shatter your concentration, dissipating the accumulated energy and leaving your devastating assault unfulfilled."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn BlastOption([ui]) {
+	SlotOption(WantBlast) {
+        BlastDescription
 	}
 }
 
-pub fn ability.BlastAbility(unit, owner, btn) {
-	on BotAttacking {
+pub fn ability.BlastAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotAttacking target {
 		if Cooldown == 0 {
 			BotUseAbility
 		}
 	}
 
-	Incantation {
-		.. ownerColor=true, damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        BlastDescription
+    }
 
-		const birth = Tick
+	SpawnEachIncantation incantation {
+		use ownerColor=true, damage = damage * unit.DamageModifier
+		let birth = Tick
 
-		SpeedModifier(-0.5)
+		SpeedModifier(0.5)
 
-		once Interrupt { StopIncantation }
+		once Interrupt { incantation.Expire }
 
-		if !HasCommenced {
+		if !GameCommenced {
 			// Disallow pre-game charging to count during the real game
-			once AfterCommence { StopIncantation }
+			once AfterGameCommenced { incantation.Expire }
 		}
 
-		on BotChannelling {
+		on BotChannelling target {
 			const channelDuration=1.0s
 			if Tick - birth < channelDuration {
 				BotKeepChannelling
 			}
 		}
 
-		Sing(Blast:ChargingSound)
+		Sing(@blastCharging.esfx)
 		await ChargeUntilReleased(2.0s, minProportion=0.1) {
 			ChargingIndicator(flicker=0.1)
-			CooldownRate(-1)
+			CooldownRate(0)
 		}
 
 		Spawn projectile {
-			.. parent=unit
-			.. damage = damage * ChargeProportion
-			.. radius = ChargeProportion.Mix(0.3, 1.2), speed=40.0
-			.. aoe=2, impulse = 70 * ChargeProportion
-			.. lifetime=2s, dissipation=10
-			.. luminous=1.0, depth=Depth:Projectile
-			.. feather=1, glare=0.5
-			.. density = 140 * ChargeProportion, ccd=true
-			.. categories = Category:Projectile | Category:Massive, durability=Durability:Maximum
+			use parent=unit, body=projectile
+			use damage = damage * ChargeProportion
+			use radius = ChargeProportion.Mix(0.3, 1.2), speed=40.0
+			use aoe=2, impulse = 70 * ChargeProportion
+			use lifetime=2s, dissipate=10
+			use luminous=1, layer=Layer:Projectile
+			use feather=1, glare=0.5
 
-			LaunchBody
-			PrepareForCollision
-			PropulsiveMotion
-			Sing(Blast:Sound)
+			Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+			Durability = Durability:Maximum
+			RecoverSpeed
+			DecayTurnRate
+			Sing(@blast.esfx)
 			ExpireAfterLifetime
 
-			Collider {
-				Shape:Circle
+			PolygonCollider(
+                Circle,
+                category = Category:Projectile | Category:Disintegrator,
+                density = 140 * ChargeProportion, restitution=1,
+			)
+
+			PolygonSprite(shape=Circle(0), bloom=10*ChargeProportion, bloomAlpha=1, layer=Layer:Bloom)
+
+			on Paint {
+				Spark(radius=2*radius, shine=0.5, shadow=0.5, splatter=0.5) // larger radius needed to compensate for feather=1 making it look smaller
 			}
 
-			Bloom(bloom=10*ChargeProportion)
-			Smoke(radius=2*radius, splatter=0.5, shadow=0.5) // larger radius needed to compensate for feather=1 making it look smaller
-
-			let canHurtSelf = false
 			on BeforeCollide that {
-				if canHurtSelf || that.Team != owner.Team {
+				if CanHurtSelf || that.Team != owner.Team {
 					Attack(that)
 
 					that.Tombstone victim {
-						NameBlock(owner)
-						%(" farewelled ")
-						NameBlock(victim)
-						%(" with a bang ")
+						PlayerNameDisplay(owner)
+						" farewelled "
+						PlayerNameDisplay(victim)
+						" with a bang "
 					}
 				}
 			}
 			on AfterCollide that {
-				if that.Category & Category:Shield {
-					canHurtSelf = true // Can bounce off shield to hurt self
+				if that.Category.Overlaps(Category:Shield) && that.Team != owner.Team  {
+					CanHurtSelf = true // Can bounce off shield to hurt self
 				}
 				if that.Durability >= this.Durability {
 					Strobe(growth=0.5)
-					Hear(Blast:HitSound)
+					Hear(@blastHit.esfx)
 					Expire
 				}
 			}
-			once Expire {
-				Puff(radius=radius*2, count=3, splatter=1)
-				Aoe:ForEach that {
+			once BeforeDespawn {
+				repeat 3 { Spark(radius=2*radius, shine=0.5, splatter=1) }
+				for that in QueryWithinRadius(aoe, filter=Category:Aoe) {
 					if that.Team != owner.Team {
-						Aoe:Impulse(that)
-						Aoe:Destroy(that)
+						ImpulseAway(that)
+						ExpireIfDestructible(that)
 					}
 				}
 			}
 		}
 	}
-}
-
-sound Blast:ChargingSound(duration=5s, cutoff=0.5s) {
-	Oscillator(wave=$triangle, freq=[4,9], harmonics=[1,2,2.5,4,5,8,10,16])
-	Tremolo(volumeModulation=0.8) {
-		Oscillator(freq=12)
-	}
-	Envelope(attack=0.25s, release=0.5s)
-}
-
-sound Blast:Sound(duration=1s, cutoff=0.5s) {
-	BrownNoise
-	LowPass(freq=[8500,2125], q=1)
-	Output(into=$mix)
-
-	Input(key=$mix)
-	Envelope(attack=0.1s, sustain=0s)
-}
-
-sound Blast:HitSound(duration=2s) {
-	BrownNoise
-	LowPass(freq=500)
-	HighPass(freq=100)
-	Envelope(attack=0.01s, sustain=0s, release=0.85s)
-	Output
-
-	Oscillator(wave=$triangle, freq=[50,0], harmonics=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2])
-	LowPass(freq=300)
-	Envelope(attack=0.01s, sustain=0s)
 }

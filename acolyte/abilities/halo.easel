@@ -1,33 +1,41 @@
-.. glyph=AngelOutfit:Glyph, color=#ffaa00, damage=6, lifesteal=1.0, lifetime=4.5s, cooldown=7.5s, numHalos=3, fastProportion=0.2
+use glyph=@angelOutfit.svg, color=#ffaa00, damage=6, lifesteal=1.0, lifetime=3s, cooldown=7.5s, numHalos=3, fastProportion=0.2
 
 pub symbol WantHalo
 
-pub fn HaloOption(.. ui) {
-	SlotOption<WantHalo> {
-		H1 { %("Halo") }
+pub signal unit.ClearHalos
 
-		P {
-			%("Manifest " + numHalos + " resplendent swirls of radiant energy, burning your enemies with holy light and stealing a fragment of their soul with each hit.")
-		}
+pub fn HaloDescription([ui]) {
+    H1 { "Halo" }
 
-		P {
-			SlotEffect("Interruptible", icon="fas fa-hand-paper") {
-				%("Any disruption, be it an attempt to cast another spell or a strike from your enemies, compromises your steadfast devotion and halt the advent of further halos.")
-			}
-			SlotEffect("Rapid Gracefulness", icon="fas fa-running") {
-				%("Move " + (fastProportion * 100) + "% faster as your every step shimmers with the favor of the gods.")
-			}
-		}
+    P {
+        "Manifest " + numHalos + " resplendent swirls of radiant energy, burning your enemies with holy light and stealing a fragment of their soul with each hit."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    SlotEffect("Interruptible", icon="fas fa-hand-paper") {
+        "Any strike from your enemies compromises your steadfast devotion and will bring your divine brilliance to an end."
+    }
+    SlotEffect("Rapid Gracefulness", icon="fas fa-running") {
+        "Move " + (fastProportion * 100) + "% faster as your every step shimmers with the favor of the gods."
+    }
+
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn HaloOption([ui]) {
+	SlotOption(WantHalo) {
+        HaloDescription
 	}
 }
 
-pub fn ability.HaloAbility(unit, owner, btn) {
+pub fn ability.HaloAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
 	on BotAttacking target {
 		const triggerDistance = 5
 		if Cooldown == 0 && Distance(unit.Pos, target) <= triggerDistance {
@@ -35,87 +43,92 @@ pub fn ability.HaloAbility(unit, owner, btn) {
 		}
 	}
 
-	Incantation {
-		.. damage = damage * unit.DamageModifier
+    AbilityCommandBtn {
+        HaloDescription
+    }
 
-		const beginning = Tick
+	SpawnEachIncantation incantation {
+	    unit.Subspawn {
+            // Spawn a separate lifespan so halos can keep spawning while the player is casting another spell.
+            // The player can only be casting one incantation at a time.
+            // Spawning a separate lifespan means we separate ourselves from that restriction.
 
-		SpeedModifier(fastProportion)
+            use damage = damage * unit.DamageModifier
 
-		on BotChannelling target {
-			const chaseDistance=10
-			if Distance(unit.Pos, target) <= chaseDistance {
-				BotKeepChannelling
-			}
-		}
+            const beginning = Tick
 
-		// Enemy hits to the arrival of further halos, but we are free to cast something else without losing halos
-		on Interrupt interruptor {
-			if interruptor & Interruptor:NotSelf {
-				StopIncantation
-			}
-		}
+            CooldownRate(0)
+            SpeedModifier(1 + fastProportion)
 
-		await Barrage(interval=0.8s, count=numHalos) index {
-			Spawn projectile {
-				.. parent=unit
-				.. dissipation=15 
-				.. radius=0.1, speed=40.0
-				.. luminous=1.0, depth=Depth:Projectile
-				.. density=1, ccd=true
-				.. categories=Category:Projectile | Category:Aoe | Category:Destructible, durability=Durability:Minimum
-				.. collideWith = Category:Solid ^ Category:Projectile
-				.. noLavasteal=true // Not enough knockback to push others into lava
+            on BotChannelling target {
+                const chaseDistance=10
+                if Distance(unit.Pos, target) <= chaseDistance {
+                    BotKeepChannelling
+                }
+            }
 
-				LaunchBody
-				PrepareForCollision
-				PropulsiveMotion
-				Movement:WalkWith(unit)
-				Homing(unit, turnProportion=0.2)
-				RayEmitter(bloom=2, fade=1, taper=0)
-				Sing(Halo:Sound)
-				ExpireAfterLifetime(lifetime - (Tick - beginning)) // Make all halos expire at the same time
+            on Interrupt interruptor {
+                if interruptor.Overlaps(Interruptor:NotSelf) {
+                    incantation.Expire
+                }
+            }
 
-				// Enemy hits will destroy our halos
-				on Interrupt interruptor {
-					if interruptor & Interruptor:NotSelf {
-						Expire
-					}
-				}
+            once ClearHalos {
+                Expire
+            }
 
-				Collider {
-					Shape:Circle
-				}
+            await Barrage(interval=0.8s, count=numHalos) index {
+                Subspawn projectile {
+                    use parent=unit, body=projectile
+                    use dissipate=15
+                    use radius=0.1, speed=40.0
+                    use luminous=1, layer=Layer:Projectile
+                    use noLavasteal=true // Not enough knockback to push others into lava
 
-				on BeforeCollide that {
-					if that.Team != owner.Team {
-						Attack(that)
-						Strobe(growth=1.0)
-						Hear(Halo:HitSound)
+                    Body(pos=parent.Pos, heading=parent.Heading, velocity=speed*Direction(heading), bullet=true)
+                    Durability = Durability:Minimum
+                    RecoverSpeed
+                    DecayTurnRate
+                    Movement:WalkWith(unit)
+                    Homing(unit, turnProportion=0.2)
+                    Sing(@halo.esfx)
 
-						that.Tombstone victim {
-							NameBlock(owner)
-							%(" enlightened ")
-							NameBlock(victim)
-							%(" in a blazing spectacle")
-						}
-					}
-				}
-			}
-		}
+                    // Enemy hits will destroy our halos
+                    on Interrupt interruptor {
+                        if interruptor.Overlaps(Interruptor:NotSelf) {
+                            Expire
+                        }
+                    }
+
+                    PolygonCollider(
+                        Circle,
+                        category=Category:Projectile | Category:Aoe | Category:Destructible,
+                        collideWith = Category:Unit | Category:Shield | Category:Obstacle,
+                        density=1, restitution=1,
+                    )
+
+                    on Paint {
+                        Streak(bloom=2, bloomAlpha=1, glare=1, shadow=0.25, fade=1, taper=0)
+                    }
+
+                    on BeforeCollide that {
+                        if that.Team != owner.Team {
+                            Attack(that)
+                            Strobe(growth=1.0)
+                            Hear(@haloHit.esfx)
+
+                            that.Tombstone victim {
+                                PlayerNameDisplay(owner)
+                                " enlightened "
+                                PlayerNameDisplay(victim)
+                                " in a blazing spectacle"
+                            }
+                        }
+                    }
+                }
+            }
+            await Tick(lifetime) // lifetime for halo only begins once all halos have been spawned
+            Despawn
+        }
 	}
-}
-
-sound Halo:Sound(duration=0.3s) {
-	Oscillator(wave=$sawtooth, freq=[9000,11500], harmonics=[1, 1.167, 1.33, 1.78, 2, 2.25])
-	Envelope(attack=0.01s, sustain=0s)
-	Gain(volume=0.25)
-}
-
-sound Halo:HitSound(duration=0.3s) {
-	Oscillator(wave=$sawtooth, freq=[7000,6880], harmonics=[1, 1.167, 1.33, 1.78, 2, 2.25])
-	HighPass(freq=6500)
-	LowPass(freq=[10000,0])
-	Envelope(attack=0.01s, sustain=0s)
-	Gain(volume=0.25)
 }

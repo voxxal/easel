@@ -1,9 +1,16 @@
-.. btn="KeyQ", slotDefault=WantFireball
+use keycode=KeyQ, slotDefault=WantFireball
 
-pub preference owner.PrimarySlot
+pub symbol PrimarySlot
 
-pub fn unit.PrimarySlotAbility(.. owner, btnIndex?, btnSize=1) {
-	SlotAbility<PrimarySlot> choice {
+pub fn unit.PrimarySlotAbility([owner, btnOrder?, btnSize?]) {
+    use btnEdit = ShowIntent<PrimarySlot>
+    if owner.IsHuman {
+        BottomModal<PrimarySlot>(dismissed=true) {
+            PrimarySlotEditor
+        }
+    }
+
+	SpawnEachAbility<PrimarySlot> choice ability {
 		if choice == WantFireball { FireballAbility }
 		else if choice == WantFireboom { FireboomAbility }
 		else if choice == WantDifire { DifireAbility }
@@ -11,13 +18,10 @@ pub fn unit.PrimarySlotAbility(.. owner, btnIndex?, btnSize=1) {
 		else if choice == WantRefract { RefractAbility }
 		else if choice == WantBoomerang { BoomerangAbility }
 		else if choice == WantElectroshock { ElectroshockAbility }
-		else { SlotWithoutAbility }
-
-		SlotPopup<PrimarySlot> { PrimarySlotEditor }
 	}
 }
 
-pub fn this.PrimarySlotEditor(.. owner, ui) {
+pub fn this.PrimarySlotEditor([dismiss?, owner, ui]) {
 	SlotEditor<PrimarySlot> {
 		FireballOption
 		FireboomOption
@@ -30,7 +34,7 @@ pub fn this.PrimarySlotEditor(.. owner, ui) {
 }
 
 pub fn owner.RandomizePrimarySlot {
-	PrimarySlot = PickRandom([
+	SlotChoice<PrimarySlot> = PickRandom([
 		WantFireball,
 		WantFireboom,
 		WantDifire,

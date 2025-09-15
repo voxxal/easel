@@ -1,26 +1,34 @@
-.. glyph=Dodging:Glyph, color=#ff00aa, fastProportion=0.1
+use glyph=@dodging.svg, color=#ff00aa, fastProportion=0.15
 
 pub symbol WantArcaneAgility
 
-pub fn ArcaneAgilityOption(.. ui) {
-	SlotOption<WantArcaneAgility> {
-		H1 { %("Arcane Agility") }
+pub fn ArcaneAgilityDescription([ui]) {
+    H1 { "Arcane Agility" }
 
-		P {
-			Span(italic=true) { %("Passive ability. ") }
-			%("Awaken the arcane fire within and achieve unparalleled nimbleness. Like a flickering flame, deftly dodge your adversaries' attacks as you glide across the battlefield with the fluidity and grace of a dancing inferno.")
-		}
+    P {
+        Span(italic=true) { "Passive ability. " }
+        "Awaken the arcane fire within and achieve unparalleled nimbleness. Like a flickering flame, deftly dodge your adversaries' attacks as you glide across the battlefield with the fluidity and grace of a dancing inferno."
+    }
 
-		P {
-			SlotEffect("Flickering Swiftness", icon="fas fa-running") {
-				%("Permanently increase movement speed by " + (fastProportion * 100) + "%.")
-			}
-		}
+    SlotEffect("Flickering Swiftness", icon="fas fa-running") {
+        "Permanently increase movement speed by " + (fastProportion * 100) + "%."
+    }
+}
+
+pub fn ArcaneAgilityOption([ui]) {
+	SlotOption(WantArcaneAgility) {
+        ArcaneAgilityDescription
 	}
 }
 
-pub fn ability.ArcaneAgilityAbility(unit, owner, btn) {
+pub fn ability.ArcaneAgilityAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+    AbilityCommandBtn(passive=true) {
+        ArcaneAgilityDescription
+    }
+
 	NoIncantation {
-		SpeedModifier(fastProportion)
+		SpeedModifier(1 + fastProportion)
 	}
 }

@@ -1,55 +1,63 @@
-.. glyph=FireWave:Glyph, color=#ff00cc, damage=10, lifesteal=0.3, speed=64, cooldown=10.0s
+use glyph=@fireWave.svg, color=#ff00cc, damage=10, lifesteal=0.3, speed=64, cooldown=10.0s
 
 pub symbol WantBlaze
 
-pub fn BlazeOption(.. ui) {
-	SlotOption<WantBlaze> {
-		H1 { %("Blaze") }
+pub fn BlazeDescription([ui]) {
+    H1 { "Blaze" }
 
-		P {
-			%("Perform a swift, incendiary dash, setting the battlefield ablaze as you surge through your adversaries. Harness this blazing velocity to skillfully evade peril or bridge distances, adeptly maneuvering yourself into favorable positions amidst the chaos of combat.")
-		}
+    P {
+        "Perform a swift, incendiary dash, setting the battlefield ablaze as you surge through your adversaries. Harness this blazing velocity to skillfully evade peril or bridge distances, adeptly maneuvering yourself into favorable positions amidst the chaos of combat."
+    }
 
-		P {
-			SlotEffect("Incendiary Traversal", icon="fas fa-bolt") {
-				%("While dashing, you may pass through obstacles and enemies.")
-			}
-		}
+    SlotEffect("Incendiary Traversal", icon="fas fa-bolt") {
+        "While dashing, you may pass through obstacles and enemies."
+    }
 
-		SlotStats {
-			SlotStat("Damage", icon="fas fa-sword") { %(damage) }
-			SlotStat("Lifesteal", icon="fas fa-heart") { %((lifesteal * 100.0) + "%") }
-			SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
-		}
+    Blank(expand=true)
+
+    SlotStats {
+        SlotStat("Damage", icon="fas fa-heart-crack") { %(damage) }
+        SlotStat("Lifesteal", icon="fas fa-circle-plus") { %((lifesteal * 100.0) + "%") }
+        SlotStat("Cooldown", icon="fas fa-clock") { %((cooldown / TicksPerSecond) + "s") }
+    }
+}
+
+pub fn BlazeOption([ui]) {
+	SlotOption(WantBlaze) {
+        BlazeDescription
 	}
 }
 
-pub fn ability.BlazeAbility(unit, owner, btn) {
-	on BotRecovering {
+pub fn ability.BlazeAbility([unit, owner, keycode, btnEdit?, btnOrder?, btnSize?]) {
+    use body=unit, life=unit
+
+	on BotRecovering target {
 		if Cooldown == 0 {
 			BotUseAbility(utility=Utility:Low)
 		}
 	}
 
-	Incantation {
-		.. lifetime=7
-		.. radius=0.5, dissipation=12
-		.. ownerColor=true, depth=Depth:Projectile
-		.. shine=1.0, glare=0.7, bloom=3.0, luminous=1.0
+    AbilityCommandBtn {
+        BlazeDescription
+    }
 
-		SpeedModifier(-1) // Don't allow other movement to interfere with the charge
-		Tangibility(Category:Shield) // Pass through everything except shields
-		SenseAlso(Category:Hero) // Sense units while charging so we can apply damage but don't collide with them
-		Sing(Blaze:Sound)
+	SpawnEachIncantation incantation {
+		use lifetime=7
+		use radius=0.5, dissipate=12
+		use ownerColor=true, layer=Layer:Projectile
+		use luminous=1
 
-		// Set the new target to be the same as where we're charging towards.
-		// This is to stop the unit walking backwards after the thrust is complete when using click-to-move
-		Movement:WalkTo(Pointer)
-		Proximity:OnArrival(Pointer) {
-			StopIncantation
+		SpeedModifier(0) // Don't allow other movement to interfere with the charge
+		Tangibility(Category:None) // Pass through everything except shields
+		SenseAlso(Category:Unit) // Sense units while charging so we can apply damage but don't collide with them
+		Sing(@blaze.esfx)
+		UngrabMe
+
+		once Arrived(Pointer) {
+			incantation.Expire
 		}
 
-		hook Pointer {
+		with Pointer {
 			Thrust(Pointer, speed=)
 		}
 
@@ -58,30 +66,27 @@ pub fn ability.BlazeAbility(unit, owner, btn) {
 				Attack(that)
 
 				that.Tombstone victim {
-					NameBlock(owner)
-					%(" charred ")
-					NameBlock(victim)
-					%(" to ash")
+					PlayerNameDisplay(owner)
+					" charred "
+					PlayerNameDisplay(victim)
+					" to ash"
 				}
 			}
 		}
 
-		hook Tick {
+		with Tick {
 			Spawn trail {
-				.. parent=unit
+				use parent=unit, body=trail
 
-				LaunchBody(speed=0)
-				Smoke(interval=3, splatter=Splatter:Outwards(12, glide=0.15), bloom=1.5)
-				ExpireAfterLifetime(7)
+				Body(pos=parent.Pos, heading=parent.Heading)
+				ExpireAfterLifetime(lifetime=7)
+
+ 			   	on Paint(interval=3) {
+					Spark(bloom=1.5, glare=0.7, bloom=1, feather=1, shine=1, speed=12, splatter=0.15)
+				}
 			}
 		}
 
-		await Sleep(lifetime)
+		await Tick(lifetime)
 	}
-}
-
-sound Blaze:Sound(duration=0.5s, cutoff=0.25s) {
-	BrownNoise
-	BandPass(freq=[300,400], q=5)
-	Envelope(attack=0.05s, sustain=0s)
 }
